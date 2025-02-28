@@ -1,0 +1,19 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+plugins {
+    id("org.jetbrains.kotlin.plugin.compose") version "2.1.0" apply false
+    //id("com.google.devtools.ksp") version "2.1.0-1.0.29" apply false
+}
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies{
+        classpath(Libraries.hiltGradlePlugin)
+        classpath(Libraries.gradleKotlin)
+    }
+}
+
+
