@@ -1,7 +1,5 @@
 package moviedblight.home
 
-import moviedblight.core.ui.MyApplicationTheme
-import moviedblight.home.MyModelUiState.Success
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,19 +17,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import moviedblight.core.ui.MyApplicationTheme
+import moviedblight.home.MyModelUiState.Success
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun MyModelScreen(modifier: Modifier = Modifier, viewModel: MyModelViewModel = hiltViewModel()) {
-    /*val items by viewModel.uiState.collectAsStateWithLifecycle()
+fun MyModelScreen(modifier: Modifier = Modifier, viewModel: MyModelViewModel = koinViewModel()) {
+    val items by viewModel.uiState.collectAsStateWithLifecycle()
     if (items is Success) {
         MyModelScreen(
             items = (items as Success).data,
             onSave = { name -> viewModel.addMyModel(name) },
             modifier = modifier
         )
-    }*/
+    }
 }
 
 @Composable
@@ -43,7 +43,9 @@ internal fun MyModelScreen(
     Column(modifier) {
         var nameMyModel by remember { mutableStateOf("Compose") }
         Row(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             TextField(

@@ -1,31 +1,23 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
-    //id("com.google.devtools.ksp")
     id("org.jetbrains.kotlin.plugin.compose")
-    id("com.google.dagger.hilt.android")
 }
 
 android {
-    namespace = "com.mutkuensert.moviedblight"
-    compileSdk = 35
+    namespace = PluginConfigs.applicationId
+    compileSdk = PluginConfigs.compileSdk
 
     defaultConfig {
-        applicationId = "com.mutkuensert.moviedblight"
-        minSdk = 21
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        applicationId = PluginConfigs.applicationId
+        minSdk = PluginConfigs.minSdk
+        targetSdk = PluginConfigs.targetSdk
+        versionCode = PluginConfigs.versionCode
+        versionName = PluginConfigs.versionName
 
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        // Enable room auto-migrations
-        /*ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
-        }*/
     }
 
     buildTypes {
@@ -39,12 +31,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = PluginConfigs.sourceCompatibility
+        targetCompatibility = PluginConfigs.targetCompatibility
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = PluginConfigs.jvmTarget
     }
 
     buildFeatures {
@@ -64,24 +56,10 @@ android {
 
 dependencies {
     implementation(project(":core:ui"))
+    implementation(project(":core:injection"))
     implementation(project(":feature:home"))
-
-    implementation(Libraries.androidxCoreKtx)
-    implementation(Libraries.androidxLifecycleRuntimeKtx)
-    implementation(Libraries.androidxActivityCompose)
-
-    implementation(Libraries.hiltAndroid)
-    kapt(Libraries.hiltAndroidCompiler)
-
-    implementation(Libraries.kotlinxCoroutinesAndroid)
-
-    implementation(Libraries.androidxComposeRuntime)
-    implementation(Libraries.androidxLifecycleViewModelCompose)
-    implementation(Libraries.androidxNavigationCompose)
-    implementation(Libraries.androidxHiltNavigationCompose)
-
-    implementation(platform(Libraries.androidxComposeBom))
-    implementation(Libraries.androidxComposeUi)
-    implementation(Libraries.androidxComposeUiToolingPreview)
-    implementation(Libraries.androidxComposeMaterial3)
+    base()
+    baseAndroid()
+    coroutines()
+    compose()
 }

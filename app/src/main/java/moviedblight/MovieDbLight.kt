@@ -1,7 +1,19 @@
 package moviedblight
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import moviedblight.core.injection.modules.core.dataModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.GlobalContext.startKoin
 
-@HiltAndroidApp
-class MovieDbLight : Application()
+class MovieDbLight : Application() {
+    override fun onCreate() {
+        super.onCreate()
+
+        startKoin {
+            androidLogger()
+            androidContext(this@MovieDbLight)
+            modules(dataModule)
+        }
+    }
+}
