@@ -1,6 +1,5 @@
 plugins {
     id("base-library")
-    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -8,13 +7,6 @@ android {
 }
 
 dependencies {
-//    implementation(project(":core:database"))
-
-    implementation(Libraries.hiltAndroid)
-    kapt(Libraries.hiltAndroidCompiler)
-
-    implementation(Libraries.kotlinxCoroutinesAndroid)
-
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.kotlinxCoroutinesTest)
+    coroutines()
+    unitTest()
 }

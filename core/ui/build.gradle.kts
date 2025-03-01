@@ -8,17 +8,17 @@ android {
 }
 
 dependencies {
-    implementation(platform(Libraries.androidxComposeBom))
-    androidTestImplementation(Libraries.androidxComposeBom)
-    implementation(Libraries.androidxComposeRuntime)
+    implementation(platform(Libs.androidxComposeBom))
+    androidTestImplementation(Libs.androidxComposeBom)
+    implementation(Libs.androidxComposeRuntime)
 
     // Core Android dependencies
-    implementation(Libraries.androidxCoreKtx)
+
 
     // Compose
-    implementation(Libraries.androidxComposeUi)
-    implementation(Libraries.androidxComposeUiToolingPreview)
-    implementation(Libraries.androidxComposeMaterial3)
+    implementation(Libs.androidxComposeUi)
+    implementation(Libs.androidxComposeUiToolingPreview)
+    implementation(Libs.androidxComposeMaterial3)
     // Tooling
-    debugImplementation(Libraries.androidXComposeUiTooling)
+    debugImplementation(Libs.androidXComposeUiTooling)
 }

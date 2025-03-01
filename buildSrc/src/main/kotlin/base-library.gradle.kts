@@ -1,16 +1,15 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
 }
 
 android {
-    compileSdk = 35
+    compileSdk = PluginConfigs.compileSdk
 
     defaultConfig {
-        minSdk = 21
+        minSdk = PluginConfigs.minSdk
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = PluginConfigs.testInstrumentationRunner
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -23,15 +22,15 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = PluginConfigs.sourceCompatibility
+        targetCompatibility = PluginConfigs.targetCompatibility
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = PluginConfigs.jvmTarget
     }
 }
 
-kapt {
-    correctErrorTypes = true
+dependencies {
+    base()
 }

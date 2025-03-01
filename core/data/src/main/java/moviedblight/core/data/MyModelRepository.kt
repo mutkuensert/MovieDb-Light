@@ -1,18 +1,22 @@
 package moviedblight.core.data
 
-import javax.inject.Inject
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 interface MyModelRepository {
-    val myModels: Flow<List<String>>
+    val myModels: StateFlow<List<String>>
 
     suspend fun add(name: String)
 }
 
-class DefaultMyModelRepository @Inject constructor() : MyModelRepository {
+class DefaultMyModelRepository : MyModelRepository {
+    private val _myModels = MutableStateFlow(listOf<String>())
+    override val myModels: StateFlow<List<String>> = _myModels.asStateFlow()
 
-    override val myModels: Flow<List<String>> = flowOf(listOf())
-
-    override suspend fun add(name: String) {}
+    override suspend fun add(name: String) {
+        val list = myModels.value.toMutableList()
+        list.add(name)
+        _myModels.value = list
+    }
 }
