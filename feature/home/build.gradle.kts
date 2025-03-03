@@ -1,6 +1,7 @@
 plugins {
     id("base-feature")
     id("org.jetbrains.kotlin.plugin.compose")
+    kotlin("plugin.serialization")
 }
 
 android {
@@ -15,4 +16,5 @@ dependencies {
     coroutines()
     unitTest()
     androidTest()
+    implementation(libraries.kotlinSerialization)
 }

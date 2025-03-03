@@ -16,6 +16,7 @@ rootProject.name = "MovieDb Light"
 
 include(":app")
 include(":core:data")
+include(":core:database")
 include(":core:injection")
 include(":core:ui")
 include(":feature:home")
