@@ -1,13 +1,17 @@
 plugins {
-    id("base-feature")
+    id("base-library")
     kotlin("plugin.serialization")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
-    namespace = "moviedblight.core.ui"
+    namespace = "core.ui"
+    buildFeatures.compose = true
 }
 
 dependencies {
-    compose()
     implementation(libraries.kotlinSerialization)
+    baseAndroid()
+    coroutines()
+    compose()
 }

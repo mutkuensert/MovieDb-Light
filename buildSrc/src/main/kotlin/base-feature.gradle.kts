@@ -33,7 +33,9 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:ui"))
     base()
     baseAndroid()
     coroutines()
+    compose()
 }

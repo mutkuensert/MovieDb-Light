@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import moviedblight.core.ui.MyApplicationTheme
-import moviedblight.core.ui.navigation.Navigator
-import moviedblight.home.HomeScreen
+import core.ui.MyApplicationTheme
+import core.ui.navigation.Navigator
+import feature.home.HomeScreen
 import org.koin.android.ext.android.inject
 import org.koin.compose.KoinContext
 

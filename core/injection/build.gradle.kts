@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "moviedblight.core.injection"
+    namespace = "core.injection"
 }
 
 dependencies {

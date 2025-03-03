@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "moviedblight.core.database"
+    namespace = "core.database"
 }
 
 dependencies {
