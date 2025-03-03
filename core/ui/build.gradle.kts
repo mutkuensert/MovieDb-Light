@@ -1,6 +1,6 @@
 plugins {
     id("base-feature")
-    id("org.jetbrains.kotlin.plugin.compose")
+    kotlin("plugin.serialization")
 }
 
 android {
@@ -8,17 +8,6 @@ android {
 }
 
 dependencies {
-    implementation(platform(Libs.androidxComposeBom))
-    androidTestImplementation(Libs.androidxComposeBom)
-    implementation(Libs.androidxComposeRuntime)
-
-    // Core Android dependencies
-
-
-    // Compose
-    implementation(Libs.androidxComposeUi)
-    implementation(Libs.androidxComposeUiToolingPreview)
-    implementation(Libs.androidxComposeMaterial3)
-    // Tooling
-    debugImplementation(Libs.androidXComposeUiTooling)
+    compose()
+    implementation(libraries.kotlinSerialization)
 }

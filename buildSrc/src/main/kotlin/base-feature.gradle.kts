@@ -5,12 +5,12 @@ plugins {
 }
 
 android {
-    compileSdk = PluginConfigs.compileSdk
+    compileSdk = ProjectConfigs.compileSdk
 
     defaultConfig {
-        minSdk = PluginConfigs.minSdk
+        minSdk = ProjectConfigs.minSdk
 
-        testInstrumentationRunner = PluginConfigs.testInstrumentationRunner
+        testInstrumentationRunner = ProjectConfigs.testInstrumentationRunner
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -23,12 +23,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = PluginConfigs.sourceCompatibility
-        targetCompatibility = PluginConfigs.targetCompatibility
+        sourceCompatibility = ProjectConfigs.sourceCompatibility
+        targetCompatibility = ProjectConfigs.targetCompatibility
     }
 
     kotlinOptions {
-        jvmTarget = PluginConfigs.jvmTarget
+        jvmTarget = ProjectConfigs.jvmTarget
     }
 }
 
