@@ -12,12 +12,14 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:database"))
+    api(project(":core:database"))
     coroutines()
     unitTest()
     implementation(libraries.retrofit)
-    implementation(libraries.kotlinSerialization)
+    implementation(libraries.kotlinxSerialization)
     implementation(libraries.retrofitKotlinxSerializationConverter)
-    implementation(libraries.security)
+    implementation(libraries.androidxSecurity)
     implementation(libraries.okHttp3Logging)
+    debugImplementation(libraries.chucker)
+    releaseImplementation(libraries.chuckerNoOp)
 }

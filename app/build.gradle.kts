@@ -58,7 +58,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
     implementation(project(":core:injection"))
-    implementation(project(":feature:home"))
+    implementation(project(":feature:movies:presentation"))
     base()
     baseAndroid()
     coroutines()

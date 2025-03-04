@@ -10,7 +10,7 @@ android {
 }
 
 dependencies {
-    implementation(libraries.kotlinSerialization)
+    implementation(libraries.kotlinxSerialization)
     baseAndroid()
     coroutines()
     compose()

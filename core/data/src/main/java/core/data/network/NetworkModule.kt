@@ -1,9 +1,11 @@
 package core.data.network
 
-import kotlinx.serialization.json.Json
+import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import core.data.network.interceptor.AccountIdInterceptor
 import core.data.network.interceptor.ApiKeyInterceptor
 import core.database.user.UserManager
+import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -17,9 +19,10 @@ val networkModule = module {
     single { UserManager(androidContext(), get()) }
     single {
         Retrofit.Builder()
-            .client(getClient(get()))
+            .client(getClient(get(), get()))
+            .addCallAdapterFactory(NetworkResultFactory())
             .baseUrl(Configs.BASE_URL)
-            .addConverterFactory(Json.asConverterFactory("application/json; charset=UTF8".toMediaType()))
+            .addConverterFactory(get<Json>().asConverterFactory("application/json; charset=UTF8".toMediaType()))
             .build()
     }
 }
@@ -34,12 +37,14 @@ private fun getJson(): Json {
     }
 }
 
-private fun getClient(userManager: UserManager): OkHttpClient {
+private fun getClient(context: Context, userManager: UserManager): OkHttpClient {
     return OkHttpClient()
         .newBuilder()
         .addInterceptor(ApiKeyInterceptor())
         .addInterceptor(AccountIdInterceptor(userManager))
         .addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
-        }).build()
+        })
+        .addInterceptor(ChuckerInterceptor(context))
+        .build()
 }

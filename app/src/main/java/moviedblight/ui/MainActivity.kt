@@ -9,7 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import core.ui.MyApplicationTheme
 import core.ui.navigation.Navigator
-import feature.home.HomeScreen
+import moviedblight.ui.home.HomeScreen
 import org.koin.android.ext.android.inject
 import org.koin.compose.KoinContext
 

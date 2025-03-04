@@ -9,6 +9,9 @@ android {
 dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:ui"))
-    implementation(project(":feature:home"))
+    implementation(project(":feature:movies:data"))
+    implementation(project(":feature:movies:domain"))
+    implementation(project(":feature:movies:presentation"))
+    implementation(libraries.retrofit)
     unitTest()
 }

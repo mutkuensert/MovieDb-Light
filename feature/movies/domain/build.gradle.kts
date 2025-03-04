@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "feature.movies.domain"
 }
+
+dependencies {
+    implementation(libraries.androidxPagingRuntime)
+}
