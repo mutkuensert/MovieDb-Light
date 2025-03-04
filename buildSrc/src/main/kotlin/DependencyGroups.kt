@@ -26,6 +26,7 @@ fun Project.base() {
     implementation(libraries.koinAndroid)
     testImplementation(libraries.koinTest)
     implementation(libraries.timber)
+    implementation(libraries.kotlinResult)
 }
 
 fun Project.androidTest() {

@@ -2,8 +2,10 @@ package moviedblight
 
 import android.app.Application
 import core.data.network.networkModule
-import core.injection.common.core.dataModule
-import core.injection.common.core.uiModule
+import core.database.databaseModule
+import core.injection.feature.movies.moviesModule
+import core.ui.uiModule
+import moviedblight.ui.home.homeModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
@@ -15,7 +17,13 @@ class MovieDbLight : Application() {
         startKoin {
             androidLogger()
             androidContext(this@MovieDbLight)
-            modules(dataModule, uiModule, networkModule)
+            modules(
+                homeModule,
+                uiModule,
+                networkModule,
+                databaseModule,
+                moviesModule
+            )
         }
     }
 }
