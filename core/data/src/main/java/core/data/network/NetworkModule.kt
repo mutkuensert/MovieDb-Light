@@ -2,6 +2,7 @@ package core.data.network
 
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import core.data.StringResProvider
 import core.data.network.interceptor.AccountIdInterceptor
 import core.data.network.interceptor.ApiKeyInterceptor
 import core.database.user.UserManager
@@ -20,11 +21,12 @@ val networkModule = module {
     single {
         Retrofit.Builder()
             .client(getClient(get(), get()))
-            .addCallAdapterFactory(NetworkResultFactory())
+            .addCallAdapterFactory(ResultCallAdapterFactory(get<Json>(), get<StringResProvider>()))
             .baseUrl(Configs.BASE_URL)
             .addConverterFactory(get<Json>().asConverterFactory("application/json; charset=UTF8".toMediaType()))
             .build()
     }
+    single { StringResProvider(androidContext()) }
 }
 
 private fun getJson(): Json {
@@ -43,7 +45,7 @@ private fun getClient(context: Context, userManager: UserManager): OkHttpClient 
         .addInterceptor(ApiKeyInterceptor())
         .addInterceptor(AccountIdInterceptor(userManager))
         .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = HttpLoggingInterceptor.Level.BASIC
         })
         .addInterceptor(ChuckerInterceptor(context))
         .build()
