@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_400_bad_request">Üzgünüz! İsteğinizde bir hata oluştu. Lütfen tekrar deneyin.</string>
+    <string name="error_401_unauthorized">Devam etmek için giriş yapmalısınız. Lütfen oturum açın ve tekrar deneyin.</string>
+    <string name="error_403_forbidden">Bu içeriğe erişim izniniz yok. Bunun bir hata olduğunu düşünüyorsanız destekle iletişime geçin.</string>
+    <string name="error_404_not_found">Aradığınız içeriği bulamadık. Taşınmış veya silinmiş olabilir.</string>
+    <string name="error_408_request_timeout">Bağlantı çok uzun sürüyor. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
+    <string name="error_429_too_many_requests">Çok fazla istek gönderdiniz. Lütfen biraz bekleyin ve tekrar deneyin.</string>
+
+    <string name="error_500_internal_server">Sunucumuzda bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_502_bad_gateway">Sunucu geçici olarak kullanılamıyor. Lütfen birkaç dakika içinde tekrar deneyin.</string>
+    <string name="error_503_service_unavailable">Hizmetimiz şu anda bakımda. En kısa sürede geri döneceğiz!</string>
+    <string name="error_504_gateway_timeout">Sunucu yanıt vermekte zorlanıyor. Lütfen internet bağlantınızı kontrol edin veya daha sonra tekrar deneyin.</string>
+    <string name="undefined_status_code">Üzgünüz! İsteğinizde bir hata oluştu. Lütfen tekrar deneyin.</string>
+    <string name="unknown_request_error">Üzgünüz! İsteğinizde bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="something_is_wrong">Üzgünüz! İsteğinizde bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
+</resources>

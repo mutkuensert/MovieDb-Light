@@ -14,4 +14,5 @@ dependencies {
     baseAndroid()
     coroutines()
     compose()
+    implementation(libraries.palette)
 }

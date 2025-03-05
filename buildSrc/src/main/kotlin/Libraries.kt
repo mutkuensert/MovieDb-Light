@@ -43,6 +43,7 @@ class Libraries(val project: Project) {
     val kotlinxCoroutinesTest = getLibrary("kotlinx.coroutines.test")
     val kotlinxSerialization = getLibrary("kotlinx.serialization")
     val okHttp3Logging = getLibrary("okhttp3.logging")
+    val palette = getLibrary("palette")
     val retrofit = getLibrary("retrofit")
     val retrofitKotlinxSerializationConverter = getLibrary("retrofit.kotlinx.serialization.converter")
     val timber = getLibrary("timber")

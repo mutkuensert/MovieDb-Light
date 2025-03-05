@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_400_bad_request">Oops! Something went wrong with your request. Please try again.</string>
+    <string name="error_401_unauthorized">You need to sign in to continue. Please log in and try again.</string>
+    <string name="error_403_forbidden">You don’t have permission to access this. Contact support if you think this is a mistake.</string>
+    <string name="error_404_not_found">We couldn’t find what you’re looking for. It might have been moved or deleted.</string>
+    <string name="error_408_request_timeout">It’s taking too long to connect. Please check your internet and try again.</string>
+    <string name="error_429_too_many_requests">You’ve made too many requests in a short time. Please wait and try again later.</string>
+
+    <string name="error_500_internal_server">Something went wrong on our end. Please try again later.</string>
+    <string name="error_502_bad_gateway">The server is temporarily unavailable. Please try again in a few minutes.</string>
+    <string name="error_503_service_unavailable">Our service is currently under maintenance. We’ll be back soon!</string>
+    <string name="error_504_gateway_timeout">The server is taking too long to respond. Please check your internet or try again later.</string>
+    <string name="undefined_status_code">Oops! Something went wrong with your request. Please try again.</string>
+    <string name="unknown_request_error">Oops! Something went wrong with your request. Please try again later.</string>
+    <string name="something_is_wrong">Oops! Something went wrong with your request. Please try again later.</string>
+</resources>

@@ -21,6 +21,7 @@ kotlinResult = "2.0.1"
 kotlinxSerialization = "1.8.0"
 okHttp3 = "4.12.0"
 paging = "3.3.6"
+palette = "1.0.0"
 retrofit = "2.11.0"
 timber = "5.0.1"
 
@@ -61,8 +62,9 @@ koin-test = { group = "io.insert-koin", name = "koin-test-junit4", version.ref =
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
-okhttp3-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okHttp3" }
 kotlin-result = { module = "com.michael-bull.kotlin-result:kotlin-result", version.ref = "kotlinResult" }
+okhttp3-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okHttp3" }
+palette = { module = "androidx.palette:palette", version.ref = "palette" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-kotlinx-serialization-converter = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }

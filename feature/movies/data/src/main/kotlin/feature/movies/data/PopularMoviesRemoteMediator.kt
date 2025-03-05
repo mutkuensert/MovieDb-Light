@@ -11,6 +11,7 @@ import core.database.feature.movies.popular.PopularMovieEntity
 import feature.movies.data.remote.response.PopularMoviesResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 @OptIn(ExperimentalPagingApi::class)
 class PopularMoviesRemoteMediator(
@@ -47,22 +48,26 @@ class PopularMoviesRemoteMediator(
 
             getPopularMovies.invoke(page).mapBoth(
                 success = { response ->
-                    popularMovieDao.insert(response.results.map {
-                        PopularMovieEntity(
-                            it.id,
-                            page,
-                            it.title,
-                            it.posterPath,
-                            it.voteAverage
-                        )
-                    })
+                    withContext(Dispatchers.IO) {
+                        popularMovieDao.insert(response.results.map {
+                            PopularMovieEntity(
+                                it.id,
+                                page,
+                                it.title,
+                                it.posterPath,
+                                it.voteAverage
+                            )
+                        })
+                    }
                     MediatorResult.Success(endOfPaginationReached = response.results.isEmpty())
                 },
                 failure = {
+                    Timber.w(it.message)
                     MediatorResult.Success(endOfPaginationReached = true)
                 }
             )
         } catch (e: Exception) {
+            Timber.e(e)
             MediatorResult.Error(e)
         }
     }

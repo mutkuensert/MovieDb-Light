@@ -13,11 +13,11 @@ fun Project.compose() {
     implementation(libraries.androidxLifecycleViewModelCompose)
     androidTestImplementation(libraries.androidxComposeUiTestJunit4)
     debugImplementation(libraries.androidxComposeUiTestManifest)
+    implementation(libraries.koinCompose)
 }
 
 fun Project.baseAndroid() {
     implementation(libraries.koinAndroid)
-    implementation(libraries.koinCompose)
     implementation(libraries.androidxCoreKtx)
     implementation(libraries.androidxLifecycleRuntimeKtx)
 }

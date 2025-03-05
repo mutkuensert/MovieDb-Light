@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,6 +34,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import core.ui.NestedVerticalScroll
+import core.ui.getInsetsController
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -41,10 +43,10 @@ fun MoviesScreen(
 ) {
     //val moviesNowPlayingLazyPagingItems = viewModel.moviesNowPlaying.collectAsLazyPagingItems()
     val popularMovies = viewModel.popularMovies.collectAsLazyPagingItems()
-    //val context = LocalContext.current
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        //TODO context.getInsetsController()?.isAppearanceLightStatusBars = true
+         context.getInsetsController()?.isAppearanceLightStatusBars = true
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

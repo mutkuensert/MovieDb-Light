@@ -5,7 +5,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
-import core.data.image.ImageUrl
+import core.data.image.Poster
 import core.database.feature.movies.popular.PopularMovieDao
 import feature.movies.data.remote.MovieService
 import feature.movies.domain.Movie
@@ -31,7 +31,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = entity.id,
                     title = entity.title,
-                    imageUrl = entity.posterPath?.let { ImageUrl.create(it) },
+                    imageUrl = entity.posterPath?.let { Poster(it).w780Url },
                     isFavorite = null, //TODO: get from database
                     voteAverage = entity.voteAverage
                 )
