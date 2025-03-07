@@ -3,7 +3,7 @@ package core.data.network
 import core.data.StringResProvider
 import moviedblight.core.data.R
 
-internal class HttpCodeMessageProvider(private val stringResProvider: StringResProvider) {
+internal class HttpErrorCodeMessageProvider(private val stringResProvider: StringResProvider) {
     fun getUserFriendlyMessage(code: Int): String {
         return when (code) {
             400 -> stringResProvider.get(R.string.error_400_bad_request)
