@@ -104,15 +104,13 @@ private class ResultCall<T>(
                 Timber.e("Error body couldn't be deserialized:\n${exception.stackTraceToString()}")
             }
 
-            val userFriendlyMessage = HttpCodeMessageProvider(stringResProvider)
+            val userFriendlyMessage = HttpErrorCodeMessageProvider(stringResProvider)
                 .getUserFriendlyMessage(code())
             return Err(Failure(userFriendlyMessage))
         }
 
         body()?.let { body -> return Ok(body) }
 
-        // if we defined Unit as success type it means we expected no response body
-        // e.g. in case of 204 No Content
         return if (successType == Unit::class.java) {
             @Suppress("UNCHECKED_CAST")
             Ok(Unit as T)
