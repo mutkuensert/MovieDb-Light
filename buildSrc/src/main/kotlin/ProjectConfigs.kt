@@ -1,7 +1,7 @@
 import org.gradle.api.JavaVersion
 
 object ProjectConfigs {
-    const val applicationId = "com.mutkuensert.mymultimoduletemplate"
+    const val applicationId = "com.mutkuensert.moviedblight"
     const val compileSdk = 35
     const val minSdk = 24
     const val targetSdk = 35

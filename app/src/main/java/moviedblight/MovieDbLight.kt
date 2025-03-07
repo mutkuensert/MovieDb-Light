@@ -1,7 +1,7 @@
 package moviedblight
 
 import android.app.Application
-import com.mutkuensert.mymultimoduletemplate.BuildConfig
+import com.mutkuensert.moviedblight.BuildConfig
 import core.data.network.networkModule
 import core.database.databaseModule
 import core.injection.feature.movies.moviesModule
