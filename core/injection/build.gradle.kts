@@ -3,11 +3,15 @@ plugins {
 }
 
 android {
-    namespace = "moviedblight.core.injection"
+    namespace = "core.injection"
 }
 
 dependencies {
     implementation(project(":core:data"))
-    implementation(project(":feature:home"))
+    implementation(project(":core:ui"))
+    implementation(project(":feature:movies:data"))
+    implementation(project(":feature:movies:domain"))
+    implementation(project(":feature:movies:presentation"))
+    implementation(libraries.retrofit)
     unitTest()
 }

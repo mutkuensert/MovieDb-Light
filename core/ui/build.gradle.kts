@@ -1,24 +1,18 @@
 plugins {
-    id("base-feature")
+    id("base-library")
+    kotlin("plugin.serialization")
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
-    namespace = "moviedblight.core.ui"
+    namespace = "core.ui"
+    buildFeatures.compose = true
 }
 
 dependencies {
-    implementation(platform(Libs.androidxComposeBom))
-    androidTestImplementation(Libs.androidxComposeBom)
-    implementation(Libs.androidxComposeRuntime)
-
-    // Core Android dependencies
-
-
-    // Compose
-    implementation(Libs.androidxComposeUi)
-    implementation(Libs.androidxComposeUiToolingPreview)
-    implementation(Libs.androidxComposeMaterial3)
-    // Tooling
-    debugImplementation(Libs.androidXComposeUiTooling)
+    implementation(libraries.kotlinxSerialization)
+    baseAndroid()
+    coroutines()
+    compose()
+    implementation(libraries.palette)
 }
