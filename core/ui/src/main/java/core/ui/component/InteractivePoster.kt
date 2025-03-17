@@ -1,5 +1,6 @@
 package core.ui.component
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -78,7 +79,7 @@ fun InteractivePoster(
             url = url,
             size = size,
             onSuccess = { state ->
-                val bitmap = state.result.image.toBitmap()
+                val bitmap = state.result.image.toBitmap().copy(Bitmap.Config.ARGB_8888, true)
                 infoColor = bitmap.titleTextColor
                 textColor = bitmap.bodyTextColor
             }

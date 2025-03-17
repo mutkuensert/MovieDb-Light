@@ -41,7 +41,7 @@ fun Image(
         model = ImageRequest.Builder(LocalContext.current)
             .data(url)
             .crossfade(true)
-            .allowHardware(false)
+            .allowHardware(true)
             .build(),
         loading = {
             Box(
