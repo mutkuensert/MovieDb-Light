@@ -3,7 +3,7 @@ package core.data.network
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
-import core.data.StringResProvider
+import core.data.StrResources
 import javax.net.ssl.SSLPeerUnverifiedException
 import kotlinx.serialization.json.Json
 import moviedblight.core.data.R
@@ -20,7 +20,7 @@ import java.lang.reflect.Type
 
 internal class ResultCallAdapterFactory(
     private val json: Json,
-    private val stringResProvider: StringResProvider,
+    private val strResources: StrResources,
 ) : CallAdapter.Factory() {
 
     override fun get(
@@ -36,14 +36,14 @@ internal class ResultCallAdapterFactory(
         if (getRawType(type) != Result::class.java) return null
 
         val responseType = getParameterUpperBound(0, type)
-        return ResultCallAdapter<Any>(responseType, json, stringResProvider)
+        return ResultCallAdapter<Any>(responseType, json, strResources)
     }
 }
 
 private class ResultCallAdapter<T>(
     private val type: Type,
     private val json: Json,
-    private val stringResProvider: StringResProvider
+    private val strResources: StrResources
 ) : CallAdapter<T, Call<Result<T, Failure>>> {
 
     override fun responseType(): Type {
@@ -51,7 +51,7 @@ private class ResultCallAdapter<T>(
     }
 
     override fun adapt(call: Call<T>): Call<Result<T, Failure>> {
-        return ResultCall(call, type, json, stringResProvider)
+        return ResultCall(call, type, json, strResources)
     }
 }
 
@@ -59,7 +59,7 @@ private class ResultCall<T>(
     private val call: Call<T>,
     private val successType: Type,
     private val json: Json,
-    private val stringResProvider: StringResProvider,
+    private val strResources: StrResources,
 ) : Call<Result<T, Failure>> {
 
     override fun enqueue(callback: Callback<Result<T, Failure>>) {
@@ -77,9 +77,9 @@ private class ResultCall<T>(
 
             override fun onFailure(call: Call<T>, throwable: Throwable) {
                 val error = if (throwable is SSLPeerUnverifiedException) {
-                    Err(Failure(stringResProvider.get(R.string.something_is_wrong)))
+                    Err(Failure(strResources.get(R.string.something_is_wrong)))
                 } else {
-                    Err(Failure(stringResProvider.get(R.string.unknown_request_error)))
+                    Err(Failure(strResources.get(R.string.unknown_request_error)))
                 }
                 Timber.e(throwable)
                 callback.onResponse(this@ResultCall, Response.success(error))
@@ -104,7 +104,7 @@ private class ResultCall<T>(
                 Timber.e("Error body couldn't be deserialized:\n${exception.stackTraceToString()}")
             }
 
-            val userFriendlyMessage = HttpErrorCodeMessageProvider(stringResProvider)
+            val userFriendlyMessage = HttpErrorCodeMessageProvider(strResources)
                 .getUserFriendlyMessage(code())
             return Err(Failure(userFriendlyMessage))
         }
@@ -120,7 +120,7 @@ private class ResultCall<T>(
     }
 
     override fun clone(): Call<Result<T, Failure>> =
-        ResultCall(call.clone(), successType, json, stringResProvider)
+        ResultCall(call.clone(), successType, json, strResources)
 
     override fun execute(): Response<Result<T, Failure>> = throw UnsupportedOperationException()
 

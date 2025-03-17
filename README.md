@@ -222,7 +222,7 @@ The adapter handles different types of errors:
 - SSL errors
 - Parsing errors
 
-Each error is transformed into a user-friendly message using the [StringResProvider](./core/data/src/main/java/core/data/StringResProvider.kt).
+Each error is transformed into a user-friendly message using the [StrResources](./core/data/src/main/java/core/data/StrResources.kt).
 
 #### Creating and Using a Service
 
