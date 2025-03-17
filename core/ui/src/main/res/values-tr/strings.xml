@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vote_icon">Puan ikonu</string>
+    <string name="image">Görsel</string>
+    <string name="info">Bilgi</string>
+</resources>

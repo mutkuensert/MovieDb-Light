@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vote_icon">Vote icon</string>
+    <string name="image">Image</string>
+    <string name="info">Info</string>
+</resources>

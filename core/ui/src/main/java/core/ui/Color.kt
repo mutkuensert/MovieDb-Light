@@ -13,3 +13,7 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val Color.isDark: Boolean get() = ColorUtils.calculateLuminance(this.toArgb()) < 0.1
+
+object AppColors {
+    val star = Color(0xFFFFC107)
+}

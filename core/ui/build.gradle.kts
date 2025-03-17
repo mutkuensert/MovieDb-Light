@@ -13,5 +13,7 @@ dependencies {
     implementation(libraries.kotlinxSerialization)
     baseAndroid()
     compose()
-    implementation(libraries.palette)
+    api(libraries.palette)
+    api(libraries.coilCompose)
+    api(libraries.coilNetworkOkhttp)
 }

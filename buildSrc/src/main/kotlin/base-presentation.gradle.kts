@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:ui"))
+    api(project(":core:ui"))
     base()
     baseAndroid()
     compose()
