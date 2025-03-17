@@ -1,5 +1,5 @@
 plugins {
-    id("base-feature")
+    id("base-presentation")
 }
 
 android {

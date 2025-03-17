@@ -111,7 +111,7 @@ private fun PopularMovie(
     title: String,
     imageUrl: String?,
     isFavorite: Boolean?,
-    voteAverage: Double,
+    voteAverage: String,
     navigateToMovieDetails: () -> Unit,
     onAddToFavorite: (isFavorite: Boolean, movieId: Int) -> Unit,
 ) {
@@ -137,7 +137,7 @@ private fun PopularMovie(
             Spacer(Modifier.height(10.dp))
 
             Text(
-                text = voteAverage.toString(),
+                text = voteAverage,
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -163,7 +163,7 @@ private fun PreviewPopularMoviesItem() {
         title = "quis",
         imageUrl = null,
         isFavorite = null,
-        voteAverage = 8.9,
+        voteAverage = "8.9",
         navigateToMovieDetails = {},
         onAddToFavorite = { _, _ -> }
     )

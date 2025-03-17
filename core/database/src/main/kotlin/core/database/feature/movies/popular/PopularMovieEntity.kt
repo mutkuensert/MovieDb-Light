@@ -10,7 +10,7 @@ class PopularMovieEntity(
     val page: Int,
     val title: String,
     @ColumnInfo(name = "poster_path") val posterPath: String?,
-    @ColumnInfo(name = "vote_average") val voteAverage: Double
+    @ColumnInfo(name = "vote_average") val voteAverage: Float
 ) {
     @PrimaryKey(autoGenerate = true)
     var primaryKey: Int = 0

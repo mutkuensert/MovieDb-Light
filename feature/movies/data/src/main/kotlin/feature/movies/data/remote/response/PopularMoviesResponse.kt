@@ -16,5 +16,5 @@ data class PopularMovieDto(
     val id: Int,
     val title: String,
     @SerialName("poster_path") val posterPath: String?,
-    @SerialName("vote_average") val voteAverage: Double
+    @SerialName("vote_average") val voteAverage: Float
 )

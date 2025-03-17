@@ -9,7 +9,6 @@ android {
 }
 
 dependencies {
-    coroutines()
     unitTest()
     implementation(libraries.kotlinxSerialization)
     implementation(libraries.retrofitKotlinxSerializationConverter)

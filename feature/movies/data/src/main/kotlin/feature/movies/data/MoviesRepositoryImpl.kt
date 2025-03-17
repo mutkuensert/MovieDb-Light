@@ -6,6 +6,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import core.data.image.Poster
+import core.data.util.withDecimals
 import core.database.feature.movies.popular.PopularMovieDao
 import feature.movies.data.remote.MovieService
 import feature.movies.domain.Movie
@@ -17,6 +18,7 @@ class MoviesRepositoryImpl(
     private val movieService: MovieService,
     private val popularMovieDao: PopularMovieDao,
 ) : MoviesRepository {
+
     @OptIn(ExperimentalPagingApi::class)
     override fun getPopularMovies(): Flow<PagingData<Movie>> {
         return Pager(
@@ -33,7 +35,7 @@ class MoviesRepositoryImpl(
                     title = entity.title,
                     imageUrl = entity.posterPath?.let { Poster(it).w780Url },
                     isFavorite = null, //TODO: get from database
-                    voteAverage = entity.voteAverage
+                    voteAverage = entity.voteAverage.withDecimals(1)
                 )
             }
         }

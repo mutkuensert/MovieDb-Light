@@ -104,7 +104,7 @@ If no feature name is specified, it defaults to "newfeature":
 
 The project uses precompiled script plugins in the buildSrc directory to share common build configurations across modules.
 
-### base-library.gradle.kts
+### [base-library.gradle.kts](./buildSrc/src/main/kotlin/base-library.gradle.kts)
 
 This plugin configures basic Android library modules:
 
@@ -120,13 +120,13 @@ It applies:
 - Common Android configurations (SDK versions, JVM target, etc.)
 - Base dependencies
 
-### base-feature.gradle.kts
+### [base-presentation.gradle.kts](./buildSrc/src/main/kotlin/base-presentation.gradle.kts)
 
 This plugin configures feature presentation modules with Compose support:
 
 ```kotlin
 plugins {
-    id("base-feature")
+    id("base-presentation")
 }
 ```
 
@@ -137,7 +137,7 @@ It applies:
 - UI-related dependencies
 - Core UI module dependency
 
-### base-data.gradle.kts
+### [base-data.gradle.kts](./buildSrc/src/main/kotlin/base-data.gradle.kts)
 
 This plugin configures data modules with network support:
 
@@ -166,7 +166,7 @@ Dependency management is centralized in the buildSrc directory using Kotlin DSL.
 
 ### Library Versions
 
-Dependencies are declared in the `gradle/libs.versions.toml` file, which maintains a centralized list of library versions. This ensures consistent versions across all modules and makes updates easier.
+Dependencies are declared in the [gradle/libs.versions.toml](./gradle/libs.versions.toml) file, which maintains a centralized list of library versions. This ensures consistent versions across all modules and makes updates easier.
 
 ### Dependency Groups
 
@@ -199,7 +199,7 @@ dependencies {
 }
 ```
 
-For example, the `base()` function in DependencyGroups.kt adds:
+For example, the `base()` function in [DependencyGroups.kt](./buildSrc/src/main/kotlin/DependencyGroups.kt) adds:
 - Koin for dependency injection
 - Timber for logging
 - Kotlin Result for functional error handling
@@ -222,7 +222,7 @@ The adapter handles different types of errors:
 - SSL errors
 - Parsing errors
 
-Each error is transformed into a user-friendly message using the `StringResProvider`.
+Each error is transformed into a user-friendly message using the [StringResProvider](./core/data/src/main/java/core/data/StringResProvider.kt).
 
 #### Creating and Using a Service
 
@@ -237,7 +237,7 @@ interface MyService {
 }
 ```
 
-2. Create the service instance using Retrofit with the ResultCallAdapterFactory (typically in a Koin module):
+2. Create the service instance using Retrofit with the [ResultCallAdapterFactory](core/data/src/main/java/core/data/network/ResultCallAdapterFactory.kt) (typically in a Koin module):
 
 ```kotlin
 single { 

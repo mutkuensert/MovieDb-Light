@@ -12,7 +12,7 @@ class MoviesViewModel(
 ) : ViewModel() {
     val popularMovies = repository.getPopularMovies().map { pagingData ->
         pagingData.map {
-            MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage)
+            MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage.toString())
         }
     }.cachedIn(viewModelScope)
 }

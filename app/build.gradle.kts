@@ -61,6 +61,5 @@ dependencies {
     implementation(project(":feature:movies:presentation"))
     base()
     baseAndroid()
-    coroutines()
     compose()
 }

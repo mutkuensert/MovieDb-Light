@@ -70,7 +70,7 @@ abstract class FeatureModuleCreatorTask: DefaultTask() {
 
                     "presentation" -> """
                     plugins {
-                        id("base-feature")
+                        id("base-presentation")
                     }
 
                     android {

@@ -12,7 +12,6 @@ android {
 dependencies {
     implementation(libraries.kotlinxSerialization)
     baseAndroid()
-    coroutines()
     compose()
     implementation(libraries.palette)
 }

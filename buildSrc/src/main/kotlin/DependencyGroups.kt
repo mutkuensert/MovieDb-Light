@@ -23,6 +23,7 @@ fun Project.baseAndroid() {
 }
 
 fun Project.base() {
+    coroutines()
     implementation(libraries.koinAndroid)
     testImplementation(libraries.koinTest)
     implementation(libraries.timber)
@@ -39,7 +40,7 @@ fun Project.unitTest() {
     testImplementation(libraries.junit)
 }
 
-fun Project.coroutines() {
+private fun Project.coroutines() {
     implementation(libraries.kotlinxCoroutinesAndroid)
     testImplementation(libraries.kotlinxCoroutinesTest)
 }

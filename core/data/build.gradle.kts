@@ -12,8 +12,7 @@ android {
 }
 
 dependencies {
-    api(project(":core:database"))
-    coroutines()
+    api(projects.core.database)
     unitTest()
     implementation(libraries.retrofit)
     implementation(libraries.kotlinxSerialization)

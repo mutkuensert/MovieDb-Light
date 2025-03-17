@@ -5,5 +5,5 @@ data class Movie(
     val title: String,
     val imageUrl: String?,
     val isFavorite: Boolean?,
-    val voteAverage: Double
+    val voteAverage: Float
 )
