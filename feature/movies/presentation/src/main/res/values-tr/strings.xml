@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="popular_movies">Popüler Filmler</string>
+    <string name="popular">Popüler</string>
+    <string name="top_rated">Yüksek Puan</string>
+    <string name="now_playing">Yayında</string>
+    <string name="upcoming">Yakında yayında</string>
 </resources>

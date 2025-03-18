@@ -15,4 +15,22 @@ class MoviesViewModel(
             MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage.toString())
         }
     }.cachedIn(viewModelScope)
+
+    val moviesNowPlaying = repository.getMoviesNowPlaying().map { pagingData ->
+        pagingData.map {
+            MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage.toString())
+        }
+    }.cachedIn(viewModelScope)
+
+    val topRatedMovies = repository.getTopRatedMovies().map { pagingData ->
+        pagingData.map {
+            MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage.toString())
+        }
+    }.cachedIn(viewModelScope)
+
+    val upcomingMovies = repository.getUpcomingMovies().map { pagingData ->
+        pagingData.map {
+            MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage.toString())
+        }
+    }.cachedIn(viewModelScope)
 }

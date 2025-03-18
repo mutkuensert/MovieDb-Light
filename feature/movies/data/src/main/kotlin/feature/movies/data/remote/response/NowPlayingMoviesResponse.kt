@@ -4,13 +4,13 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PopularMoviesResponse(
+data class NowPlayingMoviesResponse(
     val page: Int,
-    val results: List<PopularMovieDto>
+    val results: List<NowPlayingMovieDto>
 )
 
 @Serializable
-data class PopularMovieDto(
+data class NowPlayingMovieDto(
     val id: Int,
     val title: String,
     @SerialName("poster_path") val posterPath: String?,
