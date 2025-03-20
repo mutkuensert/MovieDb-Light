@@ -4,4 +4,8 @@
     <string name="top_rated">Yüksek Puan</string>
     <string name="now_playing">Yayında</string>
     <string name="upcoming">Yakında yayında</string>
+    <string name="options">Seçenekler</string>
+    <string name="select_a_country">Bir ülke seçin</string>
+    <string name="cancel">İptal</string>
+    <string name="flag_icon">Bayrak ikonu</string>
 </resources>

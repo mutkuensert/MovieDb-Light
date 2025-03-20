@@ -1,4 +1,4 @@
-package core.data.image
+package core.libraries.image
 
 private const val IMAGE_BASE_URL = "https://image.tmdb.org/t/p/"
 

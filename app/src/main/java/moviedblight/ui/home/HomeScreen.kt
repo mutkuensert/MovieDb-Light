@@ -3,7 +3,8 @@ package moviedblight.ui.home
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -23,9 +24,10 @@ import androidx.navigation.NavDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
-import core.ui.navigation.routes.MoviesRoute
 import feature.movies.presentation.MoviesScreen
+import feature.settings.presentation.SettingsScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -34,30 +36,44 @@ fun HomeScreen(navigator: Navigator) {
 
     MainNavigation(
         navigator,
-        viewModel::navigateToMovies
+        viewModel::navigateToMovies,
+        viewModel::navigateToSettings
     )
 }
 
 @Composable
-fun MainNavigation(navigator: Navigator, onNavigateToMovies: () -> Unit) {
+fun MainNavigation(
+    navigator: Navigator,
+    onNavigateToMovies: () -> Unit,
+    onNavigateToSettings: () -> Unit,
+) {
     val navController = rememberNavController()
 
     LaunchedEffect(navController) {
         navigator.setNavController(navController)
+        navigator.keepTrackOfCurrentTab()
     }
 
     Scaffold(
         bottomBar = {
-            BottomNavBar(navController, onNavigateToMovies)
+            BottomNavBar(
+                navController,
+                onNavigateToMovies,
+                onNavigateToSettings
+            )
         }
     ) { padding ->
         NavHost(
             modifier = Modifier.padding(padding),
             navController = navController,
-            startDestination = MoviesRoute
+            startDestination = NavTab.startDestination
         ) {
-            composable<MoviesRoute> {
+            composable<NavTab.MoviesRoute> {
                 MoviesScreen()
+            }
+
+            composable<NavTab.SettingsRoute> {
+                SettingsScreen()
             }
         }
     }
@@ -67,6 +83,7 @@ fun MainNavigation(navigator: Navigator, onNavigateToMovies: () -> Unit) {
 private fun BottomNavBar(
     navController: NavController,
     onNavigateToMovies: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val navDestination by navController.currentTabDestinationAsState()
@@ -75,58 +92,34 @@ private fun BottomNavBar(
         contentColor = Color.DarkGray
     ) {
         NavigationBarItem(
-            selected = MoviesRoute.navDestinationId == navDestination?.id,
+            selected = NavTab.MoviesRoute.navDestinationId == navDestination?.id,
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MoviesRoute.tabConfig.selectedColor,
-                unselectedIconColor = MoviesRoute.tabConfig.unselectedColor
+                selectedIconColor = NavTab.MoviesRoute.tabConfig.selectedColor,
+                unselectedIconColor = NavTab.MoviesRoute.tabConfig.unselectedColor
             ),
             onClick = onNavigateToMovies,
             icon = {
                 Icon(
-                    imageVector = Icons.Filled.Home,
-                    contentDescription = null
-                )
-            })
-
-        /*NavigationBarItem(
-            selected = lastTabItemRoute == TabItem.TvShow.route,
-            unselectedContentColor = Color.Gray,
-            selectedContentColor = AppColors.DarkCyan,
-            onClick = viewModel::navigateToTvShow,
-            icon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_tvshow),
+                    imageVector = Icons.Filled.Movie,
                     contentDescription = null
                 )
             })
 
         NavigationBarItem(
-            selected = lastTabItemRoute == TabItem.MultiSearch.route,
-            unselectedContentColor = Color.Gray,
-            selectedContentColor = AppColors.DarkCyan,
-            onClick = viewModel::navigateToMultiSearch,
+            selected = NavTab.SettingsRoute.navDestinationId == navDestination?.id,
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = NavTab.MoviesRoute.tabConfig.selectedColor,
+                unselectedIconColor = NavTab.MoviesRoute.tabConfig.unselectedColor
+            ),
+            onClick = onNavigateToSettings,
             icon = {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_search),
+                    imageVector = Icons.Filled.Settings,
                     contentDescription = null
                 )
             })
-
-        NavigationBarItem(
-            selected = lastTabItemRoute == TabItem.Login.route,
-            unselectedContentColor = Color.Gray,
-            selectedContentColor = AppColors.DarkCyan,
-            onClick = viewModel::navigateToLogin,
-            icon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_account),
-                    contentDescription = null
-                )
-            })*/
     }
 }
-
-val navTabs = listOf(MoviesRoute)
 
 @SuppressLint("RestrictedApi")
 @Composable
@@ -135,7 +128,7 @@ private fun NavController.currentTabDestinationAsState(): State<NavDestination?>
 
     DisposableEffect(this) {
         val listener = NavController.OnDestinationChangedListener { _, navDestination, _ ->
-            if (navTabs.any { navDestination.id == it.navDestinationId })
+            if (NavTab.all.any { navDestination.id == it.navDestinationId })
                 destination.value = navDestination
         }
         addOnDestinationChangedListener(listener)

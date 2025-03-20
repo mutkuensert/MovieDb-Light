@@ -1,5 +1,6 @@
 package core.ui.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,13 +48,18 @@ fun Image(
             Box(
                 modifier = Modifier
                     .then(if (size != ImageSize.MaxWidth) sizeModifier else Modifier)
-                    .width(100.dp),
+                    .width(160.dp),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(color = Color.Gray)
             }
         },
         onSuccess = onSuccess,
+        error = {
+            Box( modifier = Modifier
+                .then(if (size != ImageSize.MaxWidth) sizeModifier else Modifier)
+                .width(160.dp).background(Color.Black))
+        },
         modifier = modifier
             .then(sizeModifier)
             .shadow(elevation = 3.dp, shape = MaterialTheme.shapes.medium)

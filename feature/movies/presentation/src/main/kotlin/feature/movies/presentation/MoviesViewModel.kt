@@ -2,35 +2,68 @@ package feature.movies.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import feature.movies.domain.Movie
 import feature.movies.domain.MoviesRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 
 class MoviesViewModel(
-    repository: MoviesRepository,
+    private val repository: MoviesRepository,
 ) : ViewModel() {
-    val popularMovies = repository.getPopularMovies().map { pagingData ->
-        pagingData.map {
-            MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage.toString())
-        }
-    }.cachedIn(viewModelScope)
+    private val _uiModel = MutableStateFlow(MoviesUiModel.initial())
+    val uiModel: StateFlow<MoviesUiModel> = _uiModel.asStateFlow()
 
-    val moviesNowPlaying = repository.getMoviesNowPlaying().map { pagingData ->
-        pagingData.map {
-            MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage.toString())
-        }
-    }.cachedIn(viewModelScope)
+    val popularMovies = getPagingDataWithCountry { repository.getPopularMovies(it) }
+    val moviesNowPlaying = getPagingDataWithCountry { repository.getMoviesNowPlaying(it) }
+    val topRatedMovies = getPagingDataWithCountry { repository.getTopRatedMovies(it) }
+    val upcomingMovies = getPagingDataWithCountry { repository.getUpcomingMovies(it) }
 
-    val topRatedMovies = repository.getTopRatedMovies().map { pagingData ->
-        pagingData.map {
-            MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage.toString())
-        }
-    }.cachedIn(viewModelScope)
+    private fun PagingData<Movie>.toUiModel(): PagingData<MovieUiModel> {
+        return map { MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage.toString()) }
+    }
 
-    val upcomingMovies = repository.getUpcomingMovies().map { pagingData ->
-        pagingData.map {
-            MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage.toString())
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun getPagingDataWithCountry(getPagingData: suspend (country: String?) -> Flow<PagingData<Movie>>): Flow<PagingData<MovieUiModel>> {
+        return uiModel.distinctUntilChanged { old, new -> old.selectedCountry == new.selectedCountry }
+            .map { it.selectedCountry }
+            .flatMapLatest { selectedCountry ->
+                getPagingData(selectedCountry)
+                    .map { it.toUiModel() }
+                    .cachedIn(viewModelScope)
+            }
+    }
+
+    fun handleCountryClick(country: String) {
+        _uiModel.update {
+            it.copy(selectedCountry = country, isCountryDialogVisible = false)
         }
-    }.cachedIn(viewModelScope)
+    }
+
+    fun handleDismissCountryDialog() {
+        _uiModel.update {
+            it.copy(isCountryDialogVisible = false)
+        }
+    }
+
+    fun handleSelectCountryClick() {
+        if (uiModel.value.selectedCountry.isNullOrEmpty()) {
+            _uiModel.update {
+                it.copy(isCountryDialogVisible = true)
+            }
+        } else {
+            _uiModel.update {
+                it.copy(selectedCountry = null)
+            }
+        }
+    }
 }

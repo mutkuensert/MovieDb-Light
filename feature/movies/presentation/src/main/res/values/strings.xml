@@ -4,4 +4,8 @@
     <string name="top_rated">Top Rated</string>
     <string name="now_playing">Now Playing</string>
     <string name="upcoming">Upcoming</string>
+    <string name="options">Options</string>
+    <string name="select_a_country">Select a country</string>
+    <string name="cancel">Cancel</string>
+    <string name="flag_icon">Flag icon</string>
 </resources>

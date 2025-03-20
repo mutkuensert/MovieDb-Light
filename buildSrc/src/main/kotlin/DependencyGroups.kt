@@ -8,6 +8,7 @@ fun Project.compose() {
     implementation(libraries.androidxComposeUi)
     implementation(libraries.androidxComposeUiToolingPreview)
     implementation(libraries.androidxComposeMaterial3)
+    implementation(libraries.androidxComposeMaterialIconsExtended)
     debugImplementation(libraries.androidXComposeUiTooling)
     implementation(libraries.androidxLifecycleRuntimeCompose)
     implementation(libraries.androidxLifecycleViewModelCompose)

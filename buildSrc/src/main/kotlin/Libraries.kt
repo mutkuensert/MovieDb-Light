@@ -9,6 +9,7 @@ class Libraries(val project: Project) {
     val androidxActivityCompose = getLibrary("androidx.activity.compose")
     val androidxComposeBom = getLibrary("androidx.compose.bom")
     val androidxComposeMaterial3 = getLibrary("androidx.compose.material3")
+    val androidxComposeMaterialIconsExtended = getLibrary("androidx.compose.material.icons.extended")
     val androidxComposeUi = getLibrary("androidx.compose.ui")
     val androidxComposeUiTestJunit4 = getLibrary("androidx.compose.ui.test.junit4")
     val androidxComposeUiTestManifest = getLibrary("androidx.compose.ui.test.manifest")

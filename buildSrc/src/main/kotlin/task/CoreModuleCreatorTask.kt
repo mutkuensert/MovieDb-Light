@@ -46,11 +46,6 @@ abstract class CoreModuleCreatorTask : DefaultTask() {
                     android {
                         namespace = "$namespace"
                     }
-
-                    dependencies {
-                        base()
-                        baseAndroid()
-                    }
                 """.trimIndent()
 
         buildFile.writeText(buildScript)

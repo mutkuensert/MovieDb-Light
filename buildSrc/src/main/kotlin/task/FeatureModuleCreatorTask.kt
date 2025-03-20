@@ -5,7 +5,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 
-abstract class FeatureModuleCreatorTask: DefaultTask() {
+abstract class FeatureModuleCreatorTask : DefaultTask() {
     private val defaultFeatureName = "newfeature"
 
     init {
@@ -30,21 +30,20 @@ abstract class FeatureModuleCreatorTask: DefaultTask() {
         val modules = listOf("data", "domain", "presentation")
         val settingsFile = project.rootDir.resolve("settings.gradle.kts")
 
-        doLast {
-            featureDir.mkdirs()
+        featureDir.mkdirs()
 
-            modules.forEach { module ->
-                val moduleDir = featureDir.resolve(module)
-                moduleDir.mkdirs()
+        modules.forEach { module ->
+            val moduleDir = featureDir.resolve(module)
+            moduleDir.mkdirs()
 
-                val srcDir = moduleDir.resolve("src/main/kotlin/feature/$featureName/$module")
-                srcDir.mkdirs()
+            val srcDir = moduleDir.resolve("src/main/kotlin/feature/$featureName/$module")
+            srcDir.mkdirs()
 
-                val buildFile = moduleDir.resolve("build.gradle.kts")
-                val namespace = "feature.$featureName.$module"
+            val buildFile = moduleDir.resolve("build.gradle.kts")
+            val namespace = "feature.$featureName.$module"
 
-                val buildScript = when (module) {
-                    "data" -> """
+            val buildScript = when (module) {
+                "data" -> """
                     plugins {
                         id("base-library")
                     }
@@ -58,7 +57,7 @@ abstract class FeatureModuleCreatorTask: DefaultTask() {
                     }
                 """.trimIndent()
 
-                    "domain" -> """
+                "domain" -> """
                     plugins {
                         id("base-library")
                     }
@@ -68,7 +67,7 @@ abstract class FeatureModuleCreatorTask: DefaultTask() {
                     }
                 """.trimIndent()
 
-                    "presentation" -> """
+                "presentation" -> """
                     plugins {
                         id("base-presentation")
                     }
@@ -82,15 +81,14 @@ abstract class FeatureModuleCreatorTask: DefaultTask() {
                     }
                 """.trimIndent()
 
-                    else -> ""
-                }
-
-                buildFile.writeText(buildScript)
+                else -> ""
             }
 
-            val includeStatements =
-                modules.joinToString("\n") { "include(\":feature:$featureName:$it\")" }
-            settingsFile.appendText("\n$includeStatements")
+            buildFile.writeText(buildScript)
         }
+
+        val includeStatements =
+            modules.joinToString("\n") { "include(\":feature:$featureName:$it\")" }
+        settingsFile.appendText("\n$includeStatements")
     }
 }

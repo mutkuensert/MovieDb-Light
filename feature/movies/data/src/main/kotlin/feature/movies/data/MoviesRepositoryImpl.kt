@@ -5,7 +5,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
-import core.data.image.Poster
+import core.libraries.image.Poster
 import core.data.util.withDecimals
 import core.database.feature.movies.nowplaying.NowPlayingMovieDao
 import core.database.feature.movies.popular.PopularMovieDao
@@ -26,11 +26,11 @@ class MoviesRepositoryImpl(
     private val topRatedMovieDao: TopRatedMovieDao,
 ) : MoviesRepository {
 
-    override fun getPopularMovies(): Flow<PagingData<Movie>> {
+    override fun getPopularMovies(countryCode: String?): Flow<PagingData<Movie>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = PopularMoviesRemoteMediator(
-                movieService::getPopularMovies,
+                { page -> movieService.getPopularMovies(page, countryCode) },
                 popularMovieDao
             ),
             pagingSourceFactory = { popularMovieDao.getPagingSource() }
@@ -47,11 +47,11 @@ class MoviesRepositoryImpl(
     }
 
 
-    override fun getMoviesNowPlaying(): Flow<PagingData<Movie>> {
+    override fun getMoviesNowPlaying(countryCode: String?): Flow<PagingData<Movie>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = NowPlayingMoviesRemoteMediator(
-                movieService::getMoviesNowPlaying,
+                { page -> movieService.getMoviesNowPlaying(page, countryCode) },
                 nowPlayingMovieDao
             ),
             pagingSourceFactory = { nowPlayingMovieDao.getPagingSource() }
@@ -67,11 +67,11 @@ class MoviesRepositoryImpl(
         }
     }
 
-    override fun getUpcomingMovies(): Flow<PagingData<Movie>> {
+    override fun getUpcomingMovies(countryCode: String?): Flow<PagingData<Movie>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = UpcomingMoviesRemoteMediator(
-                movieService::getUpcomingMovies,
+                { page -> movieService.getUpcomingMovies(page, countryCode) },
                 upcomingMovieDao
             ),
             pagingSourceFactory = { upcomingMovieDao.getPagingSource() }
@@ -87,11 +87,11 @@ class MoviesRepositoryImpl(
         }
     }
 
-    override fun getTopRatedMovies(): Flow<PagingData<Movie>> {
+    override fun getTopRatedMovies(countryCode: String?): Flow<PagingData<Movie>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = TopRatedMoviesRemoteMediator(
-                movieService::getTopRatedMovies,
+                { page -> movieService.getTopRatedMovies(page, countryCode) },
                 topRatedMovieDao
             ),
             pagingSourceFactory = { topRatedMovieDao.getPagingSource() }

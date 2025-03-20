@@ -1,40 +1,19 @@
+import gradle.kotlin.dsl.accessors._bbe0bfdc0dab4a8c93d3b9a5283ae910.implementation
+
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    id("base-library")
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
-    compileSdk = ProjectConfigs.compileSdk
-
-    defaultConfig {
-        minSdk = ProjectConfigs.minSdk
-
-        testInstrumentationRunner = ProjectConfigs.testInstrumentationRunner
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
     buildFeatures {
         compose = true
-        aidl = false
-        buildConfig = true
-        renderScript = false
-        shaders = false
-    }
-
-    compileOptions {
-        sourceCompatibility = ProjectConfigs.sourceCompatibility
-        targetCompatibility = ProjectConfigs.targetCompatibility
-    }
-
-    kotlinOptions {
-        jvmTarget = ProjectConfigs.jvmTarget
     }
 }
 
 dependencies {
     api(project(":core:ui"))
-    base()
     baseAndroid()
     compose()
+    implementation(project(":core:libraries"))
 }
