@@ -69,7 +69,7 @@ fun InteractivePoster(
     ) {
         val density = LocalDensity.current
         var imageWidth by remember { mutableStateOf(0.dp) }
-        Image(
+        Poster(
             modifier = Modifier
                 .then(blurModifier)
                 .onGloballyPositioned {

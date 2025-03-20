@@ -26,7 +26,7 @@ import coil3.request.crossfade
 import core.ui.R
 
 @Composable
-fun Image(
+fun Poster(
     modifier: Modifier = Modifier,
     url: String?,
     size: ImageSize = ImageSize.Medium,
@@ -56,9 +56,12 @@ fun Image(
         },
         onSuccess = onSuccess,
         error = {
-            Box( modifier = Modifier
-                .then(if (size != ImageSize.MaxWidth) sizeModifier else Modifier)
-                .width(160.dp).background(Color.Black))
+            Box(
+                modifier = Modifier
+                    .then(if (size != ImageSize.MaxWidth) sizeModifier else Modifier)
+                    .width(160.dp)
+                    .background(Color.Black)
+            )
         },
         modifier = modifier
             .then(sizeModifier)
