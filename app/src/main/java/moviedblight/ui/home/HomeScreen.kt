@@ -50,8 +50,7 @@ fun MainNavigation(
     val navController = rememberNavController()
 
     LaunchedEffect(navController) {
-        navigator.setNavController(navController)
-        navigator.keepTrackOfCurrentTab()
+        navigator.configure(navController)
     }
 
     Scaffold(

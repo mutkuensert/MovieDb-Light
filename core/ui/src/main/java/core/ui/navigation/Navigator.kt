@@ -14,16 +14,17 @@ class Navigator {
     private val _currentTab = MutableStateFlow<NavDestination?>(null)
     val currentTab: StateFlow<NavDestination?> = _currentTab.asStateFlow()
 
-    fun keepTrackOfCurrentTab() {
+    fun configure(controller: NavHostController) {
+        this.controller = controller
+        keepTrackOfCurrentTab()
+    }
+
+    private fun keepTrackOfCurrentTab() {
         val listener = NavController.OnDestinationChangedListener { _, navDestination, _ ->
             if (NavTab.all.any { navDestination.id == it.navDestinationId })
                 _currentTab.value = navDestination
         }
         controller.addOnDestinationChangedListener(listener)
-    }
-
-    fun setNavController(controller: NavHostController) {
-        this.controller = controller
     }
 
     fun <T : Any> navigateToTab(route: T) {
