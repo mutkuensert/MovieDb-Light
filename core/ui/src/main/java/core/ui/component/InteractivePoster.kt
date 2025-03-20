@@ -45,7 +45,7 @@ import core.ui.palette.titleTextColor
 fun InteractivePoster(
     modifier: Modifier = Modifier,
     url: String?,
-    size: ImageSize = ImageSize.Big,
+    size: PosterSize = PosterSize.Big,
     title: String = "",
     description: String? = null,
     vote: String? = null,

@@ -29,12 +29,12 @@ import core.ui.R
 fun Poster(
     modifier: Modifier = Modifier,
     url: String?,
-    size: ImageSize = ImageSize.Medium,
+    size: PosterSize = PosterSize.Medium,
     onSuccess: (AsyncImagePainter.State.Success) -> Unit = {}
 ) {
     val sizeModifier = when (size) {
-        ImageSize.MaxWidth -> Modifier.fillMaxWidth()
-        ImageSize.MaxHeight -> Modifier.fillMaxHeight()
+        PosterSize.MaxWidth -> Modifier.fillMaxWidth()
+        PosterSize.MaxHeight -> Modifier.fillMaxHeight()
         else -> Modifier.height(size.height)
     }
 
@@ -47,7 +47,7 @@ fun Poster(
         loading = {
             Box(
                 modifier = Modifier
-                    .then(if (size != ImageSize.MaxWidth) sizeModifier else Modifier)
+                    .then(if (size != PosterSize.MaxWidth) sizeModifier else Modifier)
                     .width(160.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -58,7 +58,7 @@ fun Poster(
         error = {
             Box(
                 modifier = Modifier
-                    .then(if (size != ImageSize.MaxWidth) sizeModifier else Modifier)
+                    .then(if (size != PosterSize.MaxWidth) sizeModifier else Modifier)
                     .width(160.dp)
                     .background(Color.Black)
             )
@@ -71,6 +71,6 @@ fun Poster(
     )
 }
 
-enum class ImageSize(val height: Dp) {
+enum class PosterSize(val height: Dp) {
     Small(80.dp), Medium(160.dp), Big(240.dp), ExtraBig(320.dp), MaxWidth((-1).dp), MaxHeight((-1).dp)
 }

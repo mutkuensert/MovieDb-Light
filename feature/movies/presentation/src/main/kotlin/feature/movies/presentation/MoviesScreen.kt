@@ -40,7 +40,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import core.libraries.CountryManager
-import core.ui.component.ImageSize
+import core.ui.component.PosterSize
 import core.ui.component.InteractivePoster
 import org.koin.androidx.compose.koinViewModel
 
@@ -210,7 +210,7 @@ private fun Movies(
             if (movies.loadState.refresh == LoadState.Loading) {
                 Box(
                     modifier = Modifier
-                        .height(ImageSize.Big.height)
+                        .height(PosterSize.Big.height)
                         .fillParentMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
