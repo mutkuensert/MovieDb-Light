@@ -7,7 +7,7 @@ android {
     namespace = "feature.movies.data"
 }
 dependencies {
-    implementation(project(":feature:movies:domain"))
+    implementation(projects.feature.movies.domain)
     implementation(libraries.androidxPagingRuntime)
     implementation(libraries.androidxRoom)
     ksp(libraries.androidxRoomCompiler)

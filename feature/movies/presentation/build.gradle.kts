@@ -7,6 +7,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":feature:movies:domain"))
+    implementation(projects.feature.movies.domain)
     implementation(libraries.androidxPagingCompose)
 }

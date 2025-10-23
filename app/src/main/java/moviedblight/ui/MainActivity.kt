@@ -12,7 +12,6 @@ import core.ui.MyApplicationTheme
 import core.ui.navigation.Navigator
 import moviedblight.ui.home.HomeScreen
 import org.koin.android.ext.android.inject
-import org.koin.compose.KoinContext
 
 class MainActivity : ComponentActivity() {
     private val navigator: Navigator by inject()
@@ -21,14 +20,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            KoinContext {
-                MyApplicationTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        HomeScreen(navigator)
-                    }
+            MyApplicationTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    HomeScreen(navigator)
                 }
             }
         }

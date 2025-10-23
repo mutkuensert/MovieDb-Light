@@ -10,7 +10,7 @@ sealed interface NavTab {
     val tabConfig: TabConfig get() = TabConfig()
 
     companion object {
-        val startDestination = MoviesRoute
+        val startDestination get() = MoviesRoute
         val all: List<NavTab> get() = listOf(MoviesRoute, SettingsRoute)
     }
 

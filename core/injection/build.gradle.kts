@@ -7,11 +7,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:data"))
-    implementation(project(":core:ui"))
-    implementation(project(":feature:movies:data"))
-    implementation(project(":feature:movies:domain"))
-    implementation(project(":feature:movies:presentation"))
+    implementation(projects.core.data)
+    implementation(projects.core.ui)
+    implementation(projects.feature.movies.data)
+    implementation(projects.feature.movies.domain)
+    implementation(projects.feature.movies.presentation)
     implementation(libraries.retrofit)
     unitTest()
 }
