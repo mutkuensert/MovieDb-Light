@@ -92,14 +92,14 @@ private fun BottomNavBar(
     onNavigateToProfile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val navDestination by navController.currentTabDestinationAsState()
+    val currentTabDestination by navController.currentTabDestinationAsState()
 
     NavigationBar(
         modifier = modifier,
         contentColor = Color.DarkGray
     ) {
         NavigationBarItem(
-            selected = navDestination?.isRoute(NavTab.MoviesRoute::class) ?: false,
+            selected = currentTabDestination?.isRoute(NavTab.MoviesRoute::class) ?: false,
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = NavTab.MoviesRoute.tabConfig.selectedColor,
                 unselectedIconColor = NavTab.MoviesRoute.tabConfig.unselectedColor
@@ -113,7 +113,7 @@ private fun BottomNavBar(
             })
 
         NavigationBarItem(
-            selected = navDestination?.isRoute(NavTab.ProfileRoute::class) ?: false,
+            selected = currentTabDestination?.isRoute(NavTab.ProfileRoute::class) ?: false,
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = NavTab.MoviesRoute.tabConfig.selectedColor,
                 unselectedIconColor = NavTab.MoviesRoute.tabConfig.unselectedColor
