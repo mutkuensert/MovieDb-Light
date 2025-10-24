@@ -26,8 +26,10 @@ android {
         targetCompatibility = ProjectConfigs.targetCompatibility
     }
 
-    kotlinOptions {
-        jvmTarget = ProjectConfigs.jvmTarget
+    kotlin {
+        compilerOptions {
+            jvmTarget = ProjectConfigs.jvmTarget
+        }
     }
 }
 
