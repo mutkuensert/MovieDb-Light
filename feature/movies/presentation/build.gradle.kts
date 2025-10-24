@@ -8,5 +8,5 @@ android {
 
 dependencies {
     implementation(projects.feature.movies.domain)
-    implementation(libraries.androidxPagingCompose)
+    implementation(libs.androidx.paging.compose)
 }

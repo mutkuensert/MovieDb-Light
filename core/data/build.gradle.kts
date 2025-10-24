@@ -14,11 +14,11 @@ android {
 dependencies {
     api(projects.core.database)
     unitTest()
-    implementation(libraries.retrofit)
-    implementation(libraries.kotlinxSerialization)
-    implementation(libraries.retrofitKotlinxSerializationConverter)
-    implementation(libraries.androidxSecurity)
-    implementation(libraries.okHttp3Logging)
-    debugImplementation(libraries.chucker)
-    releaseImplementation(libraries.chuckerNoOp)
+    implementation(libs.retrofit)
+    implementation(libs.kotlinx.serialization)
+    implementation(libs.retrofit.kotlinx.serialization.converter)
+    implementation(libs.androidx.security)
+    implementation(libs.okhttp3.logging)
+    debugImplementation(libs.chucker)
+    releaseImplementation(libs.chucker.no.op)
 }

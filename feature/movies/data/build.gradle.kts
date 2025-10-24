@@ -8,9 +8,9 @@ android {
 }
 dependencies {
     implementation(projects.feature.movies.domain)
-    implementation(libraries.androidxPagingRuntime)
-    implementation(libraries.androidxRoom)
-    ksp(libraries.androidxRoomCompiler)
-    implementation(libraries.androidxRoomKtx)
-    implementation(libraries.androidxRoomPaging3)
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.room)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging3)
 }

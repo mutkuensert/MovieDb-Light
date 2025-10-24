@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     implementation(project(":core:data"))
-    implementation(libraries.kotlinxSerialization)
-    implementation(libraries.retrofit)
+    implementation(getLibrary("kotlinx.serialization"))
+    implementation(getLibrary("retrofit"))
     implementation(project(":core:libraries"))
 }

@@ -10,11 +10,11 @@ android {
 
 dependencies {
     unitTest()
-    implementation(libraries.kotlinxSerialization)
-    implementation(libraries.retrofitKotlinxSerializationConverter)
-    implementation(libraries.androidxSecurity)
-    implementation(libraries.androidxRoom)
-    ksp(libraries.androidxRoomCompiler)
-    implementation(libraries.androidxRoomKtx)
-    implementation(libraries.androidxRoomPaging3)
+    implementation(libs.kotlinx.serialization)
+    implementation(libs.retrofit.kotlinx.serialization.converter)
+    implementation(libs.androidx.security)
+    implementation(libs.androidx.room)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging3)
 }

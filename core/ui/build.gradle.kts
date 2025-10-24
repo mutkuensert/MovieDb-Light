@@ -10,10 +10,10 @@ android {
 }
 
 dependencies {
-    implementation(libraries.kotlinxSerialization)
+    implementation(libs.kotlinx.serialization)
     baseAndroid()
     compose()
-    api(libraries.palette)
-    api(libraries.coilCompose)
-    api(libraries.coilNetworkOkhttp)
+    api(libs.palette)
+    api(libs.coil.compose)
+    api(libs.coil.network.okhttp)
 }

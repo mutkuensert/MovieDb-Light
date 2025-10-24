@@ -7,5 +7,5 @@ android {
 }
 
 dependencies {
-    implementation(libraries.androidxPagingRuntime)
+    implementation(libs.androidx.paging.runtime)
 }

@@ -12,6 +12,6 @@ dependencies {
     implementation(projects.feature.movies.data)
     implementation(projects.feature.movies.domain)
     implementation(projects.feature.movies.presentation)
-    implementation(libraries.retrofit)
+    implementation(libs.retrofit)
     unitTest()
 }
