@@ -13,6 +13,7 @@ android {
 
 dependencies {
     api(projects.core.database)
+    implementation(projects.core.domain)
     unitTest()
     implementation(libs.retrofit)
     implementation(libs.kotlinx.serialization)
@@ -21,4 +22,5 @@ dependencies {
     implementation(libs.okhttp3.logging)
     debugImplementation(libs.chucker)
     releaseImplementation(libs.chucker.no.op)
+    implementation(libs.androidx.browser)
 }

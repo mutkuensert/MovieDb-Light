@@ -4,7 +4,6 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import core.libraries.StrResources
-import javax.net.ssl.SSLPeerUnverifiedException
 import kotlinx.serialization.json.Json
 import moviedblight.core.data.R
 import okhttp3.Request
@@ -17,6 +16,7 @@ import retrofit2.Retrofit
 import timber.log.Timber
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import javax.net.ssl.SSLPeerUnverifiedException
 
 internal class ResultCallAdapterFactory(
     private val json: Json,
@@ -44,13 +44,13 @@ private class ResultCallAdapter<T>(
     private val type: Type,
     private val json: Json,
     private val strResources: StrResources
-) : CallAdapter<T, Call<Result<T, Failure>>> {
+) : CallAdapter<T, Call<Result<T, NetworkError>>> {
 
     override fun responseType(): Type {
         return type
     }
 
-    override fun adapt(call: Call<T>): Call<Result<T, Failure>> {
+    override fun adapt(call: Call<T>): Call<Result<T, NetworkError>> {
         return ResultCall(call, type, json, strResources)
     }
 }
@@ -60,9 +60,9 @@ private class ResultCall<T>(
     private val successType: Type,
     private val json: Json,
     private val strResources: StrResources,
-) : Call<Result<T, Failure>> {
+) : Call<Result<T, NetworkError>> {
 
-    override fun enqueue(callback: Callback<Result<T, Failure>>) {
+    override fun enqueue(callback: Callback<Result<T, NetworkError>>) {
         call.enqueue(object : Callback<T> {
 
             override fun onResponse(
@@ -77,9 +77,22 @@ private class ResultCall<T>(
 
             override fun onFailure(call: Call<T>, throwable: Throwable) {
                 val error = if (throwable is SSLPeerUnverifiedException) {
-                    Err(Failure(strResources.get(R.string.something_is_wrong)))
+                    val sslCertificateError = 495
+                    Err(
+                        NetworkError(
+                            httpCode = sslCertificateError,
+                            statusCode = null,
+                            message = strResources.get(R.string.something_is_wrong)
+                        )
+                    )
                 } else {
-                    Err(Failure(strResources.get(R.string.unknown_request_error)))
+                    Err(
+                        NetworkError(
+                            httpCode = null,
+                            statusCode = null,
+                            strResources.get(R.string.unknown_request_error)
+                        )
+                    )
                 }
                 Timber.e(throwable)
                 callback.onResponse(this@ResultCall, Response.success(error))
@@ -88,25 +101,32 @@ private class ResultCall<T>(
         )
     }
 
-    fun <T> Response<T>.toResult(successType: Type): Result<T, Failure> {
+    fun <T> Response<T>.toResult(successType: Type): Result<T, NetworkError> {
         if (!isSuccessful) {
-            try {
-                val error = errorBody()?.let {
+            val error = try {
+                errorBody()?.let {
                     json.decodeFromString<ErrorResponse>(it.string())
-                }
-                if (error != null) {
-                    Timber.e(
-                        "Status Code: ${error.statusCode} " +
-                                "Status Message: ${error.statusMessage}"
-                    )
                 }
             } catch (exception: Exception) {
                 Timber.e("Error body couldn't be deserialized:\n${exception.stackTraceToString()}")
+                null
+            }
+            if (error != null) {
+                Timber.e(
+                    "Status Code: ${error.statusCode} " +
+                            "Status Message: ${error.statusMessage}"
+                )
             }
 
             val userFriendlyMessage = HttpErrorCodeMessageProvider(strResources)
                 .getUserFriendlyMessage(code())
-            return Err(Failure(userFriendlyMessage))
+            return Err(
+                NetworkError(
+                    code(),
+                    error?.statusCode,
+                    error?.statusMessage ?: userFriendlyMessage
+                )
+            )
         }
 
         body()?.let { body -> return Ok(body) }
@@ -119,10 +139,11 @@ private class ResultCall<T>(
         }
     }
 
-    override fun clone(): Call<Result<T, Failure>> =
+    override fun clone(): Call<Result<T, NetworkError>> =
         ResultCall(call.clone(), successType, json, strResources)
 
-    override fun execute(): Response<Result<T, Failure>> = throw UnsupportedOperationException()
+    override fun execute(): Response<Result<T, NetworkError>> =
+        throw UnsupportedOperationException()
 
     override fun isExecuted(): Boolean = call.isExecuted
 

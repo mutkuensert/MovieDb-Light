@@ -1,10 +1,16 @@
-package core.data.network
+package core.data
 
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import core.data.auth.AuthenticationRepositoryImpl
+import core.data.auth.AuthenticationService
+import core.data.network.Configs
+import core.data.network.ResultCallAdapterFactory
 import core.data.network.interceptor.AccountIdInterceptor
 import core.data.network.interceptor.ApiKeyInterceptor
 import core.database.user.UserManager
+import core.domain.AuthenticationRepository
+import core.domain.SessionManager
 import core.libraries.StrResources
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -26,6 +32,15 @@ val networkModule = module {
             .addConverterFactory(get<Json>().asConverterFactory("application/json; charset=UTF8".toMediaType()))
             .build()
     }
+    single { get<Retrofit>().create(AuthenticationService::class.java) }
+    single<AuthenticationRepository> {
+        AuthenticationRepositoryImpl(
+            androidContext(),
+            get(),
+            get()
+        )
+    }
+    single<SessionManager> { SessionManagerImpl(androidContext()) }
 }
 
 private fun getJson(): Json {

@@ -6,9 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class ErrorResponse(
     @SerialName("status_code")
-    val statusCode: Int,
+    val statusCode: Int?,
     @SerialName("status_message")
-    val statusMessage: String,
-) {
-    val success: Boolean = false
-}
+    val statusMessage: String?,
+)
