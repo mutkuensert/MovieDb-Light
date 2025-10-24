@@ -2,10 +2,10 @@ package core.data.network
 
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
-import core.data.StrResources
 import core.data.network.interceptor.AccountIdInterceptor
 import core.data.network.interceptor.ApiKeyInterceptor
 import core.database.user.UserManager
+import core.libraries.StrResources
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -26,7 +26,6 @@ val networkModule = module {
             .addConverterFactory(get<Json>().asConverterFactory("application/json; charset=UTF8".toMediaType()))
             .build()
     }
-    single { StrResources(androidContext()) }
 }
 
 private fun getJson(): Json {

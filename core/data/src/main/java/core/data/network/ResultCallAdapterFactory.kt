@@ -3,7 +3,7 @@ package core.data.network
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
-import core.data.StrResources
+import core.libraries.StrResources
 import javax.net.ssl.SSLPeerUnverifiedException
 import kotlinx.serialization.json.Json
 import moviedblight.core.data.R

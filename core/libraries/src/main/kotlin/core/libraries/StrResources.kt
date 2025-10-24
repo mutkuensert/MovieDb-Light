@@ -1,9 +1,9 @@
-package core.data
+package core.libraries
 
 import android.content.Context
 import androidx.annotation.StringRes
 
-internal class StrResources(private val context: Context) {
+class StrResources(private val context: Context) {
 
     fun get(@StringRes id: Int): String {
         return context.resources.getString(id)

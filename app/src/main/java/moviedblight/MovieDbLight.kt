@@ -5,6 +5,7 @@ import com.mutkuensert.moviedblight.BuildConfig
 import core.data.network.networkModule
 import core.database.databaseModule
 import core.injection.feature.movies.moviesModule
+import core.libraries.librariesModule
 import core.ui.uiModule
 import moviedblight.ui.home.homeModule
 import org.koin.android.ext.koin.androidContext
@@ -25,7 +26,8 @@ class MovieDbLight : Application() {
                 uiModule,
                 networkModule,
                 databaseModule,
-                moviesModule
+                moviesModule,
+                librariesModule
             )
         }
     }

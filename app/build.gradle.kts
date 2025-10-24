@@ -57,9 +57,10 @@ android {
 dependencies {
     implementation(projects.core.ui)
     implementation(projects.core.data)
-    implementation(projects.core.injection)
+    implementation(project(":core:feature-injection"))
     implementation(projects.feature.movies.presentation)
     implementation(projects.feature.settings.presentation)
+    implementation(projects.core.libraries)
     base()
     baseAndroid()
     compose()
