@@ -25,6 +25,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
+import core.libraries.navigation.isRoute
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
 import feature.movies.presentation.MoviesScreen
@@ -92,12 +93,13 @@ private fun BottomNavBar(
     modifier: Modifier = Modifier,
 ) {
     val navDestination by navController.currentTabDestinationAsState()
+
     NavigationBar(
         modifier = modifier,
         contentColor = Color.DarkGray
     ) {
         NavigationBarItem(
-            selected = navDestination?.route?.contains(NavTab.MoviesRoute::class.java.simpleName) == true,
+            selected = navDestination?.isRoute(NavTab.MoviesRoute::class) ?: false,
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = NavTab.MoviesRoute.tabConfig.selectedColor,
                 unselectedIconColor = NavTab.MoviesRoute.tabConfig.unselectedColor
@@ -111,7 +113,7 @@ private fun BottomNavBar(
             })
 
         NavigationBarItem(
-            selected = navDestination?.route?.contains(NavTab.ProfileRoute::class.java.simpleName) == true,
+            selected = navDestination?.isRoute(NavTab.ProfileRoute::class) ?: false,
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = NavTab.MoviesRoute.tabConfig.selectedColor,
                 unselectedIconColor = NavTab.MoviesRoute.tabConfig.unselectedColor
