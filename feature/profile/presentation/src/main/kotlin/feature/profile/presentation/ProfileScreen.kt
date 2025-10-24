@@ -39,11 +39,10 @@ private fun launchLoginWebPage(requestToken: String, context: Context) {
         .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
         .build()
 
-    var uri =
-        ("https://www.themoviedb.org/authenticate/" +
-                requestToken +
-                "?redirect_to" +
-                "=$ProfileDeeplink?$KEY_CAME_FROM_TMDB_LOGIN=true").toUri()
+    var uri = ("https://www.themoviedb.org/authenticate/" +
+            requestToken +
+            "?redirect_to" +
+            "=$ProfileDeeplink?$KEY_CAME_FROM_TMDB_LOGIN=true").toUri()
     if (uri.scheme == null) {
         uri = uri
             .buildUpon()
