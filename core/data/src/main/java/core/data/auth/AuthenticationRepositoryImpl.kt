@@ -1,70 +1,49 @@
 package core.data.auth
 
-import android.content.Context
-import android.content.Intent
-import androidx.browser.customtabs.CustomTabsIntent
-import androidx.core.net.toUri
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
-import com.github.michaelbull.result.get
 import com.github.michaelbull.result.mapBoth
 import com.github.michaelbull.result.mapOr
+import com.github.michaelbull.result.onSuccess
 import core.data.SessionManagerImpl
 import core.domain.AuthenticationRepository
 import core.domain.ErrorMessage
-
-const val APP_DEEP_LINK = "mutkuensert.moviedblight://app/"
+import core.libraries.StrResources
+import moviedblight.core.data.R
 
 class AuthenticationRepositoryImpl(
-    private val context: Context,
     private val authenticationService: AuthenticationService,
     private val sessionManager: SessionManagerImpl,
+    private val strResources: StrResources,
 ) : AuthenticationRepository {
 
     override suspend fun getRequestToken(): Result<String, ErrorMessage> {
-        return authenticationService.getRequestToken()
-            .mapBoth(
-                success = {
-                    Ok(it.requestToken)
-                }, failure = {
-                    Err("Unsuccessful request token")
-                })
-    }
-
-    suspend fun login() {
-        val requestToken = getRequestToken().get()
-
-        if (requestToken != null) {
-            openLoginPage(requestToken)
+        val requestToken = sessionManager.getRequestToken()
+        return if (requestToken != null) {
+            Ok(requestToken)
+        } else {
+            authenticationService.getRequestToken()
+                .mapBoth(
+                    success = {
+                        sessionManager.setRequestToken(it.requestToken)
+                        Ok(it.requestToken)
+                    }, failure = {
+                        Err("Unsuccessful request token")
+                    })
         }
     }
 
-    private fun openLoginPage(requestToken: String) {
-        val intent = CustomTabsIntent.Builder()
-            .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
-            .build()
+    override suspend fun startSession(): Result<Unit, ErrorMessage> {
+        val requestToken = sessionManager.getRequestToken()
+            ?: return Err(strResources.get(R.string.something_is_wrong))
 
-        intent.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-        var uri =
-            ("https://www.themoviedb.org/authenticate/" +
-                    requestToken +
-                    "?redirect_to" +
-                    "=$APP_DEEP_LINK").toUri()
-        if (uri.scheme == null) {
-            uri = uri
-                .buildUpon()
-                .scheme("https")
-                .build()
-        }
-
-        intent.launchUrl(context, uri)
-    }
-
-    override suspend fun startSession(requestToken: String): Result<String, ErrorMessage> {
         return authenticationService.startSession(NewSessionRequest(requestToken))
-            .mapBoth(success = { Ok(it.sessionId) }, failure = {
+            .mapBoth(success = {
+                sessionManager.setSessionId(it.sessionId)
+                sessionManager.removeRequestToken()
+                Ok(Unit)
+            }, failure = {
                 Err("Unsuccessful request token validation.")
             })
     }
@@ -73,6 +52,11 @@ class AuthenticationRepositoryImpl(
         val sessionId = requireNotNull(sessionManager.getSessionId())
 
         return authenticationService.deleteSession(SessionIdRequest(sessionId))
+            .onSuccess {
+                if (it.success) {
+                    sessionManager.removeSessionId()
+                }
+            }
             .mapOr(
                 default = false,
                 transform = {

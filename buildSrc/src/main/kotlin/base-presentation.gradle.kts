@@ -11,6 +11,7 @@ android {
 
 dependencies {
     api(project(":core:ui"))
+    implementation(project(":core:domain"))
     baseAndroid()
     compose()
     implementation(project(":core:libraries"))

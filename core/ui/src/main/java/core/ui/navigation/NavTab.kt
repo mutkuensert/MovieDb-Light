@@ -1,32 +1,25 @@
 package core.ui.navigation
 
-import android.annotation.SuppressLint
 import androidx.compose.ui.graphics.Color
-import androidx.navigation.serialization.generateHashCode
 import kotlinx.serialization.Serializable
 
 sealed interface NavTab {
-    val navDestinationId: Int
     val tabConfig: TabConfig get() = TabConfig()
 
     companion object {
         val startDestination get() = MoviesRoute
-        val all: List<NavTab> get() = listOf(MoviesRoute, SettingsRoute)
+        val allRoutes: List<String>
+            get() = listOf(
+                MoviesRoute::class.java.simpleName,
+                ProfileRoute::class.java.simpleName
+            )
     }
 
     @Serializable
-    data object MoviesRoute : NavTab {
-        override val navDestinationId: Int
-            @SuppressLint("RestrictedApi")
-            get() = serializer().generateHashCode()
-    }
+    data object MoviesRoute : NavTab
 
     @Serializable
-    data object SettingsRoute : NavTab {
-        override val navDestinationId: Int
-            @SuppressLint("RestrictedApi")
-            get() = serializer().generateHashCode()
-    }
+    data class ProfileRoute(val cameFromTmdbLogin: Boolean = false) : NavTab
 }
 
 class TabConfig(

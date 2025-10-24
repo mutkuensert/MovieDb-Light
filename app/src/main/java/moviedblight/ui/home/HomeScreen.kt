@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Movie
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -24,10 +24,12 @@ import androidx.navigation.NavDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
 import feature.movies.presentation.MoviesScreen
-import feature.settings.presentation.SettingsScreen
+import feature.profile.presentation.ProfileDeeplink
+import feature.profile.presentation.ProfileScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -37,7 +39,7 @@ fun HomeScreen(navigator: Navigator) {
     MainNavigation(
         navigator,
         viewModel::navigateToMovies,
-        viewModel::navigateToSettings
+        viewModel::navigateToProfile
     )
 }
 
@@ -45,7 +47,7 @@ fun HomeScreen(navigator: Navigator) {
 fun MainNavigation(
     navigator: Navigator,
     onNavigateToMovies: () -> Unit,
-    onNavigateToSettings: () -> Unit,
+    onNavigateToProfile: () -> Unit,
 ) {
     val navController = rememberNavController()
 
@@ -58,7 +60,7 @@ fun MainNavigation(
             BottomNavBar(
                 navController,
                 onNavigateToMovies,
-                onNavigateToSettings
+                onNavigateToProfile
             )
         }
     ) { padding ->
@@ -71,8 +73,12 @@ fun MainNavigation(
                 MoviesScreen()
             }
 
-            composable<NavTab.SettingsRoute> {
-                SettingsScreen()
+            composable<NavTab.ProfileRoute>(
+                deepLinks = listOf(
+                    navDeepLink<NavTab.ProfileRoute>(basePath = ProfileDeeplink)
+                )
+            ) {
+                ProfileScreen()
             }
         }
     }
@@ -82,7 +88,7 @@ fun MainNavigation(
 private fun BottomNavBar(
     navController: NavController,
     onNavigateToMovies: () -> Unit,
-    onNavigateToSettings: () -> Unit,
+    onNavigateToProfile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val navDestination by navController.currentTabDestinationAsState()
@@ -91,7 +97,7 @@ private fun BottomNavBar(
         contentColor = Color.DarkGray
     ) {
         NavigationBarItem(
-            selected = NavTab.MoviesRoute.navDestinationId == navDestination?.id,
+            selected = navDestination?.route?.contains(NavTab.MoviesRoute::class.java.simpleName) == true,
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = NavTab.MoviesRoute.tabConfig.selectedColor,
                 unselectedIconColor = NavTab.MoviesRoute.tabConfig.unselectedColor
@@ -105,15 +111,15 @@ private fun BottomNavBar(
             })
 
         NavigationBarItem(
-            selected = NavTab.SettingsRoute.navDestinationId == navDestination?.id,
+            selected = navDestination?.route?.contains(NavTab.ProfileRoute::class.java.simpleName) == true,
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = NavTab.MoviesRoute.tabConfig.selectedColor,
                 unselectedIconColor = NavTab.MoviesRoute.tabConfig.unselectedColor
             ),
-            onClick = onNavigateToSettings,
+            onClick = onNavigateToProfile,
             icon = {
                 Icon(
-                    imageVector = Icons.Filled.Settings,
+                    imageVector = Icons.Filled.PersonPin,
                     contentDescription = null
                 )
             })
@@ -127,7 +133,7 @@ private fun NavController.currentTabDestinationAsState(): State<NavDestination?>
 
     DisposableEffect(this) {
         val listener = NavController.OnDestinationChangedListener { _, navDestination, _ ->
-            if (NavTab.all.any { navDestination.id == it.navDestinationId })
+            if (NavTab.allRoutes.any { navDestination.route?.contains(it) == true })
                 destination.value = navDestination
         }
         addOnDestinationChangedListener(listener)

@@ -2,6 +2,6 @@ package core.domain
 
 import kotlinx.coroutines.flow.StateFlow
 
-interface SessionManager {
+interface AuthState {
     val loggedIn: StateFlow<Boolean>
 }

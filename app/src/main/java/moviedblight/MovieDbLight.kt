@@ -2,9 +2,10 @@ package moviedblight
 
 import android.app.Application
 import com.mutkuensert.moviedblight.BuildConfig
-import core.data.networkModule
+import core.data.dataModule
 import core.database.databaseModule
 import core.injection.feature.movies.moviesModule
+import core.injection.feature.movies.profileModule
 import core.libraries.librariesModule
 import core.ui.uiModule
 import moviedblight.ui.home.homeModule
@@ -24,9 +25,10 @@ class MovieDbLight : Application() {
             modules(
                 homeModule,
                 uiModule,
-                networkModule,
+                dataModule,
                 databaseModule,
                 moviesModule,
+                profileModule,
                 librariesModule
             )
         }

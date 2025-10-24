@@ -3,5 +3,5 @@ plugins {
 }
 
 android {
-    namespace = "feature.settings.domain"
+    namespace = "feature.profile.domain"
 }

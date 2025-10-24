@@ -12,7 +12,7 @@ class HomeViewModel(
         navigator.navigateToTab(NavTab.MoviesRoute)
     }
 
-    fun navigateToSettings() {
-        navigator.navigateToTab(NavTab.SettingsRoute)
+    fun navigateToProfile() {
+        navigator.navigateToTab(NavTab.ProfileRoute())
     }
 }

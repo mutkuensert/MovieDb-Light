@@ -10,7 +10,6 @@ import core.data.network.interceptor.AccountIdInterceptor
 import core.data.network.interceptor.ApiKeyInterceptor
 import core.database.user.UserManager
 import core.domain.AuthenticationRepository
-import core.domain.SessionManager
 import core.libraries.StrResources
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -21,7 +20,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
-val networkModule = module {
+val dataModule = module {
     single { getJson() }
     single { UserManager(androidContext(), get()) }
     single {
@@ -33,14 +32,10 @@ val networkModule = module {
             .build()
     }
     single { get<Retrofit>().create(AuthenticationService::class.java) }
+    single { SessionManagerImpl(androidContext()) }
     single<AuthenticationRepository> {
-        AuthenticationRepositoryImpl(
-            androidContext(),
-            get(),
-            get()
-        )
+        AuthenticationRepositoryImpl(get(), get(), get())
     }
-    single<SessionManager> { SessionManagerImpl(androidContext()) }
 }
 
 private fun getJson(): Json {
@@ -59,7 +54,7 @@ private fun getClient(context: Context, userManager: UserManager): OkHttpClient 
         .addInterceptor(ApiKeyInterceptor())
         .addInterceptor(AccountIdInterceptor(userManager))
         .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BASIC
+            level = HttpLoggingInterceptor.Level.BODY
         })
         .addInterceptor(ChuckerInterceptor(context))
         .build()
