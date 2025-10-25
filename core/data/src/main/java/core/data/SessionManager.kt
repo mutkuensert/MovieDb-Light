@@ -10,7 +10,7 @@ private const val PREFS_SESSION: String = "sessionPreferences"
 private const val KEY_SESSION_ID: String = "sessionId"
 private const val KEY_REQUEST_TOKEN: String = "requestToken"
 
-class SessionManagerImpl(context: Context) {
+class SessionManager(context: Context) {
     private val encryptedSharedPreferences = EncryptedPreferences.create(PREFS_SESSION, context)
     private val _loggedIn = MutableStateFlow<Boolean>(
         encryptedSharedPreferences.contains(KEY_SESSION_ID)

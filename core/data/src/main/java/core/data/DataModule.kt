@@ -32,7 +32,7 @@ val dataModule = module {
             .build()
     }
     single { get<Retrofit>().create(AuthenticationService::class.java) }
-    single { SessionManagerImpl(androidContext()) }
+    single { SessionManager(androidContext()) }
     single<AuthenticationRepository> {
         AuthenticationRepositoryImpl(get(), get(), get())
     }

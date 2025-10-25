@@ -6,7 +6,7 @@ import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.mapBoth
 import com.github.michaelbull.result.mapOr
 import com.github.michaelbull.result.onSuccess
-import core.data.SessionManagerImpl
+import core.data.SessionManager
 import core.domain.AuthenticationRepository
 import core.domain.ErrorMessage
 import core.libraries.StrResources
@@ -14,7 +14,7 @@ import moviedblight.core.data.R
 
 class AuthenticationRepositoryImpl(
     private val authenticationService: AuthenticationService,
-    private val sessionManager: SessionManagerImpl,
+    private val sessionManager: SessionManager,
     private val strResources: StrResources,
 ) : AuthenticationRepository {
 
