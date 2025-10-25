@@ -14,10 +14,13 @@ import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.database.user.UserManager
+import core.domain.AccountRepository
 import core.domain.ErrorMessage
 import core.libraries.AppScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AccountRepositoryImpl(
     private val accountService: AccountService,
@@ -62,80 +65,98 @@ class AccountRepositoryImpl(
     }
 
     override suspend fun fetchFavoriteMovies() {
-        accountDao.clearAllFavoriteMovies()
-        val favoriteMovies = mutableListOf<FavoriteMoviesResultDto>()
+        withContext(Dispatchers.IO) {
+            accountDao.clearAllFavoriteMovies()
+            val favoriteMovies = mutableListOf<FavoriteMoviesResultDto>()
 
-        var endPage = 2
-        var page = 1
-        while (page in 0..endPage) {
-            accountService.getFavoriteMovies(
-                page = page,
-                sessionId = sessionManager.getSessionId()!!
-            ).onSuccess { response: FavoriteMoviesResponse ->
-                endPage = response.totalPages
+            var endPage = 2
+            var page = 1
+            while (page in 0..endPage) {
+                accountService.getFavoriteMovies(
+                    page = page,
+                    sessionId = sessionManager.getSessionId()!!
+                ).onSuccess { response: FavoriteMoviesResponse ->
+                    endPage = response.totalPages
 
-                if (response.results.isNotEmpty()) {
-                    favoriteMovies.addAll(response.results)
+                    if (response.results.isNotEmpty()) {
+                        favoriteMovies.addAll(response.results)
+                    }
+                }.onFailure {
+                    break
                 }
-            }.onFailure {
-                break
+                page++
             }
-            page++
-        }
 
-        accountDao.insertFavoriteMovies(
-            *favoriteMovies
-                .map(::mapToFavoriteMovieEntity)
-                .toTypedArray()
-        )
+            accountDao.insertFavoriteMovies(
+                *favoriteMovies
+                    .map(::mapToFavoriteMovieEntity)
+                    .toTypedArray()
+            )
+        }
     }
 
     override suspend fun syncMovieFavoriteStatus(
         isFavorite: Boolean,
         movieId: Int
     ): Result<Unit, ErrorMessage> {
-        accountDao.insertFavoriteMovies(FavoriteMovieEntity(movieId))
-        updateFavoriteStatusOfMovieInDatabase(movieId, isFavorite)
-
-        return accountService.postFavoriteMovie(
-            FavoriteMovieDto(
-                favorite = isFavorite,
-                mediaId = movieId
-            ),
-            sessionId = sessionManager.getSessionId()!!
-        ).mapBoth(
-            success = {
-                Ok(Unit)
-            },
-            failure = {
+        return withContext(Dispatchers.IO) {
+            if (isFavorite) {
+                accountDao.insertFavoriteMovies(FavoriteMovieEntity(movieId))
+            } else {
                 accountDao.deleteFavoriteMovies(FavoriteMovieEntity(movieId))
-                updateFavoriteStatusOfMovieInDatabase(movieId, !isFavorite)
-                Err(it.message)
             }
-        )
+
+            updateFavoriteStatusOfMovieInDatabase(movieId, isFavorite)
+
+            return@withContext accountService.postFavoriteMovie(
+                FavoriteMovieDto(
+                    favorite = isFavorite,
+                    mediaId = movieId
+                ),
+                sessionId = sessionManager.getSessionId()!!
+            ).mapBoth(
+                success = {
+                    Ok(Unit)
+                },
+                failure = {
+                    accountDao.deleteFavoriteMovies(FavoriteMovieEntity(movieId))
+                    updateFavoriteStatusOfMovieInDatabase(movieId, !isFavorite)
+                    Err(it.message)
+                }
+            )
+        }
     }
 
     private suspend fun updateFavoriteStatusOfMovieInDatabase(movieId: Int, isFavorite: Boolean) {
-        topRatedMovieDao.get(movieId)
-            ?.copy(isFavorite = isFavorite)
-            ?.let {
-                topRatedMovieDao.update(it)
-            }
-        popularMovieDao.get(movieId)
-            ?.copy(isFavorite = isFavorite)
-            ?.let {
-                popularMovieDao.update(it)
-            }
-        nowPlayingMovieDao.get(movieId)
-            ?.copy(isFavorite = isFavorite)
-            ?.let {
-                nowPlayingMovieDao.update(it)
-            }
-        upcomingMovieDao.get(movieId)
-            ?.copy(isFavorite = isFavorite)
-            ?.let {
-                upcomingMovieDao.update(it)
-            }
+        withContext(Dispatchers.IO) {
+            val topRatedMovie = topRatedMovieDao.get(movieId)
+            topRatedMovie?.copy(isFavorite = isFavorite)
+                ?.apply { primaryKey = topRatedMovie.primaryKey }
+                ?.let {
+                    topRatedMovieDao.update(it)
+                }
+
+            val popularMovie = popularMovieDao.get(movieId)
+            popularMovie?.copy(isFavorite = isFavorite)
+                ?.apply { primaryKey = popularMovie.primaryKey }
+                ?.let {
+                    popularMovieDao.update(it)
+                }
+
+            val nowPlayingMovie = nowPlayingMovieDao.get(movieId)
+            nowPlayingMovie?.copy(isFavorite = isFavorite)
+                ?.apply { primaryKey = nowPlayingMovie.primaryKey }
+                ?.let {
+                    nowPlayingMovieDao.update(it)
+                }
+
+            val upcomingMovie = upcomingMovieDao.get(movieId)
+            upcomingMovie?.copy(isFavorite = isFavorite)
+                ?.apply { primaryKey = upcomingMovie.primaryKey }
+                ?.let {
+                    upcomingMovieDao.update(it)
+                }
+        }
     }
 }
 

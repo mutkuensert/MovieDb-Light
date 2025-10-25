@@ -40,8 +40,8 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import core.libraries.CountryManager
-import core.ui.component.PosterSize
 import core.ui.component.InteractivePoster
+import core.ui.component.PosterSize
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -73,6 +73,7 @@ fun MoviesScreen(
         Movies(
             movies = upcomingMovies,
             navigateToDetails = {},
+            onFavoriteClick = viewModel::handleFavoriteClick
         )
 
         MovieListTitle(stringResource(R.string.now_playing))
@@ -80,6 +81,7 @@ fun MoviesScreen(
         Movies(
             movies = moviesNowPlaying,
             navigateToDetails = {},
+            onFavoriteClick = viewModel::handleFavoriteClick
         )
 
         MovieListTitle(stringResource(R.string.popular))
@@ -87,6 +89,7 @@ fun MoviesScreen(
         Movies(
             movies = popularMovies,
             navigateToDetails = {},
+            onFavoriteClick = viewModel::handleFavoriteClick
         )
 
         MovieListTitle(stringResource(R.string.top_rated))
@@ -94,6 +97,7 @@ fun MoviesScreen(
         Movies(
             movies = topRatedMovies,
             navigateToDetails = {},
+            onFavoriteClick = viewModel::handleFavoriteClick
         )
     }
 
@@ -201,6 +205,7 @@ private fun Movies(
     modifier: Modifier = Modifier,
     movies: LazyPagingItems<MovieUiModel>,
     navigateToDetails: (movieId: Int) -> Unit,
+    onFavoriteClick: (movie: MovieUiModel) -> Unit
 ) {
     LazyRow(
         modifier = modifier.fillMaxWidth(),
@@ -227,7 +232,9 @@ private fun Movies(
                     title = movie.title,
                     description = null,
                     vote = movie.voteAverage,
-                    onClick = { navigateToDetails(movie.id) }
+                    onPosterClick = { navigateToDetails(movie.id) },
+                    isFavorite = movie.isFavorite,
+                    onFavoriteClick = { onFavoriteClick(movie) }
                 )
             }
         }

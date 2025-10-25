@@ -1,7 +1,6 @@
-package core.data.account
+package core.domain
 
 import com.github.michaelbull.result.Result
-import core.domain.ErrorMessage
 
 interface AccountRepository {
 

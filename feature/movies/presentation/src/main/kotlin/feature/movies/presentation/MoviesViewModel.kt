@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import core.domain.AccountRepository
 import feature.movies.domain.Movie
 import feature.movies.domain.MoviesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,9 +17,11 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class MoviesViewModel(
     private val repository: MoviesRepository,
+    private val accountRepository: AccountRepository,
 ) : ViewModel() {
     private val _uiModel = MutableStateFlow(MoviesUiModel.initial())
     val uiModel: StateFlow<MoviesUiModel> = _uiModel.asStateFlow()
@@ -29,7 +32,15 @@ class MoviesViewModel(
     val upcomingMovies = getPagingDataWithCountry { repository.getUpcomingMovies(it) }
 
     private fun PagingData<Movie>.toUiModel(): PagingData<MovieUiModel> {
-        return map { MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage.toString()) }
+        return map {
+            MovieUiModel(
+                it.id,
+                it.title,
+                it.imageUrl,
+                it.voteAverage.toString(),
+                it.isFavorite
+            )
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -64,6 +75,15 @@ class MoviesViewModel(
             _uiModel.update {
                 it.copy(selectedCountry = null)
             }
+        }
+    }
+
+    fun handleFavoriteClick(movie: MovieUiModel) {
+        val isFavorite = requireNotNull(movie.isFavorite) {
+            "Can't be null if button is visible"
+        }
+        viewModelScope.launch {
+            accountRepository.syncMovieFavoriteStatus(!isFavorite, movie.id)
         }
     }
 }

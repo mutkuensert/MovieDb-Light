@@ -2,7 +2,7 @@ package core.data
 
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
-import core.data.account.AccountRepository
+import core.domain.AccountRepository
 import core.data.account.AccountRepositoryImpl
 import core.data.account.AccountService
 import core.data.auth.AuthenticationRepositoryImpl

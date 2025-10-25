@@ -5,7 +5,9 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.github.michaelbull.result.mapBoth
+import core.data.SessionManager
 import core.data.network.NetworkResult
+import core.database.account.AccountDao
 import core.database.feature.movies.nowplaying.NowPlayingMovieDao
 import core.database.feature.movies.nowplaying.NowPlayingMovieEntity
 import feature.movies.data.remote.response.NowPlayingMoviesResponse
@@ -17,6 +19,8 @@ import timber.log.Timber
 class NowPlayingMoviesRemoteMediator(
     private val getNowPlayingMovies: suspend (page: Int) -> NetworkResult<NowPlayingMoviesResponse>,
     private val nowPlayingMovieDao: NowPlayingMovieDao,
+    private val accountDao: AccountDao,
+    private val sessionManager: SessionManager,
 ) : RemoteMediator<Int, NowPlayingMovieEntity>() {
 
     override suspend fun load(
@@ -56,7 +60,8 @@ class NowPlayingMoviesRemoteMediator(
                                 it.title,
                                 it.posterPath,
                                 it.voteAverage,
-                                isFavorite = null
+                                isFavorite = accountDao.isMovieFavorite(it.id)
+                                    .takeIf { sessionManager.loggedIn.value }
                             )
                         })
                     }

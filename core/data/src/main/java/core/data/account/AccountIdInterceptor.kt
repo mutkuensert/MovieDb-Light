@@ -4,8 +4,7 @@ import core.database.user.UserManager
 import okhttp3.Interceptor
 import okhttp3.Response
 
-class AccountIdInterceptor(private val userManager: UserManager) :
-    Interceptor {
+class AccountIdInterceptor(private val userManager: UserManager) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val baseRequest = chain.request()
 

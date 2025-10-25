@@ -10,6 +10,16 @@ import retrofit2.Retrofit
 
 val moviesModule = module {
     single { get<Retrofit>().create(MovieService::class.java) }
-    single<MoviesRepository> { MoviesRepositoryImpl(get(), get(), get(), get(), get()) }
+    single<MoviesRepository> {
+        MoviesRepositoryImpl(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
     viewModelOf(::MoviesViewModel)
 }

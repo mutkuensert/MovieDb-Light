@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Beenhere
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
@@ -49,11 +50,19 @@ fun InteractivePoster(
     title: String = "",
     description: String? = null,
     vote: String? = null,
-    onClick: () -> Unit
+    isFavorite: Boolean? = null,
+    onFavoriteClick: () -> Unit,
+    onPosterClick: () -> Unit
 ) {
-    var infoColor by remember { mutableStateOf(Color(0xFFFFFFFF)) }
+    var infoButtonColor by remember { mutableStateOf(Color(0xFFFFFFFF)) }
     var textColor by remember { mutableStateOf(Color(0xFFFFFFFF)) }
+    val favoriteButtonColor = if (isFavorite == true) {
+        Color(0xA6FFEB3B)
+    } else {
+        Color(0x80E1E1E1)
+    }
     var isInfoVisible by remember { mutableStateOf(false) }
+
     val blurModifier: Modifier = if (isInfoVisible) {
         Modifier
             .clip(MaterialTheme.shapes.medium)
@@ -65,7 +74,7 @@ fun InteractivePoster(
     Box(
         modifier = modifier
             .clip(MaterialTheme.shapes.medium)
-            .clickable(onClick = onClick)
+            .clickable(onClick = onPosterClick)
     ) {
         val density = LocalDensity.current
         var imageWidth by remember { mutableStateOf(0.dp) }
@@ -79,12 +88,16 @@ fun InteractivePoster(
             size = size,
             onSuccess = { state ->
                 val bitmap = state.result.image.toBitmap().copy(Bitmap.Config.ARGB_8888, true)
-                infoColor = bitmap.titleTextColor
+                infoButtonColor = bitmap.titleTextColor
                 textColor = bitmap.bodyTextColor
             }
         )
 
-        InfoIcon(infoColor) { isInfoVisible = !isInfoVisible }
+        InfoButton(infoButtonColor) { isInfoVisible = !isInfoVisible }
+
+        if (isFavorite != null) {
+            FavoriteButton(favoriteButtonColor, onFavoriteClick)
+        }
 
         if (isInfoVisible) {
             InfoView(imageWidth, title, textColor, vote, description)
@@ -162,7 +175,7 @@ private fun VoteView(textColor: Color, vote: String) {
 }
 
 @Composable
-private fun BoxScope.InfoIcon(color: Color, onClick: () -> Unit) {
+private fun BoxScope.InfoButton(color: Color, onClick: () -> Unit) {
     Icon(
         modifier = Modifier
             .padding(16.dp)
@@ -170,6 +183,20 @@ private fun BoxScope.InfoIcon(color: Color, onClick: () -> Unit) {
             .align(Alignment.TopEnd)
             .clickable { onClick.invoke() },
         imageVector = Icons.Default.Info,
+        tint = color,
+        contentDescription = stringResource(R.string.info)
+    )
+}
+
+@Composable
+private fun BoxScope.FavoriteButton(color: Color, onClick: () -> Unit) {
+    Icon(
+        modifier = Modifier
+            .padding(16.dp)
+            .size(30.dp)
+            .align(Alignment.TopStart)
+            .clickable { onClick.invoke() },
+        imageVector = Icons.Default.Beenhere,
         tint = color,
         contentDescription = stringResource(R.string.info)
     )
