@@ -14,14 +14,13 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
 import timber.log.Timber
 
-class MovieDbLight : Application() {
+class MovieDbLightApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-
         plantTimber()
         startKoin {
             androidLogger()
-            androidContext(this@MovieDbLight)
+            androidContext(this@MovieDbLightApplication)
             modules(
                 homeModule,
                 uiModule,

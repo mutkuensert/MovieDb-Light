@@ -2,6 +2,9 @@ package core.data
 
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import core.data.account.AccountRepository
+import core.data.account.AccountRepositoryImpl
+import core.data.account.AccountService
 import core.data.auth.AuthenticationRepositoryImpl
 import core.data.auth.AuthenticationService
 import core.data.network.Configs
@@ -32,9 +35,23 @@ val dataModule = module {
             .build()
     }
     single { get<Retrofit>().create(AuthenticationService::class.java) }
+    single { get<Retrofit>().create(AccountService::class.java) }
     single { SessionManager(androidContext()) }
     single<AuthenticationRepository> {
         AuthenticationRepositoryImpl(get(), get(), get())
+    }
+    single<AccountRepository>(createdAtStart = true) {
+        AccountRepositoryImpl(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+        )
     }
 }
 

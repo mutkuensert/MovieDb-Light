@@ -15,4 +15,5 @@ val databaseModule = module {
     single { get<AppDatabase>().nowPlayingMovieDao() }
     single { get<AppDatabase>().upcomingMovieDao() }
     single { get<AppDatabase>().topRateMovieDao() }
+    single { get<AppDatabase>().favoriteMovieDao() }
 }

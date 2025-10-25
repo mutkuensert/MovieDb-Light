@@ -55,7 +55,8 @@ class UpcomingMoviesRemoteMediator(
                                 page,
                                 it.title,
                                 it.posterPath,
-                                it.voteAverage
+                                it.voteAverage,
+                                isFavorite = null
                             )
                         })
                     }

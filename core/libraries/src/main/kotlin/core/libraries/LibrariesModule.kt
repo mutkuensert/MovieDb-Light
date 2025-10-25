@@ -5,4 +5,5 @@ import org.koin.dsl.module
 
 val librariesModule = module {
     single { StrResources(androidContext()) }
+    single { AppScope() }
 }

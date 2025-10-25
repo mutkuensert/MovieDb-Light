@@ -19,19 +19,14 @@ class AuthenticationRepositoryImpl(
 ) : AuthenticationRepository {
 
     override suspend fun getRequestToken(): Result<String, ErrorMessage> {
-        val requestToken = sessionManager.getRequestToken()
-        return if (requestToken != null) {
-            Ok(requestToken)
-        } else {
-            authenticationService.getRequestToken()
-                .mapBoth(
-                    success = {
-                        sessionManager.setRequestToken(it.requestToken)
-                        Ok(it.requestToken)
-                    }, failure = {
-                        Err("Unsuccessful request token")
-                    })
-        }
+        return authenticationService.getRequestToken()
+            .mapBoth(
+                success = {
+                    sessionManager.setRequestToken(it.requestToken)
+                    Ok(it.requestToken)
+                }, failure = {
+                    Err("Unsuccessful request token")
+                })
     }
 
     override suspend fun startSession(): Result<Unit, ErrorMessage> {
