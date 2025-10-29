@@ -4,11 +4,11 @@ import android.app.Application
 import com.mutkuensert.moviedblight.BuildConfig
 import core.data.dataModule
 import core.database.databaseModule
+import core.domain.domainModule
 import core.injection.feature.movies.moviesModule
 import core.injection.feature.movies.profileModule
 import core.libraries.librariesModule
 import core.ui.uiModule
-import moviedblight.ui.home.homeModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
@@ -22,10 +22,11 @@ class MovieDbLightApplication : Application() {
             androidLogger()
             androidContext(this@MovieDbLightApplication)
             modules(
-                homeModule,
-                uiModule,
-                dataModule,
+                appModule,
                 databaseModule,
+                dataModule,
+                domainModule,
+                uiModule,
                 moviesModule,
                 profileModule,
                 librariesModule

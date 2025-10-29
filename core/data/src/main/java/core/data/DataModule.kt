@@ -2,7 +2,6 @@ package core.data
 
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
-import core.domain.AccountRepository
 import core.data.account.AccountRepositoryImpl
 import core.data.account.AccountService
 import core.data.auth.AuthenticationRepositoryImpl
@@ -12,6 +11,8 @@ import core.data.network.ResultCallAdapterFactory
 import core.data.network.interceptor.AccountIdInterceptor
 import core.data.network.interceptor.ApiKeyInterceptor
 import core.database.user.UserManager
+import core.domain.AccountRepository
+import core.domain.AuthState
 import core.domain.AuthenticationRepository
 import core.libraries.StrResources
 import kotlinx.serialization.json.Json
@@ -50,9 +51,9 @@ val dataModule = module {
             get(),
             get(),
             get(),
-            get(),
         )
     }
+    single<AuthState> { AuthStateImpl(get()) }
 }
 
 private fun getJson(): Json {

@@ -1,28 +1,24 @@
 package core.ui
 
-import android.os.Build
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = DarkBlue,
+    secondary = LightBlue,
+    tertiary = LightGreen
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = DarkBlue,
+    secondary = LightBlue,
+    tertiary = LightGreen,
+    surface = Color.White,
+    background = Color.White
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -38,26 +34,22 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun MoviedbLightTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+    val colorScheme = if (darkTheme) {
+        LightColorScheme//DarkColorScheme
+    } else {
+        LightColorScheme
+    }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        val activity = LocalActivity.current
-        SideEffect {
-            activity?.getInsetsController()?.isAppearanceLightStatusBars = !darkTheme
+    /*val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        if (darkTheme) {
+            context.setStatusBarContentLight()
+        } else {
+            context.setStatusBarContentDark()
         }
-    }
+    }*/
 
     MaterialTheme(
         colorScheme = colorScheme,

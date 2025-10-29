@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login">Giriş yap</string>
+    <string name="logout_button_icon">Çıkış yap butonunun simgesi</string>
+</resources>

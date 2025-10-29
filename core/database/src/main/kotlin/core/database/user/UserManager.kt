@@ -14,10 +14,10 @@ class UserManager(
 ) {
     private val encryptedSharedPreferences = EncryptedPreferences.create(PREFS_USER, context)
 
-    fun getUser(): AccountDetails? {
+    fun getUser(): UserDetails? {
         val userDetailsJson = encryptedSharedPreferences.getString(KEY_USER_DETAILS, null)
             ?: return null
-        return json.decodeFromString<AccountDetails>(userDetailsJson)
+        return json.decodeFromString<UserDetails>(userDetailsJson)
     }
 
     @SuppressLint("ApplySharedPref")
@@ -32,7 +32,7 @@ class UserManager(
             .putString(
                 KEY_USER_DETAILS,
                 json.encodeToString(
-                    AccountDetails(id, name, userName, profilePicturePath, includeAdult)
+                    UserDetails(id, name, userName, profilePicturePath, includeAdult)
                 )
             )
             .commit()
@@ -44,7 +44,7 @@ class UserManager(
 }
 
 @Serializable
-data class AccountDetails(
+data class UserDetails(
     val id: Int,
     val name: String,
     val userName: String,

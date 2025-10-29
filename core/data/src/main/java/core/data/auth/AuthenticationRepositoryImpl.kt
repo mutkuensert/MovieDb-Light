@@ -4,7 +4,6 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.mapBoth
-import com.github.michaelbull.result.mapOr
 import com.github.michaelbull.result.onSuccess
 import core.data.SessionManager
 import core.domain.AuthenticationRepository
@@ -43,7 +42,7 @@ class AuthenticationRepositoryImpl(
             })
     }
 
-    override suspend fun logout(): Boolean {
+    override suspend fun logout(): Result<Unit, ErrorMessage> {
         val sessionId = requireNotNull(sessionManager.getSessionId()) {
             "Session id can't be null if logout can be called."
         }
@@ -54,10 +53,16 @@ class AuthenticationRepositoryImpl(
                     sessionManager.removeSessionId()
                 }
             }
-            .mapOr(
-                default = false,
-                transform = {
-                    it.success
+            .mapBoth(
+                success = { response ->
+                    if (response.success) {
+                        Ok(Unit)
+                    } else {
+                        Err(strResources.get(R.string.logout_attempt_has_failed))
+                    }
+                },
+                failure = { error ->
+                    Err(error.message)
                 })
     }
 }

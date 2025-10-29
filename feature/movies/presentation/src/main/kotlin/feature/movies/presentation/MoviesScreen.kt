@@ -40,6 +40,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import core.libraries.CountryManager
+import core.ui.StatusBarColorHandler
 import core.ui.component.InteractivePoster
 import core.ui.component.PosterSize
 import org.koin.androidx.compose.koinViewModel
@@ -54,6 +55,27 @@ fun MoviesScreen(
     val topRatedMovies = viewModel.topRatedMovies.collectAsLazyPagingItems()
     val uiModel by viewModel.uiModel.collectAsStateWithLifecycle()
 
+    Movies(
+        viewModel,
+        uiModel,
+        upcomingMovies,
+        moviesNowPlaying,
+        popularMovies,
+        topRatedMovies
+    )
+
+    StatusBarColorHandler(MaterialTheme.colorScheme.surface)
+}
+
+@Composable
+private fun Movies(
+    viewModel: MoviesViewModel,
+    uiModel: MoviesUiModel,
+    upcomingMovies: LazyPagingItems<MovieUiModel>,
+    moviesNowPlaying: LazyPagingItems<MovieUiModel>,
+    popularMovies: LazyPagingItems<MovieUiModel>,
+    topRatedMovies: LazyPagingItems<MovieUiModel>
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()

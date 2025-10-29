@@ -12,7 +12,7 @@ import core.database.feature.movies.nowplaying.NowPlayingMovieDao
 import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
-import core.libraries.image.Poster
+import core.libraries.image.TmdbImage
 import feature.movies.data.remote.MovieService
 import feature.movies.domain.Movie
 import feature.movies.domain.MoviesRepository
@@ -45,7 +45,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = entity.id,
                     title = entity.title,
-                    imageUrl = entity.posterPath?.let { Poster(it).w780Url },
+                    imageUrl = entity.posterPath?.let { TmdbImage.Poster(it).w780Url },
                     voteAverage = entity.voteAverage.withDecimals(1),
                     isFavorite = entity.isFavorite
                 )
@@ -69,7 +69,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = entity.id,
                     title = entity.title,
-                    imageUrl = entity.posterPath?.let { Poster(it).w780Url },
+                    imageUrl = entity.posterPath?.let { TmdbImage.Poster(it).w780Url },
                     voteAverage = entity.voteAverage.withDecimals(1),
                     isFavorite = entity.isFavorite
                 )
@@ -92,7 +92,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = entity.id,
                     title = entity.title,
-                    imageUrl = entity.posterPath?.let { Poster(it).w780Url },
+                    imageUrl = entity.posterPath?.let { TmdbImage.Poster(it).w780Url },
                     voteAverage = entity.voteAverage.withDecimals(1),
                     isFavorite = entity.isFavorite
                 )
@@ -115,7 +115,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = entity.id,
                     title = entity.title,
-                    imageUrl = entity.posterPath?.let { Poster(it).w780Url },
+                    imageUrl = entity.posterPath?.let { TmdbImage.Poster(it).w780Url },
                     voteAverage = entity.voteAverage.withDecimals(1),
                     isFavorite = entity.isFavorite
                 )

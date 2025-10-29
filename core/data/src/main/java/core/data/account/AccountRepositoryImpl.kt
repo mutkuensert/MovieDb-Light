@@ -16,10 +16,8 @@ import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.database.user.UserManager
 import core.domain.AccountRepository
 import core.domain.ErrorMessage
-import core.libraries.AppScope
+import core.domain.User
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AccountRepositoryImpl(
@@ -31,24 +29,9 @@ class AccountRepositoryImpl(
     private val upcomingMovieDao: UpcomingMovieDao,
     private val topRatedMovieDao: TopRatedMovieDao,
     private val nowPlayingMovieDao: NowPlayingMovieDao,
-    appScope: AppScope,
 ) : AccountRepository {
 
-    init {
-        appScope.launch {
-            sessionManager.loggedIn.collectLatest { loggedIn ->
-                if (loggedIn) {
-                    fetchUserDetails().onSuccess {
-                        fetchFavoriteMovies()
-                    }.onFailure {
-                        TODO("")
-                    }
-                }
-            }
-        }
-    }
-
-    override suspend fun fetchUserDetails(): Result<Unit, ErrorMessage> {
+    override suspend fun fetchAccountDetails(): Result<Unit, ErrorMessage> {
         return accountService.getAccountDetails(sessionManager.getSessionId()!!)
             .mapBoth(success = {
                 userManager.setCurrentUser(
@@ -157,6 +140,19 @@ class AccountRepositoryImpl(
                     upcomingMovieDao.update(it)
                 }
         }
+    }
+
+    override fun getUser(): User {
+        val userDetails = requireNotNull(userManager.getUser()) {
+            "If logged in, user info should not be null"
+        }
+        return User(
+            id = userDetails.id,
+            name = userDetails.name,
+            userName = userDetails.userName,
+            profilePicturePath = userDetails.profilePicturePath,
+            includeAdult = userDetails.includeAdult
+        )
     }
 }
 
