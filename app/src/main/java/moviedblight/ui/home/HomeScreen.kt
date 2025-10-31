@@ -37,8 +37,8 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
-import feature.movies.presentation.MoviesRoute
-import feature.movies.presentation.MoviesScreen
+import feature.movie.presentation.MoviesRoute
+import feature.movie.presentation.MoviesScreen
 import feature.profile.presentation.ProfileDeeplink
 import feature.profile.presentation.ProfileRoute
 import feature.profile.presentation.ProfileScreen

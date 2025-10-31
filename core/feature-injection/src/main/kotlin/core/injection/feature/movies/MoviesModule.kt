@@ -1,9 +1,9 @@
 package core.injection.feature.movies
 
-import feature.movies.data.MoviesRepositoryImpl
-import feature.movies.data.remote.MovieService
-import feature.movies.domain.MoviesRepository
-import feature.movies.presentation.MoviesViewModel
+import feature.movie.data.MoviesRepositoryImpl
+import feature.movie.data.remote.MovieService
+import feature.movie.domain.MoviesRepository
+import feature.movie.presentation.MoviesViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import retrofit2.Retrofit
