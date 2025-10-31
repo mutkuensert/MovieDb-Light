@@ -229,7 +229,7 @@ fun CountryDialog(
 @Composable
 private fun MovieListTitle(title: String) {
     Text(
-        modifier = Modifier.padding(start = 20.dp, top = 10.dp),
+        modifier = Modifier.padding(start = 20.dp, top = 4.dp),
         text = title,
         color = MaterialTheme.colorScheme.onSurface,
         style = MaterialTheme.typography.titleMedium
