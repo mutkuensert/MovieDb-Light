@@ -11,15 +11,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -29,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -37,12 +34,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import core.libraries.CountryManager
+import core.ui.MoviedbLightTheme
 import core.ui.StatusBarColorHandler
 import core.ui.component.InteractivePoster
 import core.ui.component.PosterSize
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
@@ -60,12 +60,15 @@ fun MoviesScreen(
     val uiModel by viewModel.uiModel.collectAsStateWithLifecycle()
 
     Movies(
-        viewModel,
         uiModel,
         upcomingMovies,
         moviesNowPlaying,
         popularMovies,
-        topRatedMovies
+        topRatedMovies,
+        viewModel::handleOpenCountryDialogClick,
+        viewModel::handleFavoriteClick,
+        viewModel::handleDismissCountryDialog,
+        viewModel::handleCountryClick
     )
 
     StatusBarColorHandler(MaterialTheme.colorScheme.surface)
@@ -73,17 +76,21 @@ fun MoviesScreen(
 
 @Composable
 private fun Movies(
-    viewModel: MoviesViewModel,
     uiModel: MoviesUiModel,
     upcomingMovies: LazyPagingItems<MovieUiModel>,
     moviesNowPlaying: LazyPagingItems<MovieUiModel>,
     popularMovies: LazyPagingItems<MovieUiModel>,
-    topRatedMovies: LazyPagingItems<MovieUiModel>
+    topRatedMovies: LazyPagingItems<MovieUiModel>,
+    handleOpenCountryDialogClick: () -> Unit,
+    handleFavoriteClick: (MovieUiModel) -> Unit,
+    handleDismissCountryDialog: () -> Unit,
+    handleCountryClick: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Row(
             modifier = Modifier.padding(top = 10.dp, end = 10.dp),
@@ -91,7 +98,7 @@ private fun Movies(
         ) {
             Spacer(Modifier.weight(1f))
 
-            CountryButton(viewModel::handleSelectCountryClick, uiModel.selectedCountry)
+            CountryButton(handleOpenCountryDialogClick, uiModel.selectedCountry)
         }
 
         MovieListTitle(stringResource(R.string.upcoming))
@@ -99,7 +106,7 @@ private fun Movies(
         Movies(
             movies = upcomingMovies,
             navigateToDetails = {},
-            onFavoriteClick = viewModel::handleFavoriteClick
+            onFavoriteClick = handleFavoriteClick
         )
 
         MovieListTitle(stringResource(R.string.now_playing))
@@ -107,7 +114,7 @@ private fun Movies(
         Movies(
             movies = moviesNowPlaying,
             navigateToDetails = {},
-            onFavoriteClick = viewModel::handleFavoriteClick
+            onFavoriteClick = handleFavoriteClick
         )
 
         MovieListTitle(stringResource(R.string.popular))
@@ -115,7 +122,7 @@ private fun Movies(
         Movies(
             movies = popularMovies,
             navigateToDetails = {},
-            onFavoriteClick = viewModel::handleFavoriteClick
+            onFavoriteClick = handleFavoriteClick
         )
 
         MovieListTitle(stringResource(R.string.top_rated))
@@ -123,14 +130,14 @@ private fun Movies(
         Movies(
             movies = topRatedMovies,
             navigateToDetails = {},
-            onFavoriteClick = viewModel::handleFavoriteClick
+            onFavoriteClick = handleFavoriteClick
         )
     }
 
     if (uiModel.isCountryDialogVisible) {
         CountryDialog(
-            onDismiss = viewModel::handleDismissCountryDialog,
-            onClickCountry = viewModel::handleCountryClick
+            onDismiss = handleDismissCountryDialog,
+            onClickCountry = handleCountryClick
         )
     }
 }
@@ -140,32 +147,18 @@ private fun CountryButton(
     onClick: () -> Unit,
     selectedCountry: String?
 ) {
-    Box {
-        Button(onClick) {
-            Icon(
-                imageVector = Icons.Filled.Flag,
-                contentDescription = stringResource(R.string.flag_icon)
-            )
-
-            if (!selectedCountry.isNullOrEmpty()) {
-                Text(
-                    modifier = Modifier.padding(start = 4.dp, end = 2.dp),
-                    text = selectedCountry,
-                    style = TextStyle(fontWeight = FontWeight.Bold)
-                )
-            }
-        }
+    IconButton(onClick) {
+        Icon(
+            imageVector = Icons.Filled.Flag,
+            contentDescription = stringResource(R.string.flag_icon),
+            tint = MaterialTheme.colorScheme.primary
+        )
 
         if (!selectedCountry.isNullOrEmpty()) {
-            Icon(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .background(
-                        MaterialTheme.colorScheme.surface,
-                        CircleShape
-                    ),
-                imageVector = Icons.Filled.Close,
-                contentDescription = stringResource(R.string.flag_icon)
+            Text(
+                modifier = Modifier.padding(start = 4.dp, end = 2.dp),
+                text = selectedCountry,
+                style = TextStyle(fontWeight = FontWeight.Bold)
             )
         }
     }
@@ -176,7 +169,6 @@ private fun CountryButton(
 fun PreviewCountryButton() {
     Column {
         CountryButton({}, selectedCountry = "TR")
-
         CountryButton({}, selectedCountry = null)
     }
 }
@@ -188,21 +180,35 @@ fun CountryDialog(
 ) {
     AlertDialog(
         title = {
-            Text(text = stringResource(R.string.select_a_country))
+            Text(
+                text = stringResource(R.string.select_a_country),
+                color = MaterialTheme.colorScheme.onBackground
+            )
         },
         text = {
             Column(
                 Modifier
                     .height(240.dp)
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()),
+                    .verticalScroll(rememberScrollState())
+                    .background(MaterialTheme.colorScheme.background),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 val currentCountry by remember { derivedStateOf { CountryManager.current } }
-                TextButton({ onClickCountry.invoke(currentCountry) }) { Text(currentCountry) }
+                TextButton({ onClickCountry.invoke(currentCountry) }) {
+                    Text(
+                        currentCountry,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
 
                 CountryManager.all.forEach { country ->
-                    TextButton({ onClickCountry.invoke(country) }) { Text(country) }
+                    TextButton({ onClickCountry.invoke(country) }) {
+                        Text(
+                            country,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 }
             }
         },
@@ -210,9 +216,13 @@ fun CountryDialog(
         confirmButton = {},
         dismissButton = {
             TextButton(onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(
+                    stringResource(R.string.cancel),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
             }
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     )
 }
 
@@ -221,7 +231,7 @@ private fun MovieListTitle(title: String) {
     Text(
         modifier = Modifier.padding(start = 20.dp, top = 10.dp),
         text = title,
-        color = Color.Gray,
+        color = MaterialTheme.colorScheme.onSurface,
         style = MaterialTheme.typography.titleMedium
     )
 }
@@ -264,5 +274,24 @@ private fun Movies(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun MoviesScreenPreview() {
+    MoviedbLightTheme {
+        val emptyData =
+            flowOf(PagingData.from<MovieUiModel>(emptyList())).collectAsLazyPagingItems()
+        Movies(
+            MoviesUiModel.initial(),
+            emptyData,
+            emptyData,
+            emptyData,
+            emptyData,
+            {},
+            {},
+            {},
+            {})
     }
 }

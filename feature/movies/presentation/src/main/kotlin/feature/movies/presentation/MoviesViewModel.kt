@@ -66,7 +66,7 @@ class MoviesViewModel(
         }
     }
 
-    fun handleSelectCountryClick() {
+    fun handleOpenCountryDialogClick() {
         if (uiModel.value.selectedCountry.isNullOrEmpty()) {
             _uiModel.update {
                 it.copy(isCountryDialogVisible = true)

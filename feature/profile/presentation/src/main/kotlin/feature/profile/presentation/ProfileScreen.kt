@@ -67,7 +67,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
         )
     }
 
-    StatusBarColorHandler(MaterialTheme.colorScheme.primary)
+    StatusBarColorHandler(MaterialTheme.colorScheme.background)
 }
 
 @Composable
@@ -79,7 +79,7 @@ private fun LoggedOutProfile(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary),
+            .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -91,11 +91,11 @@ private fun LoggedOutProfile(
         PrimaryButton(
             onClick = onLoginClick,
             text = stringResource(R.string.login),
-            textColor = MaterialTheme.colorScheme.onSurface,
+            textColor = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier
                 .padding(horizontal = 16.dp)
-                .padding(bottom = 50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                .padding(bottom = 40.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         )
     }
 
@@ -112,7 +112,11 @@ private fun LoggedOutProfile(
 
 @Composable
 private fun LoggedInProfile(uiModel: ProfileUiModel, onLogoutClick: () -> Unit) {
-    Column(Modifier.fillMaxSize()) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         TopBar(uiModel.profileImageUrl, uiModel.name, onLogoutClick)
     }
 }
@@ -126,7 +130,7 @@ private fun TopBar(
 ) {
     Row(
         modifier = modifier
-            .background(MaterialTheme.colorScheme.primary)
+            .background(MaterialTheme.colorScheme.background)
             .fillMaxWidth()
             .height(60.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -148,7 +152,7 @@ private fun TopBar(
 
         Spacer(Modifier.width(16.dp))
 
-        Text(text = text, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
+        Text(text = text, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
 
         Spacer(Modifier.weight(1f))
 
@@ -156,7 +160,7 @@ private fun TopBar(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.Logout,
                 contentDescription = stringResource(R.string.logout_button_icon),
-                tint = MaterialTheme.colorScheme.onPrimary
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
     }

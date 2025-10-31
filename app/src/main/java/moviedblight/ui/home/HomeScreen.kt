@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsTopHeight
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -22,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -119,16 +122,17 @@ private fun BottomNavBar(
     val currentDestination = navBackStackEntry?.destination
 
     NavigationBar(
-        modifier = modifier,
-        contentColor = Color.DarkGray
+        modifier = modifier.height(80.dp),
+        containerColor = MaterialTheme.colorScheme.background,
     ) {
         NavigationBarItem(
             selected = currentDestination?.hierarchy?.any {
                 it.hasRoute(NavTab.MovieTab::class)
             } == true,
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = NavTab.MovieTab.tabConfig.selectedColor,
-                unselectedIconColor = NavTab.MovieTab.tabConfig.unselectedColor
+                selectedIconColor = MaterialTheme.colorScheme.onBackground,
+                unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                indicatorColor = Color.Gray
             ),
             onClick = onNavigateToMovies,
             icon = {
@@ -143,8 +147,9 @@ private fun BottomNavBar(
                 it.hasRoute(NavTab.ProfileTab::class)
             } == true,
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = NavTab.MovieTab.tabConfig.selectedColor,
-                unselectedIconColor = NavTab.MovieTab.tabConfig.unselectedColor
+                selectedIconColor = MaterialTheme.colorScheme.onBackground,
+                unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                indicatorColor = Color.Gray
             ),
             onClick = onNavigateToProfile,
             icon = {

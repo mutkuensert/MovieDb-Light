@@ -1,17 +1,20 @@
 package core.ui.component
 
 import android.graphics.Bitmap
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Beenhere
@@ -34,11 +37,11 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.toBitmap
 import core.ui.AppColors
 import core.ui.R
+import core.ui.isDark
 import core.ui.palette.bodyTextColor
 import core.ui.palette.titleTextColor
 
@@ -66,7 +69,7 @@ fun InteractivePoster(
     val blurModifier: Modifier = if (isInfoVisible) {
         Modifier
             .clip(MaterialTheme.shapes.medium)
-            .blur(10.dp)
+            .blur(20.dp)
     } else {
         Modifier
     }
@@ -93,32 +96,42 @@ fun InteractivePoster(
             }
         )
 
+        if (isInfoVisible) {
+            InfoView(
+                Modifier
+                    .height(size.height)
+                    .width(imageWidth)
+                    .align(Alignment.Center), title, textColor, vote, description
+            )
+        }
+
         InfoButton(infoButtonColor) { isInfoVisible = !isInfoVisible }
 
         if (isFavorite != null) {
             FavoriteButton(favoriteButtonColor, onFavoriteClick)
         }
-
-        if (isInfoVisible) {
-            InfoView(imageWidth, title, textColor, vote, description)
-        }
     }
 }
 
 @Composable
-private fun BoxScope.InfoView(
-    imageWidth: Dp,
+private fun InfoView(
+    modifier: Modifier = Modifier,
     title: String,
     textColor: Color,
     vote: String?,
     description: String?
 ) {
+    val backgroundColorInContrastToText = if (textColor.isDark) {
+        Color(0x32FFFFFF)
+    } else {
+        Color(0x80000000)
+    }
+
     Column(
-        Modifier
-            .width(imageWidth)
-            .padding(horizontal = 20.dp)
-            .align(Alignment.Center),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier
+            .background(color = backgroundColorInContrastToText)
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -129,10 +142,12 @@ private fun BoxScope.InfoView(
         )
 
         if (vote != null) {
+            Spacer(Modifier.height(10.dp))
             VoteView(textColor, vote)
         }
 
         if (description != null) {
+            Spacer(Modifier.height(10.dp))
             DescriptionView(textColor, description)
         }
     }
@@ -180,6 +195,7 @@ private fun BoxScope.InfoButton(color: Color, onClick: () -> Unit) {
         modifier = Modifier
             .padding(16.dp)
             .size(30.dp)
+            .clip(CircleShape)
             .align(Alignment.TopEnd)
             .clickable { onClick.invoke() },
         imageVector = Icons.Default.Info,
