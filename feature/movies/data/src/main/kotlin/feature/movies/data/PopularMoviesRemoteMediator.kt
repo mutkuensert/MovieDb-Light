@@ -8,7 +8,7 @@ import com.github.michaelbull.result.mapBoth
 import core.data.network.NetworkResult
 import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.popular.PopularMovieEntity
-import core.database.feature.movies.popular.PopularMovieRelations
+import core.database.feature.movies.popular.PopularMovie
 import feature.movies.data.remote.response.PopularMoviesResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,11 +18,11 @@ import timber.log.Timber
 class PopularMoviesRemoteMediator(
     private val getPopularMovies: suspend (page: Int) -> NetworkResult<PopularMoviesResponse>,
     private val popularMovieDao: PopularMovieDao,
-) : RemoteMediator<Int, PopularMovieRelations>() {
+) : RemoteMediator<Int, PopularMovie>() {
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, PopularMovieRelations>
+        state: PagingState<Int, PopularMovie>
     ): MediatorResult {
         return try {
             val page = when (loadType) {

@@ -14,15 +14,15 @@ interface NowPlayingMovieDao {
 
     @Transaction
     @Query("SELECT * FROM NowPlayingMovieEntity")
-    fun getPagingSource(): PagingSource<Int, NowPlayingMovieRelations>
+    fun getPagingSource(): PagingSource<Int, NowPlayingMovie>
 
     @Transaction
     @Query("SELECT * FROM NowPlayingMovieEntity")
-    fun getAll(): List<NowPlayingMovieRelations>
+    fun getAll(): List<NowPlayingMovie>
 
     @Transaction
     @Query("SELECT * FROM NowPlayingMovieEntity WHERE id = :id")
-    suspend fun get(id: Int): NowPlayingMovieRelations?
+    suspend fun get(id: Int): NowPlayingMovie?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(movies: List<NowPlayingMovieEntity>)

@@ -18,7 +18,7 @@ data class NowPlayingMovieEntity(
     var primaryKey: Int = 0
 }
 
-data class NowPlayingMovieRelations(
+data class NowPlayingMovie(
     @Embedded val movie: NowPlayingMovieEntity,
     @Relation(
         parentColumn = "id",

@@ -19,7 +19,7 @@ data class PopularMovieEntity(
     var primaryKey: Int = 0
 }
 
-data class PopularMovieRelations(
+data class PopularMovie(
     @Embedded val movie: NowPlayingMovieEntity,
     @Relation(
         parentColumn = "id",
