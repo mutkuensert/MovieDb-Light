@@ -12,10 +12,10 @@ class HomeViewModel(
     val statusBarContentColor = statusBarBackgroundColorManager.color
 
     fun navigateToMovies() {
-        navigator.navigateToTab(NavTab.MoviesRoute)
+        navigator.navigateToTab(NavTab.MovieTab)
     }
 
     fun navigateToProfile() {
-        navigator.navigateToTab(NavTab.ProfileRoute())
+        navigator.navigateToTab(NavTab.ProfileTab)
     }
 }

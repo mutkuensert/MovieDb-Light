@@ -1,6 +1,5 @@
 package core.ui.navigation
 
-import android.annotation.SuppressLint
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 
@@ -12,11 +11,10 @@ class Navigator {
         this.controller = controller
     }
 
-    @SuppressLint("RestrictedApi")
     fun navigateToTab(tab: NavTab) {
         controller.navigate(tab) {
-            popUpTo(controller.graph.findStartDestination().id) {
-                inclusive = true
+            val startDestination = controller.graph.findStartDestination()
+            popUpTo(startDestination.id) {
                 saveState = true
             }
             restoreState = true

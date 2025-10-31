@@ -1,6 +1,5 @@
 package moviedblight.ui.home
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,26 +18,26 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
-import core.libraries.navigation.isRoute
+import androidx.navigation.navigation
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
+import feature.movies.presentation.MoviesRoute
 import feature.movies.presentation.MoviesScreen
 import feature.profile.presentation.ProfileDeeplink
+import feature.profile.presentation.ProfileRoute
 import feature.profile.presentation.ProfileScreen
 import org.koin.androidx.compose.koinViewModel
 
@@ -87,22 +86,27 @@ fun MainNavigation(
         NavHost(
             modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
             navController = navController,
-            startDestination = NavTab.startDestination
+            startDestination = NavTab.MovieTab
         ) {
-            composable<NavTab.MoviesRoute> {
-                MoviesScreen()
+            navigation<NavTab.MovieTab>(MoviesRoute) {
+                composable<MoviesRoute> {
+                    MoviesScreen()
+                }
             }
 
-            composable<NavTab.ProfileRoute>(
-                deepLinks = listOf(
-                    navDeepLink<NavTab.ProfileRoute>(basePath = ProfileDeeplink)
-                )
-            ) {
-                ProfileScreen()
+            navigation<NavTab.ProfileTab>(ProfileRoute()) {
+                composable<ProfileRoute>(
+                    deepLinks = listOf(
+                        navDeepLink<ProfileRoute>(basePath = ProfileDeeplink)
+                    )
+                ) {
+                    ProfileScreen()
+                }
             }
         }
     }
 }
+
 
 @Composable
 private fun BottomNavBar(
@@ -111,17 +115,20 @@ private fun BottomNavBar(
     onNavigateToProfile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val currentTabDestination by navController.currentTabDestinationAsState()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
     NavigationBar(
         modifier = modifier,
         contentColor = Color.DarkGray
     ) {
         NavigationBarItem(
-            selected = currentTabDestination?.isRoute(NavTab.MoviesRoute::class) ?: false,
+            selected = currentDestination?.hierarchy?.any {
+                it.hasRoute(NavTab.MovieTab::class)
+            } == true,
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = NavTab.MoviesRoute.tabConfig.selectedColor,
-                unselectedIconColor = NavTab.MoviesRoute.tabConfig.unselectedColor
+                selectedIconColor = NavTab.MovieTab.tabConfig.selectedColor,
+                unselectedIconColor = NavTab.MovieTab.tabConfig.unselectedColor
             ),
             onClick = onNavigateToMovies,
             icon = {
@@ -132,10 +139,12 @@ private fun BottomNavBar(
             })
 
         NavigationBarItem(
-            selected = currentTabDestination?.isRoute(NavTab.ProfileRoute::class) ?: false,
+            selected = currentDestination?.hierarchy?.any {
+                it.hasRoute(NavTab.ProfileTab::class)
+            } == true,
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = NavTab.MoviesRoute.tabConfig.selectedColor,
-                unselectedIconColor = NavTab.MoviesRoute.tabConfig.unselectedColor
+                selectedIconColor = NavTab.MovieTab.tabConfig.selectedColor,
+                unselectedIconColor = NavTab.MovieTab.tabConfig.unselectedColor
             ),
             onClick = onNavigateToProfile,
             icon = {
@@ -145,22 +154,4 @@ private fun BottomNavBar(
                 )
             })
     }
-}
-
-@SuppressLint("RestrictedApi")
-@Composable
-private fun NavController.currentTabDestinationAsState(): State<NavDestination?> {
-    val destination = remember { mutableStateOf<NavDestination?>(null) }
-
-    DisposableEffect(this) {
-        val listener = NavController.OnDestinationChangedListener { _, navDestination, _ ->
-            if (NavTab.allRoutes.any { navDestination.route?.contains(it) == true })
-                destination.value = navDestination
-        }
-        addOnDestinationChangedListener(listener)
-        onDispose {
-            removeOnDestinationChangedListener(listener)
-        }
-    }
-    return destination
 }

@@ -42,10 +42,14 @@ import core.libraries.Constants.APP_DEEP_LINK
 import core.ui.MoviedbLightTheme
 import core.ui.StatusBarColorHandler
 import core.ui.component.PrimaryButton
+import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import core.libraries.R as librariesR
 
 const val ProfileDeeplink = "${APP_DEEP_LINK}/profile"
+
+@Serializable
+data class ProfileRoute(val cameFromTmdbLogin: Boolean = false)
 
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {

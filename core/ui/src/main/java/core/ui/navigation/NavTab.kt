@@ -6,20 +6,11 @@ import kotlinx.serialization.Serializable
 sealed interface NavTab {
     val tabConfig: TabConfig get() = TabConfig()
 
-    companion object {
-        val startDestination get() = MoviesRoute
-        val allRoutes: List<String>
-            get() = listOf(
-                MoviesRoute::class.java.simpleName,
-                ProfileRoute::class.java.simpleName
-            )
-    }
+    @Serializable
+    object MovieTab : NavTab
 
     @Serializable
-    data object MoviesRoute : NavTab
-
-    @Serializable
-    data class ProfileRoute(val cameFromTmdbLogin: Boolean = false) : NavTab
+    object ProfileTab : NavTab
 }
 
 class TabConfig(

@@ -43,7 +43,11 @@ import core.libraries.CountryManager
 import core.ui.StatusBarColorHandler
 import core.ui.component.InteractivePoster
 import core.ui.component.PosterSize
+import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
+
+@Serializable
+object MoviesRoute
 
 @Composable
 fun MoviesScreen(
