@@ -36,6 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import core.libraries.Constants.APP_DEEP_LINK
@@ -67,6 +69,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
         )
     }
 
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.initScreen() }
     StatusBarColorHandler(MaterialTheme.colorScheme.background)
 }
 

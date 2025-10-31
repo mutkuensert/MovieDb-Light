@@ -23,7 +23,7 @@ class ProfileViewModel(
     private val authenticationRepository: AuthenticationRepository,
     private val accountRepository: AccountRepository,
     private val authState: AuthState,
-    savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var cameFromTmdbLogin: Boolean = savedStateHandle[KEY_CAME_FROM_TMDB_LOGIN] ?: false
 
@@ -39,14 +39,6 @@ class ProfileViewModel(
         private set
 
     init {
-        if (cameFromTmdbLogin) {
-            _shouldOpenLoginPage.value = false
-            requestToken = null
-            startSession()
-        } else {
-            _shouldOpenLoginPage.value = false
-        }
-
         viewModelScope.launch {
             loggedIn.collectLatest {
                 if (it) {
@@ -61,6 +53,18 @@ class ProfileViewModel(
                     }
                 }
             }
+        }
+    }
+
+    fun initScreen() {
+        if (cameFromTmdbLogin) {
+            _shouldOpenLoginPage.value = false
+            requestToken = null
+            startSession()
+            savedStateHandle[KEY_CAME_FROM_TMDB_LOGIN] = false
+            cameFromTmdbLogin = false
+        } else {
+            _shouldOpenLoginPage.value = false
         }
     }
 
