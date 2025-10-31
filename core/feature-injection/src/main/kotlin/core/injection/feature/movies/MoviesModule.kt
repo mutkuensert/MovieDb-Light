@@ -18,7 +18,6 @@ val moviesModule = module {
             get(),
             get(),
             get(),
-            get()
         )
     }
     viewModelOf(::MoviesViewModel)

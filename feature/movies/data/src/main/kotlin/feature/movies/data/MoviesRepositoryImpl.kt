@@ -7,7 +7,6 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import core.data.SessionManager
 import core.data.util.withDecimals
-import core.database.account.AccountDao
 import core.database.feature.movies.nowplaying.NowPlayingMovieDao
 import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
@@ -26,7 +25,6 @@ class MoviesRepositoryImpl(
     private val nowPlayingMovieDao: NowPlayingMovieDao,
     private val upcomingMovieDao: UpcomingMovieDao,
     private val topRatedMovieDao: TopRatedMovieDao,
-    private val accountDao: AccountDao,
     private val sessionManager: SessionManager,
 ) : MoviesRepository {
 
@@ -36,18 +34,16 @@ class MoviesRepositoryImpl(
             remoteMediator = PopularMoviesRemoteMediator(
                 { page -> movieService.getPopularMovies(page, countryCode) },
                 popularMovieDao,
-                accountDao,
-                sessionManager
             ),
             pagingSourceFactory = { popularMovieDao.getPagingSource() }
         ).flow.map { pagingData ->
             pagingData.map { entity ->
                 Movie(
-                    id = entity.id,
-                    title = entity.title,
-                    imageUrl = entity.posterPath?.let { TmdbImage.Poster(it).w780Url },
-                    voteAverage = entity.voteAverage.withDecimals(1),
-                    isFavorite = entity.isFavorite
+                    id = entity.movie.id,
+                    title = entity.movie.title,
+                    imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                    voteAverage = entity.movie.voteAverage.withDecimals(1),
+                    isFavorite = entity.isFavorite.takeIf { sessionManager.loggedIn.value }
                 )
             }
         }
@@ -60,18 +56,16 @@ class MoviesRepositoryImpl(
             remoteMediator = NowPlayingMoviesRemoteMediator(
                 { page -> movieService.getMoviesNowPlaying(page, countryCode) },
                 nowPlayingMovieDao,
-                accountDao,
-                sessionManager
             ),
             pagingSourceFactory = { nowPlayingMovieDao.getPagingSource() }
         ).flow.map { pagingData ->
             pagingData.map { entity ->
                 Movie(
-                    id = entity.id,
-                    title = entity.title,
-                    imageUrl = entity.posterPath?.let { TmdbImage.Poster(it).w780Url },
-                    voteAverage = entity.voteAverage.withDecimals(1),
-                    isFavorite = entity.isFavorite
+                    id = entity.movie.id,
+                    title = entity.movie.title,
+                    imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                    voteAverage = entity.movie.voteAverage.withDecimals(1),
+                    isFavorite = entity.isFavorite.takeIf { sessionManager.loggedIn.value }
                 )
             }
         }
@@ -83,18 +77,16 @@ class MoviesRepositoryImpl(
             remoteMediator = UpcomingMoviesRemoteMediator(
                 { page -> movieService.getUpcomingMovies(page, countryCode) },
                 upcomingMovieDao,
-                accountDao,
-                sessionManager
             ),
             pagingSourceFactory = { upcomingMovieDao.getPagingSource() }
         ).flow.map { pagingData ->
             pagingData.map { entity ->
                 Movie(
-                    id = entity.id,
-                    title = entity.title,
-                    imageUrl = entity.posterPath?.let { TmdbImage.Poster(it).w780Url },
-                    voteAverage = entity.voteAverage.withDecimals(1),
-                    isFavorite = entity.isFavorite
+                    id = entity.movie.id,
+                    title = entity.movie.title,
+                    imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                    voteAverage = entity.movie.voteAverage.withDecimals(1),
+                    isFavorite = entity.isFavorite.takeIf { sessionManager.loggedIn.value }
                 )
             }
         }
@@ -106,18 +98,16 @@ class MoviesRepositoryImpl(
             remoteMediator = TopRatedMoviesRemoteMediator(
                 { page -> movieService.getTopRatedMovies(page, countryCode) },
                 topRatedMovieDao,
-                accountDao,
-                sessionManager
             ),
             pagingSourceFactory = { topRatedMovieDao.getPagingSource() }
         ).flow.map { pagingData ->
             pagingData.map { entity ->
                 Movie(
-                    id = entity.id,
-                    title = entity.title,
-                    imageUrl = entity.posterPath?.let { TmdbImage.Poster(it).w780Url },
-                    voteAverage = entity.voteAverage.withDecimals(1),
-                    isFavorite = entity.isFavorite
+                    id = entity.movie.id,
+                    title = entity.movie.title,
+                    imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                    voteAverage = entity.movie.voteAverage.withDecimals(1),
+                    isFavorite = entity.isFavorite.takeIf { sessionManager.loggedIn.value }
                 )
             }
         }

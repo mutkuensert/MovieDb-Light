@@ -5,11 +5,10 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.github.michaelbull.result.mapBoth
-import core.data.SessionManager
 import core.data.network.NetworkResult
-import core.database.account.AccountDao
 import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.popular.PopularMovieEntity
+import core.database.feature.movies.popular.PopularMovieRelations
 import feature.movies.data.remote.response.PopularMoviesResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,13 +18,11 @@ import timber.log.Timber
 class PopularMoviesRemoteMediator(
     private val getPopularMovies: suspend (page: Int) -> NetworkResult<PopularMoviesResponse>,
     private val popularMovieDao: PopularMovieDao,
-    private val accountDao: AccountDao,
-    private val sessionManager: SessionManager,
-) : RemoteMediator<Int, PopularMovieEntity>() {
+) : RemoteMediator<Int, PopularMovieRelations>() {
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, PopularMovieEntity>
+        state: PagingState<Int, PopularMovieRelations>
     ): MediatorResult {
         return try {
             val page = when (loadType) {
@@ -39,7 +36,7 @@ class PopularMoviesRemoteMediator(
 
                 LoadType.APPEND -> {
                     val lastPageNumber = withContext(Dispatchers.IO) {
-                        popularMovieDao.getAll().lastOrNull()?.page
+                        popularMovieDao.getAll().lastOrNull()?.movie?.page
                     }
 
                     if (lastPageNumber == null) {
@@ -59,9 +56,7 @@ class PopularMoviesRemoteMediator(
                                 page,
                                 it.title,
                                 it.posterPath,
-                                it.voteAverage,
-                                isFavorite = accountDao.isMovieFavorite(it.id)
-                                    .takeIf { sessionManager.loggedIn.value }
+                                it.voteAverage
                             )
                         })
                     }

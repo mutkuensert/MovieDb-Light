@@ -1,7 +1,11 @@
 package core.database.feature.movies.popular
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Relation
+import core.database.account.model.FavoriteMovieEntity
+import core.database.feature.movies.nowplaying.NowPlayingMovieEntity
 
 @Entity
 data class PopularMovieEntity(
@@ -9,9 +13,19 @@ data class PopularMovieEntity(
     val page: Int,
     val title: String,
     val posterPath: String?,
-    val voteAverage: Float,
-    val isFavorite: Boolean?
+    val voteAverage: Float
 ) {
     @PrimaryKey(autoGenerate = true)
     var primaryKey: Int = 0
+}
+
+data class PopularMovieRelations(
+    @Embedded val movie: NowPlayingMovieEntity,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "id"
+    )
+    val favorite: FavoriteMovieEntity?
+) {
+    val isFavorite get() = favorite != null
 }

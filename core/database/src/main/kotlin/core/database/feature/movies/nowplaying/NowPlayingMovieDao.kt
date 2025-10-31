@@ -6,19 +6,23 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 
 @Dao
 interface NowPlayingMovieDao {
 
+    @Transaction
     @Query("SELECT * FROM NowPlayingMovieEntity")
-    fun getPagingSource(): PagingSource<Int, NowPlayingMovieEntity>
+    fun getPagingSource(): PagingSource<Int, NowPlayingMovieRelations>
 
+    @Transaction
     @Query("SELECT * FROM NowPlayingMovieEntity")
-    fun getAll(): List<NowPlayingMovieEntity>
+    fun getAll(): List<NowPlayingMovieRelations>
 
+    @Transaction
     @Query("SELECT * FROM NowPlayingMovieEntity WHERE id = :id")
-    suspend fun get(id: Int): NowPlayingMovieEntity?
+    suspend fun get(id: Int): NowPlayingMovieRelations?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(movies: List<NowPlayingMovieEntity>)

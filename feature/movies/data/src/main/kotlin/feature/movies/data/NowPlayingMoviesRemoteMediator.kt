@@ -5,11 +5,10 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.github.michaelbull.result.mapBoth
-import core.data.SessionManager
 import core.data.network.NetworkResult
-import core.database.account.AccountDao
 import core.database.feature.movies.nowplaying.NowPlayingMovieDao
 import core.database.feature.movies.nowplaying.NowPlayingMovieEntity
+import core.database.feature.movies.nowplaying.NowPlayingMovieRelations
 import feature.movies.data.remote.response.NowPlayingMoviesResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,13 +18,11 @@ import timber.log.Timber
 class NowPlayingMoviesRemoteMediator(
     private val getNowPlayingMovies: suspend (page: Int) -> NetworkResult<NowPlayingMoviesResponse>,
     private val nowPlayingMovieDao: NowPlayingMovieDao,
-    private val accountDao: AccountDao,
-    private val sessionManager: SessionManager,
-) : RemoteMediator<Int, NowPlayingMovieEntity>() {
+) : RemoteMediator<Int, NowPlayingMovieRelations>() {
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, NowPlayingMovieEntity>
+        state: PagingState<Int, NowPlayingMovieRelations>
     ): MediatorResult {
         return try {
             val page = when (loadType) {
@@ -39,7 +36,7 @@ class NowPlayingMoviesRemoteMediator(
 
                 LoadType.APPEND -> {
                     val lastPageNumber = withContext(Dispatchers.IO) {
-                        nowPlayingMovieDao.getAll().lastOrNull()?.page
+                        nowPlayingMovieDao.getAll().lastOrNull()?.movie?.page
                     }
 
                     if (lastPageNumber == null) {
@@ -59,9 +56,7 @@ class NowPlayingMoviesRemoteMediator(
                                 page,
                                 it.title,
                                 it.posterPath,
-                                it.voteAverage,
-                                isFavorite = accountDao.isMovieFavorite(it.id)
-                                    .takeIf { sessionManager.loggedIn.value }
+                                it.voteAverage
                             )
                         })
                     }

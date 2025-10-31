@@ -9,10 +9,6 @@ import com.github.michaelbull.result.onSuccess
 import core.data.SessionManager
 import core.database.account.AccountDao
 import core.database.account.model.FavoriteMovieEntity
-import core.database.feature.movies.nowplaying.NowPlayingMovieDao
-import core.database.feature.movies.popular.PopularMovieDao
-import core.database.feature.movies.toprated.TopRatedMovieDao
-import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.database.user.UserManager
 import core.domain.AccountRepository
 import core.domain.ErrorMessage
@@ -25,10 +21,6 @@ class AccountRepositoryImpl(
     private val sessionManager: SessionManager,
     private val userManager: UserManager,
     private val accountDao: AccountDao,
-    private val popularMovieDao: PopularMovieDao,
-    private val upcomingMovieDao: UpcomingMovieDao,
-    private val topRatedMovieDao: TopRatedMovieDao,
-    private val nowPlayingMovieDao: NowPlayingMovieDao,
 ) : AccountRepository {
 
     override suspend fun fetchAccountDetails(): Result<Unit, ErrorMessage> {
@@ -89,8 +81,6 @@ class AccountRepositoryImpl(
                 accountDao.deleteFavoriteMovies(FavoriteMovieEntity(movieId))
             }
 
-            updateFavoriteStatusOfMovieInDatabase(movieId, isFavorite)
-
             return@withContext accountService.postFavoriteMovie(
                 FavoriteMovieDto(
                     favorite = isFavorite,
@@ -103,42 +93,9 @@ class AccountRepositoryImpl(
                 },
                 failure = {
                     accountDao.deleteFavoriteMovies(FavoriteMovieEntity(movieId))
-                    updateFavoriteStatusOfMovieInDatabase(movieId, !isFavorite)
                     Err(it.message)
                 }
             )
-        }
-    }
-
-    private suspend fun updateFavoriteStatusOfMovieInDatabase(movieId: Int, isFavorite: Boolean) {
-        withContext(Dispatchers.IO) {
-            val topRatedMovie = topRatedMovieDao.get(movieId)
-            topRatedMovie?.copy(isFavorite = isFavorite)
-                ?.apply { primaryKey = topRatedMovie.primaryKey }
-                ?.let {
-                    topRatedMovieDao.update(it)
-                }
-
-            val popularMovie = popularMovieDao.get(movieId)
-            popularMovie?.copy(isFavorite = isFavorite)
-                ?.apply { primaryKey = popularMovie.primaryKey }
-                ?.let {
-                    popularMovieDao.update(it)
-                }
-
-            val nowPlayingMovie = nowPlayingMovieDao.get(movieId)
-            nowPlayingMovie?.copy(isFavorite = isFavorite)
-                ?.apply { primaryKey = nowPlayingMovie.primaryKey }
-                ?.let {
-                    nowPlayingMovieDao.update(it)
-                }
-
-            val upcomingMovie = upcomingMovieDao.get(movieId)
-            upcomingMovie?.copy(isFavorite = isFavorite)
-                ?.apply { primaryKey = upcomingMovie.primaryKey }
-                ?.let {
-                    upcomingMovieDao.update(it)
-                }
         }
     }
 

@@ -5,11 +5,10 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.github.michaelbull.result.mapBoth
-import core.data.SessionManager
 import core.data.network.NetworkResult
-import core.database.account.AccountDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieEntity
+import core.database.feature.movies.toprated.TopRatedMovieRelations
 import feature.movies.data.remote.response.TopRatedMoviesResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,14 +17,12 @@ import timber.log.Timber
 @OptIn(ExperimentalPagingApi::class)
 class TopRatedMoviesRemoteMediator(
     private val getTopRatedMovies: suspend (page: Int) -> NetworkResult<TopRatedMoviesResponse>,
-    private val topRatedMovieDao: TopRatedMovieDao,
-    private val accountDao: AccountDao,
-    private val sessionManager: SessionManager,
-) : RemoteMediator<Int, TopRatedMovieEntity>() {
+    private val topRatedMovieDao: TopRatedMovieDao
+) : RemoteMediator<Int, TopRatedMovieRelations>() {
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, TopRatedMovieEntity>
+        state: PagingState<Int, TopRatedMovieRelations>
     ): MediatorResult {
         return try {
             val page = when (loadType) {
@@ -39,7 +36,7 @@ class TopRatedMoviesRemoteMediator(
 
                 LoadType.APPEND -> {
                     val lastPageNumber = withContext(Dispatchers.IO) {
-                        topRatedMovieDao.getAll().lastOrNull()?.page
+                        topRatedMovieDao.getAll().lastOrNull()?.movie?.page
                     }
 
                     if (lastPageNumber == null) {
@@ -59,9 +56,7 @@ class TopRatedMoviesRemoteMediator(
                                 page,
                                 it.title,
                                 it.posterPath,
-                                it.voteAverage,
-                                isFavorite = accountDao.isMovieFavorite(it.id)
-                                    .takeIf { sessionManager.loggedIn.value }
+                                it.voteAverage
                             )
                         })
                     }
