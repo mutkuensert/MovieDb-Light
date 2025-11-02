@@ -1,4 +1,4 @@
-package feature.movie.presentation
+package feature.movie.presentation.list
 
 data class MoviesUiModel(
     val selectedCountry: String?,

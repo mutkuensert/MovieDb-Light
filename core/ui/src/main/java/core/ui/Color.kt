@@ -16,6 +16,8 @@ val DarkBlue = Color(0xff0d253f)
 val LightBlue = Color(0xff01b4e4)
 val LightGreen = Color(0xff90cea1)
 
+val ColdWhite = Color(0xFFF5F7FA)
+
 val DisabledGray = Color(0xffe4e4e4)
 
 val Color.isDark: Boolean get() = ColorUtils.calculateLuminance(this.toArgb()) < 0.1

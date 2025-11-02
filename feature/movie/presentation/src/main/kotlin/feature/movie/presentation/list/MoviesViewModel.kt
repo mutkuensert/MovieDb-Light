@@ -1,4 +1,4 @@
-package feature.movie.presentation
+package feature.movie.presentation.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,8 +6,10 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import core.domain.AccountRepository
+import core.ui.navigation.Navigator
 import feature.movie.domain.Movie
 import feature.movie.domain.MoviesRepository
+import feature.movie.presentation.detail.MovieDetailRoute
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +24,7 @@ import kotlinx.coroutines.launch
 class MoviesViewModel(
     private val repository: MoviesRepository,
     private val accountRepository: AccountRepository,
+    private val navigator: Navigator,
 ) : ViewModel() {
     private val _uiModel = MutableStateFlow(MoviesUiModel.initial())
     val uiModel: StateFlow<MoviesUiModel> = _uiModel.asStateFlow()
@@ -50,8 +53,7 @@ class MoviesViewModel(
             .flatMapLatest { selectedCountry ->
                 getPagingData(selectedCountry)
                     .map { it.toUiModel() }
-                    .cachedIn(viewModelScope)
-            }
+            }.cachedIn(viewModelScope)
     }
 
     fun handleCountryClick(country: String) {
@@ -85,5 +87,9 @@ class MoviesViewModel(
         viewModelScope.launch {
             accountRepository.syncMovieFavoriteStatus(!isFavorite, movie.id)
         }
+    }
+
+    fun handleMovieClick(movieId: Int) {
+        navigator.navigateToRoute(MovieDetailRoute(movieId))
     }
 }

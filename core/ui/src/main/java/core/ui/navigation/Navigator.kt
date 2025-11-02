@@ -21,4 +21,8 @@ class Navigator {
             launchSingleTop = true
         }
     }
+
+    fun navigateToRoute(route: Any) {
+        controller.navigate(route)
+    }
 }

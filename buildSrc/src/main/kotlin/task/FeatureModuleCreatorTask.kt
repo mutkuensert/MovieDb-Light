@@ -45,7 +45,7 @@ abstract class FeatureModuleCreatorTask : DefaultTask() {
             val buildScript = when (module) {
                 "data" -> """
                     plugins {
-                        id("base-library")
+                        id("base-domain")
                     }
 
                     android {

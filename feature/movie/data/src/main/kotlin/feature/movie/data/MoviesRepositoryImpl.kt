@@ -5,16 +5,21 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import com.github.michaelbull.result.Result
 import core.data.SessionManager
+import core.data.network.mapToDomain
 import core.data.util.withDecimals
 import core.database.feature.movies.nowplaying.NowPlayingMovieDao
 import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
+import core.domain.ErrorMessage
 import core.libraries.image.TmdbImage
 import feature.movie.data.remote.MovieService
 import feature.movie.domain.Movie
+import feature.movie.domain.MovieDetails
 import feature.movie.domain.MoviesRepository
+import feature.movie.domain.Person
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -108,6 +113,31 @@ class MoviesRepositoryImpl(
                     imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
                     voteAverage = entity.movie.voteAverage.withDecimals(1),
                     isFavorite = entity.isFavorite.takeIf { sessionManager.loggedIn.value }
+                )
+            }
+        }
+    }
+
+    override suspend fun getMovieDetails(movieId: Int): Result<MovieDetails, ErrorMessage> {
+        return movieService.getMovieDetails(movieId).mapToDomain {
+            MovieDetails(
+                imageUrl = it.posterPath?.let { path -> TmdbImage.Poster(path) }?.originalSizedUrl,
+                title = it.originalTitle,
+                voteAverage = it.voteAverage?.withDecimals(1),
+                runtime = it.runtime,
+                overview = it.overview
+            )
+        }
+    }
+
+    override suspend fun getMovieCast(movieId: Int): Result<List<Person>, ErrorMessage> {
+        return movieService.getMovieCredits(movieId).mapToDomain { response ->
+            response.cast.map {
+                Person(
+                    id = it.id,
+                    imageUrl = it.profilePath?.let { path -> TmdbImage.Profile(path) }?.h632Url,
+                    name = it.name,
+                    character = it.character
                 )
             }
         }

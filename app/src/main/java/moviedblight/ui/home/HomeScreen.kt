@@ -1,6 +1,7 @@
 package moviedblight.ui.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -8,11 +9,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.PersonPin
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -22,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -37,8 +41,10 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
-import feature.movie.presentation.MoviesRoute
-import feature.movie.presentation.MoviesScreen
+import feature.movie.presentation.detail.MovieDetailRoute
+import feature.movie.presentation.detail.MovieDetailScreen
+import feature.movie.presentation.list.MoviesRoute
+import feature.movie.presentation.list.MoviesScreen
 import feature.profile.presentation.ProfileDeeplink
 import feature.profile.presentation.ProfileRoute
 import feature.profile.presentation.ProfileScreen
@@ -48,6 +54,7 @@ import org.koin.androidx.compose.koinViewModel
 fun HomeScreen(navigator: Navigator) {
     val viewModel: HomeViewModel = koinViewModel()
     val statusBarContentColor by viewModel.statusBarContentColor.collectAsStateWithLifecycle()
+    val loading by viewModel.loadingAnimator.loading.collectAsStateWithLifecycle()
 
     Column(Modifier.fillMaxSize()) {
         Spacer(
@@ -57,11 +64,27 @@ fun HomeScreen(navigator: Navigator) {
                 .windowInsetsTopHeight(WindowInsets.statusBars)
         )
 
-        MainNavigation(
-            navigator,
-            viewModel::navigateToMovies,
-            viewModel::navigateToProfile
-        )
+        Box {
+            MainNavigation(
+                navigator,
+                viewModel::navigateToMovies,
+                viewModel::navigateToProfile
+            )
+
+            if (loading) {
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .background(color = Color(0x1E000000))
+                ) {
+                    CircularProgressIndicator(
+                        Modifier
+                            .size(40.dp)
+                            .align(Alignment.Center)
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -95,6 +118,10 @@ fun MainNavigation(
                 composable<MoviesRoute> {
                     MoviesScreen()
                 }
+
+                composable<MovieDetailRoute> {
+                    MovieDetailScreen()
+                }
             }
 
             navigation<NavTab.ProfileTab>(ProfileRoute()) {
@@ -122,7 +149,7 @@ private fun BottomNavBar(
     val currentDestination = navBackStackEntry?.destination
 
     NavigationBar(
-        modifier = modifier.height(80.dp),
+        modifier = modifier.height(100.dp),
         containerColor = MaterialTheme.colorScheme.background,
     ) {
         NavigationBarItem(

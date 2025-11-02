@@ -5,7 +5,7 @@ import com.mutkuensert.moviedblight.BuildConfig
 import core.data.dataModule
 import core.database.databaseModule
 import core.domain.domainModule
-import core.injection.feature.movies.moviesModule
+import core.injection.feature.movies.movieModule
 import core.injection.feature.movies.profileModule
 import core.libraries.librariesModule
 import core.ui.uiModule
@@ -27,7 +27,7 @@ class MovieDbLightApplication : Application() {
                 dataModule,
                 domainModule,
                 uiModule,
-                moviesModule,
+                movieModule,
                 profileModule,
                 librariesModule
             )

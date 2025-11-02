@@ -1,4 +1,4 @@
-package feature.movie.presentation
+package feature.movie.presentation.list
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope

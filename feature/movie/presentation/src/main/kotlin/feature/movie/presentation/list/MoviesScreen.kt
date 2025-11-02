@@ -1,4 +1,4 @@
-package feature.movie.presentation
+package feature.movie.presentation.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -37,11 +37,13 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import core.libraries.CountryManager
 import core.ui.MoviedbLightTheme
 import core.ui.StatusBarColorHandler
 import core.ui.component.InteractivePoster
 import core.ui.component.PosterSize
+import feature.movie.presentation.R
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -65,13 +67,14 @@ fun MoviesScreen(
         moviesNowPlaying,
         popularMovies,
         topRatedMovies,
+        viewModel::handleMovieClick,
         viewModel::handleOpenCountryDialogClick,
         viewModel::handleFavoriteClick,
         viewModel::handleDismissCountryDialog,
         viewModel::handleCountryClick
     )
 
-    StatusBarColorHandler(MaterialTheme.colorScheme.surface)
+    StatusBarColorHandler(MaterialTheme.colorScheme.background)
 }
 
 @Composable
@@ -81,10 +84,11 @@ private fun Movies(
     moviesNowPlaying: LazyPagingItems<MovieUiModel>,
     popularMovies: LazyPagingItems<MovieUiModel>,
     topRatedMovies: LazyPagingItems<MovieUiModel>,
-    handleOpenCountryDialogClick: () -> Unit,
-    handleFavoriteClick: (MovieUiModel) -> Unit,
-    handleDismissCountryDialog: () -> Unit,
-    handleCountryClick: (String) -> Unit,
+    onClickMovie: (movieId: Int) -> Unit,
+    onClickCountryDialog: () -> Unit,
+    onClickFavorite: (MovieUiModel) -> Unit,
+    onDismissCountryDialog: () -> Unit,
+    onClickCountry: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -98,46 +102,46 @@ private fun Movies(
         ) {
             Spacer(Modifier.weight(1f))
 
-            CountryButton(handleOpenCountryDialogClick, uiModel.selectedCountry)
+            CountryButton(onClickCountryDialog, uiModel.selectedCountry)
         }
 
         MovieListTitle(stringResource(R.string.upcoming))
 
         Movies(
             movies = upcomingMovies,
-            navigateToDetails = {},
-            onFavoriteClick = handleFavoriteClick
+            onClickMovie = onClickMovie,
+            onFavoriteClick = onClickFavorite
         )
 
         MovieListTitle(stringResource(R.string.now_playing))
 
         Movies(
             movies = moviesNowPlaying,
-            navigateToDetails = {},
-            onFavoriteClick = handleFavoriteClick
+            onClickMovie = onClickMovie,
+            onFavoriteClick = onClickFavorite
         )
 
         MovieListTitle(stringResource(R.string.popular))
 
         Movies(
             movies = popularMovies,
-            navigateToDetails = {},
-            onFavoriteClick = handleFavoriteClick
+            onClickMovie = onClickMovie,
+            onFavoriteClick = onClickFavorite
         )
 
         MovieListTitle(stringResource(R.string.top_rated))
 
         Movies(
             movies = topRatedMovies,
-            navigateToDetails = {},
-            onFavoriteClick = handleFavoriteClick
+            onClickMovie = onClickMovie,
+            onFavoriteClick = onClickFavorite
         )
     }
 
     if (uiModel.isCountryDialogVisible) {
         CountryDialog(
-            onDismiss = handleDismissCountryDialog,
-            onClickCountry = handleCountryClick
+            onDismiss = onDismissCountryDialog,
+            onClickCountry = onClickCountry
         )
     }
 }
@@ -240,7 +244,7 @@ private fun MovieListTitle(title: String) {
 private fun Movies(
     modifier: Modifier = Modifier,
     movies: LazyPagingItems<MovieUiModel>,
-    navigateToDetails: (movieId: Int) -> Unit,
+    onClickMovie: (movieId: Int) -> Unit,
     onFavoriteClick: (movie: MovieUiModel) -> Unit
 ) {
     LazyRow(
@@ -258,7 +262,10 @@ private fun Movies(
             }
         }
 
-        items(count = movies.itemCount) { index ->
+        items(
+            count = movies.itemCount,
+            key = movies.itemKey { it.id }
+        ) { index ->
             val movie = movies[index]
 
             if (movie != null) {
@@ -266,9 +273,8 @@ private fun Movies(
                     modifier = Modifier.padding(10.dp),
                     url = movie.imageUrl,
                     title = movie.title,
-                    description = null,
                     vote = movie.voteAverage,
-                    onPosterClick = { navigateToDetails(movie.id) },
+                    onPosterClick = { onClickMovie(movie.id) },
                     isFavorite = movie.isFavorite,
                     onFavoriteClick = { onFavoriteClick(movie) }
                 )
@@ -292,6 +298,8 @@ private fun MoviesScreenPreview() {
             {},
             {},
             {},
-            {})
+            {},
+            {}
+        )
     }
 }

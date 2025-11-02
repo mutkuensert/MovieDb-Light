@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Beenhere
 import androidx.compose.material.icons.filled.Info
@@ -36,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.toBitmap
@@ -51,7 +50,6 @@ fun InteractivePoster(
     url: String?,
     size: PosterSize = PosterSize.Big,
     title: String = "",
-    description: String? = null,
     vote: String? = null,
     isFavorite: Boolean? = null,
     onFavoriteClick: () -> Unit,
@@ -101,7 +99,10 @@ fun InteractivePoster(
                 Modifier
                     .height(size.height)
                     .width(imageWidth)
-                    .align(Alignment.Center), title, textColor, vote, description
+                    .align(Alignment.Center),
+                title,
+                textColor,
+                vote
             )
         }
 
@@ -118,13 +119,12 @@ private fun InfoView(
     modifier: Modifier = Modifier,
     title: String,
     textColor: Color,
-    vote: String?,
-    description: String?
+    vote: String?
 ) {
     val backgroundColorInContrastToText = if (textColor.isDark) {
-        Color(0x32FFFFFF)
+        Color(0xCDFFFFFF)
     } else {
-        Color(0x80000000)
+        Color(0xB2000000)
     }
 
     Column(
@@ -137,6 +137,7 @@ private fun InfoView(
         Text(
             text = title,
             color = textColor,
+            textAlign = TextAlign.Center,
             overflow = TextOverflow.Visible,
             style = MaterialTheme.typography.bodyLarge
         )
@@ -145,26 +146,6 @@ private fun InfoView(
             Spacer(Modifier.height(10.dp))
             VoteView(textColor, vote)
         }
-
-        if (description != null) {
-            Spacer(Modifier.height(10.dp))
-            DescriptionView(textColor, description)
-        }
-    }
-}
-
-@Composable
-private fun DescriptionView(textColor: Color, description: String) {
-    Column(
-        modifier = Modifier
-            .height(40.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
-        Text(
-            color = textColor,
-            text = description,
-            style = MaterialTheme.typography.bodyMedium
-        )
     }
 }
 

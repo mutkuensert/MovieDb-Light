@@ -1,5 +1,5 @@
 plugins {
-    id("base-library")
+    id("base-domain")
 }
 
 android {

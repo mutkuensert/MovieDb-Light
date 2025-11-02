@@ -1,4 +1,4 @@
-package feature.movie.presentation
+package feature.movie.presentation.list
 
 data class MovieUiModel(
     val id: Int,

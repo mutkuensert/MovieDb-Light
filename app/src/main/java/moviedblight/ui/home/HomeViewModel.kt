@@ -1,12 +1,14 @@
 package moviedblight.ui.home
 
 import androidx.lifecycle.ViewModel
+import core.ui.LoadingAnimator
 import core.ui.StatusBarBackgroundColorManager
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
 
 class HomeViewModel(
     private val navigator: Navigator,
+    val loadingAnimator: LoadingAnimator,
     statusBarBackgroundColorManager: StatusBarBackgroundColorManager
 ) : ViewModel() {
     val statusBarContentColor = statusBarBackgroundColorManager.color

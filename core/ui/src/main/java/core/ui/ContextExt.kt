@@ -26,15 +26,13 @@ fun Context.getInsetsController(): WindowInsetsControllerCompat? {
     )
 }
 
-fun Context.setStatusBarAppearanceByDrawable(drawable: Drawable?) {
-    if (drawable != null) {
-        val dominantDrawableRgb = Palette.from(drawable.toBitmap())
-            .generate()
-            .dominantSwatch
-            ?.rgb
+fun Context.setStatusBarAppearanceByDrawable(drawable: Drawable) {
+    val dominantDrawableRgb = Palette.from(drawable.toBitmap())
+        .generate()
+        .dominantSwatch
+        ?.rgb
 
-        if (dominantDrawableRgb != null) {
-            getInsetsController()?.isAppearanceLightStatusBars = !Color(dominantDrawableRgb).isDark
-        }
+    if (dominantDrawableRgb != null) {
+        getInsetsController()?.isAppearanceLightStatusBars = !Color(dominantDrawableRgb).isDark
     }
 }
