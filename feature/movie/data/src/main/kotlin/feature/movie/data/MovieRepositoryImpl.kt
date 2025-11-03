@@ -23,10 +23,8 @@ import feature.movie.domain.Movie
 import feature.movie.domain.MovieDetails
 import feature.movie.domain.MovieRepository
 import feature.movie.domain.Person
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalPagingApi::class)
 class MovieRepositoryImpl(
@@ -37,9 +35,13 @@ class MovieRepositoryImpl(
     private val topRatedMovieDao: TopRatedMovieDao,
     private val sessionManager: SessionManager,
 ) : MovieRepository, AuthStateListener {
+    private var popularMovies: Flow<PagingData<Movie>> = getPopularMovies()
+    private var moviesNowPlaying: Flow<PagingData<Movie>> = getMoviesNowPlaying()
+    private var topRatedMovies: Flow<PagingData<Movie>> = getTopRatedMovies()
+    private var upcomingMovies: Flow<PagingData<Movie>> = getUpcomingMovies()
 
     override fun getPopularMovies(countryCode: String?): Flow<PagingData<Movie>> {
-        return Pager(
+        popularMovies = Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = PopularMoviesRemoteMediator(
                 { page -> movieService.getPopularMovies(page, countryCode) },
@@ -57,11 +59,12 @@ class MovieRepositoryImpl(
                 )
             }
         }
+        return popularMovies
     }
 
 
     override fun getMoviesNowPlaying(countryCode: String?): Flow<PagingData<Movie>> {
-        return Pager(
+        moviesNowPlaying = Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = NowPlayingMoviesRemoteMediator(
                 { page -> movieService.getMoviesNowPlaying(page, countryCode) },
@@ -79,10 +82,11 @@ class MovieRepositoryImpl(
                 )
             }
         }
+        return moviesNowPlaying
     }
 
     override fun getUpcomingMovies(countryCode: String?): Flow<PagingData<Movie>> {
-        return Pager(
+        upcomingMovies = Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = UpcomingMoviesRemoteMediator(
                 { page -> movieService.getUpcomingMovies(page, countryCode) },
@@ -100,10 +104,11 @@ class MovieRepositoryImpl(
                 )
             }
         }
+        return upcomingMovies
     }
 
     override fun getTopRatedMovies(countryCode: String?): Flow<PagingData<Movie>> {
-        return Pager(
+        topRatedMovies = Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = TopRatedMoviesRemoteMediator(
                 { page -> movieService.getTopRatedMovies(page, countryCode) },
@@ -121,6 +126,7 @@ class MovieRepositoryImpl(
                 )
             }
         }
+        return topRatedMovies
     }
 
     override suspend fun getMovieDetails(movieId: Int): Result<MovieDetails, ErrorMessage> {
@@ -165,11 +171,17 @@ class MovieRepositoryImpl(
     }
 
     override suspend fun onUnauthorized() {
-        withContext(Dispatchers.IO) {
-            nowPlayingMovieDao.clearAll()
-            popularMovieDao.clearAll()
-            topRatedMovieDao.clearAll()
-            upcomingMovieDao.clearAll()
+        popularMovies = popularMovies.map { pagingData ->
+            pagingData.map { it.copy(isFavorite = null) }
+        }
+        moviesNowPlaying = moviesNowPlaying.map { pagingData ->
+            pagingData.map { it.copy(isFavorite = null) }
+        }
+        topRatedMovies = topRatedMovies.map { pagingData ->
+            pagingData.map { it.copy(isFavorite = null) }
+        }
+        upcomingMovies = upcomingMovies.map { pagingData ->
+            pagingData.map { it.copy(isFavorite = null) }
         }
     }
 }

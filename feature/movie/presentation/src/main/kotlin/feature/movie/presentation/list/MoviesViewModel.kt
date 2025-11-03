@@ -49,9 +49,8 @@ class MoviesViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun getPagingDataWithCountry(getPagingData: suspend (country: String?) -> Flow<PagingData<Movie>>): Flow<PagingData<MovieUiModel>> {
         return uiModel.distinctUntilChanged { old, new -> old.selectedCountry == new.selectedCountry }
-            .map { it.selectedCountry }
-            .flatMapLatest { selectedCountry ->
-                getPagingData(selectedCountry)
+            .flatMapLatest { uiModel ->
+                getPagingData(uiModel.selectedCountry)
                     .map { it.toUiModel() }
             }.cachedIn(viewModelScope)
     }
