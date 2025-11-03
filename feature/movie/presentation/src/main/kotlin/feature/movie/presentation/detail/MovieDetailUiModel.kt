@@ -3,9 +3,9 @@ package feature.movie.presentation.detail
 data class MovieDetailUiModel(
     val imageUrl: String?,
     val title: String,
-    val voteAverage: String,
+    val vote: String,
     val runtime: String,
-    val releaseDate: String,
+    val year: String,
     val overview: String,
     val cast: List<PersonUiModel>
 ) {
@@ -14,9 +14,9 @@ data class MovieDetailUiModel(
             return MovieDetailUiModel(
                 imageUrl = null,
                 title = "",
-                voteAverage = "",
+                vote = "",
                 runtime = "",
-                releaseDate = "",
+                year = "",
                 overview = "",
                 cast = emptyList()
             )

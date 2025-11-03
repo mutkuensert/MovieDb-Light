@@ -32,9 +32,9 @@ class MovieDetailViewModel(
                     it.copy(
                         imageUrl = movieDetailsAndCast.imageUrl,
                         title = movieDetailsAndCast.title ?: "",
-                        voteAverage = movieDetailsAndCast.voteAverage?.toString() ?: "",
+                        vote = movieDetailsAndCast.voteAverage?.toString() ?: "",
                         runtime = movieDetailsAndCast.runtime?.toString() ?: "",
-                        releaseDate = movieDetailsAndCast.releaseDate?.split("-")
+                        year = movieDetailsAndCast.releaseDate?.split("-")
                             ?.firstOrNull() ?: "",
                         overview = movieDetailsAndCast.overview ?: "",
                         cast = movieDetailsAndCast.cast.map { it.toUiModel() }

@@ -126,70 +126,24 @@ private fun MovieDetail(uiModel: MovieDetailUiModel) {
             )
 
             if (loadedImage) {
-                Row(
-                    modifier = Modifier
+                YearVoteRuntimeText(
+                    Modifier
                         .align(Alignment.BottomStart)
                         .padding(start = 16.dp, bottom = 2.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        modifier = Modifier.padding(end = 8.dp),
-                        text = uiModel.releaseDate,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
-                    )
-
-                    Icon(
-                        modifier = Modifier.size(16.dp),
-                        imageVector = Icons.Filled.Star,
-                        tint = AppColors.star,
-                        contentDescription = stringResource(core.ui.R.string.vote_icon)
-                    )
-
-                    Text(
-                        modifier = Modifier.padding(end = 8.dp),
-                        text = uiModel.voteAverage,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
-                    )
-
-                    Text(
-                        modifier = Modifier.padding(end = 8.dp),
-                        text = stringResource(R.string.runtime, uiModel.runtime),
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
-                    )
-                }
+                    uiModel.year,
+                    uiModel.vote,
+                    uiModel.runtime
+                )
             }
         }
         Column(Modifier.padding(horizontal = 16.dp)) {
             if (!loadedImage) {
-                Row(
+                YearVoteRuntimeText(
                     Modifier.padding(bottom = 4.dp, top = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        modifier = Modifier.padding(end = 12.dp),
-                        text = uiModel.releaseDate,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
-                    )
-
-                    Icon(
-                        modifier = Modifier.size(16.dp),
-                        imageVector = Icons.Filled.Star,
-                        tint = AppColors.star,
-                        contentDescription = stringResource(core.ui.R.string.vote_icon)
-                    )
-
-                    Text(
-                        modifier = Modifier.padding(end = 8.dp),
-                        text = uiModel.voteAverage,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
-                    )
-
-                    Text(
-                        modifier = Modifier.padding(end = 8.dp),
-                        text = stringResource(R.string.runtime, uiModel.runtime),
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
-                    )
-                }
+                    uiModel.year,
+                    uiModel.vote,
+                    uiModel.runtime
+                )
             }
 
             var isOverviewShrinked by remember { mutableStateOf(true) }
@@ -246,6 +200,44 @@ private fun MovieDetail(uiModel: MovieDetailUiModel) {
 }
 
 @Composable
+private fun YearVoteRuntimeText(
+    modifier: Modifier = Modifier,
+    year: String,
+    vote: String,
+    runtime: String
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.padding(end = 8.dp),
+            text = year,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+        )
+
+        Icon(
+            modifier = Modifier.size(16.dp),
+            imageVector = Icons.Filled.Star,
+            tint = AppColors.star,
+            contentDescription = stringResource(core.ui.R.string.vote_icon)
+        )
+
+        Text(
+            modifier = Modifier.padding(end = 8.dp),
+            text = vote,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+        )
+
+        Text(
+            modifier = Modifier.padding(end = 8.dp),
+            text = stringResource(R.string.runtime, runtime),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+        )
+    }
+}
+
+@Composable
 private fun Person(
     name: String,
     character: String,
@@ -290,9 +282,9 @@ private fun MovieDetailPreview() {
             MovieDetailUiModel(
                 imageUrl = null,
                 title = "pharetra",
-                voteAverage = "7.1",
+                vote = "7.1",
                 runtime = "120",
-                releaseDate = "2010",
+                year = "2010",
                 overview = LoremIpsum(20).values.joinToString(" "),
                 cast = listOf(
                     PersonUiModel(
