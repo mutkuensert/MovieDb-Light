@@ -2,16 +2,18 @@ package moviedblight.ui.home
 
 import androidx.lifecycle.ViewModel
 import core.ui.LoadingAnimator
-import core.ui.StatusBarBackgroundColorManager
+import core.ui.PopupHandler
+import core.ui.StatusBarBackgroundColorHandler
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
 
 class HomeViewModel(
     private val navigator: Navigator,
     val loadingAnimator: LoadingAnimator,
-    statusBarBackgroundColorManager: StatusBarBackgroundColorManager
+    val popupHandler: PopupHandler,
+    statusBarBackgroundColorHandler: StatusBarBackgroundColorHandler
 ) : ViewModel() {
-    val statusBarContentColor = statusBarBackgroundColorManager.color
+    val statusBarContentColor = statusBarBackgroundColorHandler.color
 
     fun navigateToMovies() {
         navigator.navigateToTab(NavTab.MovieTab)
@@ -19,5 +21,9 @@ class HomeViewModel(
 
     fun navigateToProfile() {
         navigator.navigateToTab(NavTab.ProfileTab)
+    }
+
+    fun closePopup() {
+        popupHandler.close()
     }
 }

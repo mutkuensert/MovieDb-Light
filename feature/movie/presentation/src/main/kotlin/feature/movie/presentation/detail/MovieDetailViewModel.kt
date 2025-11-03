@@ -6,15 +6,17 @@ import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import core.ui.LoadingAnimator
-import feature.movie.domain.GetMovieDetailsAndCastUseCase
+import core.ui.PopupHandler
+import feature.movie.domain.MovieRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MovieDetailViewModel(
-    private val getMovieDetailsAndCastUseCase: GetMovieDetailsAndCastUseCase,
+    private val movieRepository: MovieRepository,
     private val loadingAnimator: LoadingAnimator,
+    private val popupHandler: PopupHandler,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var movieId: Int = requireNotNull(savedStateHandle["id"]) {
@@ -26,9 +28,9 @@ class MovieDetailViewModel(
     fun getDetails() {
         viewModelScope.launch {
             loadingAnimator.start()
-            getMovieDetailsAndCastUseCase.execute(movieId).onSuccess { movieDetailsAndCast ->
-                loadingAnimator.stop()
-                _uiModel.update { it ->
+
+            movieRepository.getMovieDetails(movieId).onSuccess { movieDetailsAndCast ->
+                _uiModel.update {
                     it.copy(
                         imageUrl = movieDetailsAndCast.imageUrl,
                         title = movieDetailsAndCast.title ?: "",
@@ -37,12 +39,32 @@ class MovieDetailViewModel(
                         year = movieDetailsAndCast.releaseDate?.split("-")
                             ?.firstOrNull() ?: "",
                         overview = movieDetailsAndCast.overview ?: "",
-                        cast = movieDetailsAndCast.cast.map { it.toUiModel() }
+                        cast = emptyList()
                     )
                 }
             }.onFailure {
-                loadingAnimator.stop()
+                popupHandler.showSimpleMessage(it)
             }
+
+            movieRepository.getMovieCast(movieId).onSuccess { cast ->
+                _uiModel.update {
+                    it.copy(cast = cast.map { person -> person.toUiModel() })
+                }
+            }.onFailure {
+                popupHandler.showSimpleMessage(it)
+            }
+
+            movieRepository.getProviders(movieId).onSuccess { providers ->
+                _uiModel.update {
+                    it.copy(providerLogoUrls = providers.mapNotNull { provider -> provider.logoUrl })
+                }
+            }
+
+            loadingAnimator.stop()
         }
+    }
+
+    fun handleStreamServicesInfoButton() {
+        popupHandler.showSimpleMessage("Streaming services informations are provided by JustWatch.")
     }
 }

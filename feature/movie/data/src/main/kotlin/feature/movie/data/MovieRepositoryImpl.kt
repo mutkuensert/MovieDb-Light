@@ -14,24 +14,26 @@ import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.domain.ErrorMessage
+import core.domain.common.Provider
+import core.libraries.CountryManager
 import core.libraries.image.TmdbImage
 import feature.movie.data.remote.MovieService
 import feature.movie.domain.Movie
 import feature.movie.domain.MovieDetails
-import feature.movie.domain.MoviesRepository
+import feature.movie.domain.MovieRepository
 import feature.movie.domain.Person
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalPagingApi::class)
-class MoviesRepositoryImpl(
+class MovieRepositoryImpl(
     private val movieService: MovieService,
     private val popularMovieDao: PopularMovieDao,
     private val nowPlayingMovieDao: NowPlayingMovieDao,
     private val upcomingMovieDao: UpcomingMovieDao,
     private val topRatedMovieDao: TopRatedMovieDao,
     private val sessionManager: SessionManager,
-) : MoviesRepository {
+) : MovieRepository {
 
     override fun getPopularMovies(countryCode: String?): Flow<PagingData<Movie>> {
         return Pager(
@@ -141,6 +143,21 @@ class MoviesRepositoryImpl(
                     character = it.character
                 )
             }
+        }
+    }
+
+    override suspend fun getProviders(movieId: Int): Result<List<Provider>, ErrorMessage> {
+        return movieService.getProviders(movieId).mapToDomain { response ->
+            val flatrate = response.results[CountryManager.current]?.flatrate
+                ?: response.results["US"]?.flatrate
+
+            flatrate?.map {
+                Provider(
+                    it.providerName,
+                    it.logoPath?.let { path -> TmdbImage.Logo(path) }?.w300Url
+                )
+            }?.distinctBy { it.name } ?: listOf()
+
         }
     }
 }

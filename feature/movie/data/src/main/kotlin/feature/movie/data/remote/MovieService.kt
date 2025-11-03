@@ -1,5 +1,6 @@
 package feature.movie.data.remote
 
+import core.data.model.common.ProvidersResponse
 import core.data.network.NetworkResult
 import feature.movie.data.remote.response.MovieCreditsResponse
 import feature.movie.data.remote.response.MovieDetailsResponse
@@ -46,4 +47,9 @@ interface MovieService {
     suspend fun getMovieCredits(
         @Path("movie_id") movieId: Int
     ): NetworkResult<MovieCreditsResponse>
+
+    @GET("movie/{movie_id}/watch/providers")
+    suspend fun getProviders(
+        @Path("movie_id") movieId: Int
+    ): NetworkResult<ProvidersResponse>
 }

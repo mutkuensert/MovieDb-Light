@@ -3,13 +3,15 @@ package feature.movie.domain
 import androidx.paging.PagingData
 import com.github.michaelbull.result.Result
 import core.domain.ErrorMessage
+import core.domain.common.Provider
 import kotlinx.coroutines.flow.Flow
 
-interface MoviesRepository {
+interface MovieRepository {
     fun getPopularMovies(countryCode: String? = null): Flow<PagingData<Movie>>
     fun getMoviesNowPlaying(countryCode: String? = null): Flow<PagingData<Movie>>
     fun getUpcomingMovies(countryCode: String? = null): Flow<PagingData<Movie>>
     fun getTopRatedMovies(countryCode: String? = null): Flow<PagingData<Movie>>
     suspend fun getMovieDetails(movieId: Int): Result<MovieDetails, ErrorMessage>
     suspend fun getMovieCast(movieId: Int): Result<List<Person>, ErrorMessage>
+    suspend fun getProviders(movieId: Int): Result<List<Provider>, ErrorMessage>
 }

@@ -5,6 +5,7 @@ import org.koin.dsl.module
 
 val uiModule = module {
     single { Navigator() }
-    single { StatusBarBackgroundColorManager() }
+    single { StatusBarBackgroundColorHandler() }
     single { LoadingAnimator() }
+    single { PopupHandler() }
 }

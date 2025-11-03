@@ -86,7 +86,7 @@ fun InteractivePoster(
                     imageWidth = with(density) { it.size.width.toDp() }
                 },
             url = url,
-            size = size,
+            posterSize = size,
             onSuccess = { state ->
                 val bitmap = state.result.image.toBitmap().copy(Bitmap.Config.ARGB_8888, true)
                 infoButtonColor = bitmap.titleTextColor

@@ -3,4 +3,5 @@
     <string name="vote_icon">Puan ikonu</string>
     <string name="image">Görsel</string>
     <string name="info">Bilgi</string>
+    <string name="no_image_icon">Görsel yok ikonu</string>
 </resources>

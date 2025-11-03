@@ -6,7 +6,9 @@
     <string name="upcoming">Yakında yayında</string>
     <string name="options">Seçenekler</string>
     <string name="select_a_country">Bir ülke seçin</string>
+    <string name="ok">Tamam</string>
     <string name="cancel">İptal</string>
     <string name="flag_icon">Bayrak ikonu</string>
     <string name="runtime">%s dakika</string>
+    <string name="streaming_services_info_button_icon">Streaming servisleri için bilgi butonu ikonu</string>
 </resources>

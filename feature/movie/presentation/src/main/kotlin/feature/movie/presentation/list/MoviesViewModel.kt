@@ -8,7 +8,7 @@ import androidx.paging.map
 import core.domain.AccountRepository
 import core.ui.navigation.Navigator
 import feature.movie.domain.Movie
-import feature.movie.domain.MoviesRepository
+import feature.movie.domain.MovieRepository
 import feature.movie.presentation.detail.MovieDetailRoute
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MoviesViewModel(
-    private val repository: MoviesRepository,
+    private val repository: MovieRepository,
     private val accountRepository: AccountRepository,
     private val navigator: Navigator,
 ) : ViewModel() {

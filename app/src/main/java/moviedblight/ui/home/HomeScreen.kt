@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.PersonPin
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -22,13 +23,17 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -39,8 +44,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
+import core.ui.PopupConfig
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
+import feature.movie.presentation.R
 import feature.movie.presentation.detail.MovieDetailRoute
 import feature.movie.presentation.detail.MovieDetailScreen
 import feature.movie.presentation.list.MoviesRoute
@@ -55,6 +62,7 @@ fun HomeScreen(navigator: Navigator) {
     val viewModel: HomeViewModel = koinViewModel()
     val statusBarContentColor by viewModel.statusBarContentColor.collectAsStateWithLifecycle()
     val loading by viewModel.loadingAnimator.loading.collectAsStateWithLifecycle()
+    val popup by viewModel.popupHandler.popup.collectAsStateWithLifecycle()
 
     Column(Modifier.fillMaxSize()) {
         Spacer(
@@ -84,8 +92,50 @@ fun HomeScreen(navigator: Navigator) {
                     )
                 }
             }
+
+            if (popup != null) {
+                ErrorDialog(popup!!, viewModel)
+            }
         }
     }
+}
+
+@Composable
+private fun ErrorDialog(popup: PopupConfig, viewModel: HomeViewModel) {
+    AlertDialog(
+        title = {
+            if (popup.title != null) {
+                Text(popup.title!!)
+            }
+        },
+        text = { Text(popup.message) },
+        onDismissRequest = viewModel::closePopup,
+        confirmButton = {
+            if (popup.showConfirmButton) {
+                TextButton({
+                    viewModel.closePopup()
+                    popup.onConfirm()
+                }) {
+                    Text(stringResource(R.string.ok))
+                }
+            }
+        },
+        dismissButton = if (popup.showDismissButton) {
+            {
+                TextButton({
+                    viewModel.closePopup()
+                    popup.onDismiss()
+                }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        } else null,
+        containerColor = MaterialTheme.colorScheme.background,
+        properties = DialogProperties(
+            dismissOnBackPress = popup.allowToDismiss,
+            dismissOnClickOutside = popup.allowToDismiss
+        )
+    )
 }
 
 @Composable

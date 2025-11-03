@@ -17,9 +17,11 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
@@ -62,7 +65,7 @@ data class MovieDetailRoute(val id: Int)
 fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
     val uiModel by viewModel.uiModel.collectAsStateWithLifecycle()
 
-    MovieDetail(uiModel)
+    MovieDetail(uiModel, viewModel::handleStreamServicesInfoButton)
 
     LaunchedEffect(Unit) {
         viewModel.getDetails()
@@ -70,7 +73,10 @@ fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
 }
 
 @Composable
-private fun MovieDetail(uiModel: MovieDetailUiModel) {
+private fun MovieDetail(
+    uiModel: MovieDetailUiModel,
+    onClickStreamingServicesInfoButton: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -146,14 +152,45 @@ private fun MovieDetail(uiModel: MovieDetailUiModel) {
                 )
             }
 
+            Row(
+                Modifier.padding(top = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                uiModel.providerLogoUrls.forEachIndexed { index, logoUrl ->
+                    AsyncImage(
+                        model = logoUrl,
+                        error = debugPlaceholder(core.libraries.R.drawable.tmdb_logo_blue_square),
+                        modifier = Modifier
+                            .height(36.dp)
+                            .clip(MaterialTheme.shapes.extraSmall),
+                        contentDescription = stringResource(core.ui.R.string.image)
+                    )
+                    if (index != uiModel.providerLogoUrls.lastIndex) {
+                        Spacer(Modifier.width(4.dp))
+                    }
+                }
+
+                if (uiModel.providerLogoUrls.isNotEmpty()) {
+                    IconButton(onClickStreamingServicesInfoButton, Modifier.padding(start = 2.dp)) {
+                        Icon(
+                            modifier = Modifier.height(24.dp),
+                            imageVector = Icons.Filled.Info,
+                            tint = MaterialTheme.colorScheme.onBackground,
+                            contentDescription = stringResource(R.string.streaming_services_info_button_icon)
+                        )
+                    }
+                }
+            }
+
             var isOverviewShrinked by remember { mutableStateOf(true) }
 
-            Box(Modifier.clickable {
-                isOverviewShrinked = !isOverviewShrinked
-            }) {
+            Box {
                 Text(
                     modifier = Modifier
                         .padding(top = 8.dp)
+                        .clickable {
+                            isOverviewShrinked = !isOverviewShrinked
+                        }
                         .then(if (isOverviewShrinked) Modifier.height(92.dp) else Modifier),
                     text = uiModel.overview,
                     color = MaterialTheme.colorScheme.onBackground
@@ -179,7 +216,7 @@ private fun MovieDetail(uiModel: MovieDetailUiModel) {
 
         Spacer(Modifier.height(8.dp))
 
-        LazyRow {
+        LazyRow(Modifier.height(280.dp)) {
             itemsIndexed(uiModel.cast) { index, person ->
                 if (index == 0) {
                     Spacer(Modifier.width(4.dp))
@@ -249,7 +286,7 @@ private fun Person(
             .clip(MaterialTheme.shapes.medium),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Poster(url = imageUrl, size = PosterSize.Medium)
+        Poster(url = imageUrl, posterSize = PosterSize.Medium)
 
         Spacer(Modifier.height(4.dp))
 
@@ -268,7 +305,8 @@ private fun Person(
             Text(
                 text = character,
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
@@ -286,6 +324,7 @@ private fun MovieDetailPreview() {
                 runtime = "120",
                 year = "2010",
                 overview = LoremIpsum(20).values.joinToString(" "),
+                providerLogoUrls = listOf("path", "path2"),
                 cast = listOf(
                     PersonUiModel(
                         id = 2722,
@@ -294,7 +333,8 @@ private fun MovieDetailPreview() {
                         character = "recteque"
                     )
                 )
-            )
+            ),
+            {}
         )
     }
 }

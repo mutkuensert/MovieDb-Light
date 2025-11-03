@@ -11,9 +11,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import core.libraries.AppScope
-import core.ui.LocalStatusBarBackgroundColorManager
+import core.ui.LocalStatusBarBackgroundColorHandler
 import core.ui.MoviedbLightTheme
-import core.ui.StatusBarBackgroundColorManager
+import core.ui.StatusBarBackgroundColorHandler
 import core.ui.navigation.Navigator
 import kotlinx.coroutines.cancel
 import moviedblight.ui.home.HomeScreen
@@ -22,13 +22,13 @@ import org.koin.android.ext.android.inject
 class MainActivity : ComponentActivity() {
     private val navigator: Navigator by inject()
     private val appScope: AppScope by inject()
-    private val statusBarBackgroundColorManager: StatusBarBackgroundColorManager by inject()
+    private val statusBarBackgroundColorHandler: StatusBarBackgroundColorHandler by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CompositionLocalProvider(LocalStatusBarBackgroundColorManager provides statusBarBackgroundColorManager) {
+            CompositionLocalProvider(LocalStatusBarBackgroundColorHandler provides statusBarBackgroundColorHandler) {
                 MoviedbLightTheme {
                     Surface(
                         modifier = Modifier.fillMaxSize(),

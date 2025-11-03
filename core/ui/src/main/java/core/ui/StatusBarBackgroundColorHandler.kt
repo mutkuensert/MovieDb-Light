@@ -4,7 +4,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class StatusBarBackgroundColorManager {
+class StatusBarBackgroundColorHandler {
     val color = MutableStateFlow(Color.White)
 
     fun setColor(value: Color) {
@@ -12,5 +12,5 @@ class StatusBarBackgroundColorManager {
     }
 }
 
-val LocalStatusBarBackgroundColorManager =
-    compositionLocalOf<StatusBarBackgroundColorManager> { error("No info is provided.") }
+val LocalStatusBarBackgroundColorHandler =
+    compositionLocalOf<StatusBarBackgroundColorHandler> { error("No info is provided.") }

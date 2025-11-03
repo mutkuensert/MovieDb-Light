@@ -1,9 +1,8 @@
 package core.injection.feature.movies
 
-import feature.movie.data.MoviesRepositoryImpl
+import feature.movie.data.MovieRepositoryImpl
 import feature.movie.data.remote.MovieService
-import feature.movie.domain.GetMovieDetailsAndCastUseCase
-import feature.movie.domain.MoviesRepository
+import feature.movie.domain.MovieRepository
 import feature.movie.presentation.detail.MovieDetailViewModel
 import feature.movie.presentation.list.MoviesViewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -12,8 +11,8 @@ import retrofit2.Retrofit
 
 val movieModule = module {
     single { get<Retrofit>().create(MovieService::class.java) }
-    single<MoviesRepository> {
-        MoviesRepositoryImpl(
+    single<MovieRepository> {
+        MovieRepositoryImpl(
             get(),
             get(),
             get(),
@@ -24,5 +23,4 @@ val movieModule = module {
     }
     viewModelOf(::MoviesViewModel)
     viewModelOf(::MovieDetailViewModel)
-    factory { GetMovieDetailsAndCastUseCase(get()) }
 }

@@ -3,9 +3,12 @@ package core.ui.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.NoPhotography
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -33,13 +37,12 @@ import core.ui.coil.debugPlaceholder
 fun Poster(
     modifier: Modifier = Modifier,
     url: String?,
-    size: PosterSize = PosterSize.Medium,
+    posterSize: PosterSize = PosterSize.Medium,
     onSuccess: (AsyncImagePainter.State.Success) -> Unit = {}
 ) {
-    val sizeModifier = when (size) {
-        PosterSize.MaxWidth -> Modifier.fillMaxWidth()
+    val imageSizeModifier = when (posterSize) {
         PosterSize.MaxHeight -> Modifier.fillMaxHeight()
-        else -> Modifier.height(size.height)
+        else -> Modifier.height(posterSize.height)
     }
 
     Box {
@@ -62,7 +65,7 @@ fun Poster(
             },
             error = debugPlaceholder(R.drawable.debug_placeholder_dog),
             modifier = modifier
-                .then(sizeModifier)
+                .then(imageSizeModifier)
                 .shadow(elevation = 3.dp, shape = MaterialTheme.shapes.medium)
                 .clip(MaterialTheme.shapes.medium),
             contentDescription = stringResource(R.string.image)
@@ -70,23 +73,34 @@ fun Poster(
 
         if (loading) {
             Box(
-                modifier = sizeModifier,
+                modifier = imageSizeModifier.width(posterSize.estimatedWidth),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(color = Color.Gray)
             }
         }
 
-        if (error) {
+        if (error && !LocalInspectionMode.current) {
             Box(
                 modifier = Modifier
-                    .then(sizeModifier)
-                    .background(Color.Black)
-            )
+                    .then(imageSizeModifier)
+                    .width(posterSize.estimatedWidth)
+                    .background(Color.Black, shape = MaterialTheme.shapes.medium),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    modifier = Modifier.width(36.dp),
+                    imageVector = Icons.Filled.NoPhotography,
+                    tint = Color.White,
+                    contentDescription = stringResource(R.string.no_image_icon)
+                )
+            }
         }
     }
 }
 
 enum class PosterSize(val height: Dp) {
-    Small(80.dp), Medium(160.dp), Big(240.dp), ExtraBig(320.dp), MaxWidth((-1).dp), MaxHeight((-1).dp)
+    Small(80.dp), Medium(160.dp), Big(240.dp), ExtraBig(320.dp), MaxHeight((-1).dp);
+
+    val estimatedWidth: Dp get() = if (height != (-1).dp) height * 9 / 16 else Dp.Unspecified
 }
