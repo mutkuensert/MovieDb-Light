@@ -5,6 +5,7 @@ data class MovieDetailsAndCast(
     val title: String?,
     val voteAverage: Float?,
     val runtime: Int?,
+    val releaseDate: String?,
     val overview: String?,
     val cast: List<Person>,
 )

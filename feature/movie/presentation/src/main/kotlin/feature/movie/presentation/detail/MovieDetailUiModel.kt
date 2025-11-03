@@ -5,6 +5,7 @@ data class MovieDetailUiModel(
     val title: String,
     val voteAverage: String,
     val runtime: String,
+    val releaseDate: String,
     val overview: String,
     val cast: List<PersonUiModel>
 ) {
@@ -15,6 +16,7 @@ data class MovieDetailUiModel(
                 title = "",
                 voteAverage = "",
                 runtime = "",
+                releaseDate = "",
                 overview = "",
                 cast = emptyList()
             )

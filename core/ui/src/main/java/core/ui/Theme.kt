@@ -48,10 +48,10 @@ fun MoviedbLightTheme(
         }
     }*/
 
-    CompositionLocalProvider(LocalTextStyle provides LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onBackground)) {
+    CompositionLocalProvider(LocalTextStyle provides LocalTextStyle.current.copy(color = colorScheme.onBackground)) {
         MaterialTheme(
             colorScheme = colorScheme,
-            typography = Typography,
+            typography = getTypography(colorScheme),
             content = content
         )
     }

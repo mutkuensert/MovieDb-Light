@@ -42,12 +42,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.SubcomposeAsyncImage
+import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
 import coil3.request.crossfade
 import core.ui.AppColors
 import core.ui.MoviedbLightTheme
+import core.ui.coil.debugPlaceholder
 import core.ui.component.Poster
 import core.ui.component.PosterSize
 import feature.movie.presentation.R
@@ -77,30 +78,37 @@ private fun MovieDetail(uiModel: MovieDetailUiModel) {
             .verticalScroll(rememberScrollState()),
     ) {
         var loadedImage by remember { mutableStateOf(false) }
+        var loading by remember { mutableStateOf(true) }
 
         Box {
-            SubcomposeAsyncImage(
+            AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(uiModel.imageUrl)
                     .crossfade(true)
                     .allowHardware(true)
                     .build(),
-                loading = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(160.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
-                    }
-                }, onSuccess = {
+                onLoading = { loading = true },
+                onSuccess = {
+                    loading = false
                     loadedImage = true
                 },
+                onError = { loading = false },
+                error = debugPlaceholder(core.ui.R.drawable.debug_placeholder_dog),
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier.fillMaxWidth(),
                 contentDescription = stringResource(core.ui.R.string.image)
             )
+
+            if (loading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(160.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
+                }
+            }
 
             Box(
                 Modifier
@@ -126,34 +134,7 @@ private fun MovieDetail(uiModel: MovieDetailUiModel) {
                 ) {
                     Text(
                         modifier = Modifier.padding(end = 8.dp),
-                        text = stringResource(R.string.runtime, uiModel.runtime),
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-
-                    Icon(
-                        modifier = Modifier.size(16.dp),
-                        imageVector = Icons.Filled.Star,
-                        tint = AppColors.star,
-                        contentDescription = stringResource(core.ui.R.string.vote_icon)
-                    )
-
-                    Text(
-                        modifier = Modifier.padding(end = 8.dp),
-                        text = uiModel.voteAverage,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-            }
-        }
-        Column(Modifier.padding(horizontal = 16.dp)) {
-            if (!loadedImage) {
-                Row(
-                    Modifier.padding(start = 16.dp, bottom = 4.dp, top = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        modifier = Modifier.padding(end = 8.dp),
-                        text = stringResource(R.string.runtime, uiModel.runtime),
+                        text = uiModel.releaseDate,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
                     )
 
@@ -167,6 +148,45 @@ private fun MovieDetail(uiModel: MovieDetailUiModel) {
                     Text(
                         modifier = Modifier.padding(end = 8.dp),
                         text = uiModel.voteAverage,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+                    )
+
+                    Text(
+                        modifier = Modifier.padding(end = 8.dp),
+                        text = stringResource(R.string.runtime, uiModel.runtime),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+                    )
+                }
+            }
+        }
+        Column(Modifier.padding(horizontal = 16.dp)) {
+            if (!loadedImage) {
+                Row(
+                    Modifier.padding(bottom = 4.dp, top = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        modifier = Modifier.padding(end = 12.dp),
+                        text = uiModel.releaseDate,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+                    )
+
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        imageVector = Icons.Filled.Star,
+                        tint = AppColors.star,
+                        contentDescription = stringResource(core.ui.R.string.vote_icon)
+                    )
+
+                    Text(
+                        modifier = Modifier.padding(end = 8.dp),
+                        text = uiModel.voteAverage,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+                    )
+
+                    Text(
+                        modifier = Modifier.padding(end = 8.dp),
+                        text = stringResource(R.string.runtime, uiModel.runtime),
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
                     )
                 }
@@ -262,7 +282,7 @@ private fun Person(
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview(showSystemUi = false)
 @Composable
 private fun MovieDetailPreview() {
     MoviedbLightTheme {
@@ -272,12 +292,13 @@ private fun MovieDetailPreview() {
                 title = "pharetra",
                 voteAverage = "7.1",
                 runtime = "120",
+                releaseDate = "2010",
                 overview = LoremIpsum(20).values.joinToString(" "),
                 cast = listOf(
                     PersonUiModel(
                         id = 2722,
                         imageUrl = null,
-                        name = "Letitia Gibson",
+                        name = "Some Person",
                         character = "recteque"
                     )
                 )

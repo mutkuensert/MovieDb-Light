@@ -122,9 +122,9 @@ private fun InfoView(
     vote: String?
 ) {
     val backgroundColorInContrastToText = if (textColor.isDark) {
-        Color(0xCDFFFFFF)
+        Color(0x99FFFFFF)
     } else {
-        Color(0xB2000000)
+        Color(0x99000000)
     }
 
     Column(

@@ -34,6 +34,8 @@ class MovieDetailViewModel(
                         title = movieDetailsAndCast.title ?: "",
                         voteAverage = movieDetailsAndCast.voteAverage?.toString() ?: "",
                         runtime = movieDetailsAndCast.runtime?.toString() ?: "",
+                        releaseDate = movieDetailsAndCast.releaseDate?.split("-")
+                            ?.firstOrNull() ?: "",
                         overview = movieDetailsAndCast.overview ?: "",
                         cast = movieDetailsAndCast.cast.map { it.toUiModel() }
                     )

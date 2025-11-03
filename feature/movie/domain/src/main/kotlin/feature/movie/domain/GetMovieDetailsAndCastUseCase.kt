@@ -15,6 +15,7 @@ class GetMovieDetailsAndCastUseCase(private val moviesRepository: MoviesReposito
                     title = movieDetails.title,
                     voteAverage = movieDetails.voteAverage,
                     runtime = movieDetails.runtime,
+                    releaseDate = movieDetails.releaseDate,
                     overview = movieDetails.overview,
                     cast = cast
                 )

@@ -125,6 +125,7 @@ class MoviesRepositoryImpl(
                 title = it.originalTitle,
                 voteAverage = it.voteAverage?.withDecimals(1),
                 runtime = it.runtime,
+                releaseDate = it.releaseDate,
                 overview = it.overview
             )
         }
