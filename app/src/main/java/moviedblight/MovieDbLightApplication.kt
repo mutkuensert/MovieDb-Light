@@ -4,7 +4,6 @@ import android.app.Application
 import com.mutkuensert.moviedblight.BuildConfig
 import core.data.dataModule
 import core.database.databaseModule
-import core.domain.domainModule
 import core.injection.feature.movies.movieModule
 import core.injection.feature.movies.profileModule
 import core.libraries.librariesModule
@@ -25,7 +24,7 @@ class MovieDbLightApplication : Application() {
                 appModule,
                 databaseModule,
                 dataModule,
-                domainModule,
+                //domainModule,
                 uiModule,
                 movieModule,
                 profileModule,

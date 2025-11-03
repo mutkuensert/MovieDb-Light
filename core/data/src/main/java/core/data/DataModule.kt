@@ -13,6 +13,7 @@ import core.data.network.interceptor.ApiKeyInterceptor
 import core.database.user.UserManager
 import core.domain.AccountRepository
 import core.domain.AuthState
+import core.domain.AuthStateListener
 import core.domain.AuthenticationRepository
 import core.libraries.StrResources
 import kotlinx.serialization.json.Json
@@ -20,6 +21,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.binds
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -41,14 +43,14 @@ val dataModule = module {
     single<AuthenticationRepository> {
         AuthenticationRepositoryImpl(get(), get(), get())
     }
-    single<AccountRepository>(createdAtStart = true) {
+    single(createdAtStart = true) {
         AccountRepositoryImpl(
             get(),
             get(),
             get(),
             get(),
         )
-    }
+    }.binds(arrayOf(AccountRepository::class, AuthStateListener::class))
     single<AuthState> { AuthStateImpl(get()) }
 }
 

@@ -102,5 +102,5 @@ fun Poster(
 enum class PosterSize(val height: Dp) {
     Small(80.dp), Medium(160.dp), Big(240.dp), ExtraBig(320.dp), MaxHeight((-1).dp);
 
-    val estimatedWidth: Dp get() = if (height != (-1).dp) height * 9 / 16 else Dp.Unspecified
+    val estimatedWidth: Dp get() = if (height != (-1).dp) height * 2 / 3 else Dp.Unspecified
 }

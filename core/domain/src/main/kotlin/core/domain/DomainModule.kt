@@ -1,7 +1,6 @@
 package core.domain
 
-import org.koin.dsl.module
-
+/*
 val domainModule = module {
-    factory { FetchUserRelatedDataUseCase(get()) }
-}
+    factory {  }
+}*/

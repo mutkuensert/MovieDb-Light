@@ -13,6 +13,7 @@ import core.database.feature.movies.nowplaying.NowPlayingMovieDao
 import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
+import core.domain.AuthStateListener
 import core.domain.ErrorMessage
 import core.domain.common.Provider
 import core.libraries.CountryManager
@@ -22,8 +23,10 @@ import feature.movie.domain.Movie
 import feature.movie.domain.MovieDetails
 import feature.movie.domain.MovieRepository
 import feature.movie.domain.Person
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalPagingApi::class)
 class MovieRepositoryImpl(
@@ -33,7 +36,7 @@ class MovieRepositoryImpl(
     private val upcomingMovieDao: UpcomingMovieDao,
     private val topRatedMovieDao: TopRatedMovieDao,
     private val sessionManager: SessionManager,
-) : MovieRepository {
+) : MovieRepository, AuthStateListener {
 
     override fun getPopularMovies(countryCode: String?): Flow<PagingData<Movie>> {
         return Pager(
@@ -158,6 +161,15 @@ class MovieRepositoryImpl(
                 )
             }?.distinctBy { it.name } ?: listOf()
 
+        }
+    }
+
+    override suspend fun onUnauthorized() {
+        withContext(Dispatchers.IO) {
+            nowPlayingMovieDao.clearAll()
+            popularMovieDao.clearAll()
+            topRatedMovieDao.clearAll()
+            upcomingMovieDao.clearAll()
         }
     }
 }

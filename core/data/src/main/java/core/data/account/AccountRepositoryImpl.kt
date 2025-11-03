@@ -11,6 +11,7 @@ import core.database.account.AccountDao
 import core.database.account.model.FavoriteMovieEntity
 import core.database.user.UserManager
 import core.domain.AccountRepository
+import core.domain.AuthStateListener
 import core.domain.ErrorMessage
 import core.domain.User
 import kotlinx.coroutines.Dispatchers
@@ -21,19 +22,39 @@ class AccountRepositoryImpl(
     private val sessionManager: SessionManager,
     private val userManager: UserManager,
     private val accountDao: AccountDao,
-) : AccountRepository {
+) : AccountRepository, AuthStateListener {
 
-    override suspend fun fetchAccountDetails(): Result<Unit, ErrorMessage> {
-        return accountService.getAccountDetails(sessionManager.getSessionId()!!)
-            .mapBoth(success = {
-                userManager.setCurrentUser(
-                    profilePicturePath = it.avatar.tmdb.avatarPath,
-                    id = it.id,
-                    includeAdult = it.includeAdult,
-                    name = it.name,
-                    userName = it.username
+    override suspend fun fetchAccountDetails(): Result<User, ErrorMessage> {
+        val user = userManager.getUser()
+        if (user != null) {
+            return Ok(
+                User(
+                    user.id,
+                    user.name,
+                    user.userName,
+                    user.profilePicturePath,
+                    user.includeAdult
                 )
-                Ok(Unit)
+            )
+        }
+        return accountService.getAccountDetails(sessionManager.getSessionId()!!)
+            .mapBoth(success = { response ->
+                userManager.setCurrentUser(
+                    id = response.id,
+                    name = response.name,
+                    userName = response.username,
+                    profilePicturePath = response.avatar.tmdb.avatarPath,
+                    includeAdult = response.includeAdult,
+                )
+                Ok(
+                    User(
+                        response.id,
+                        response.name,
+                        response.username,
+                        response.avatar.tmdb.avatarPath,
+                        response.includeAdult
+                    )
+                )
             }, failure = {
                 Err(it.message)
             })
@@ -99,17 +120,11 @@ class AccountRepositoryImpl(
         }
     }
 
-    override fun getUser(): User {
-        val userDetails = requireNotNull(userManager.getUser()) {
-            "If logged in, user info should not be null"
+    override suspend fun onUnauthorized() {
+        withContext(Dispatchers.IO) {
+            accountDao.clearAllFavoriteMovies()
+            accountDao.clearAllFavoriteTvShows()
         }
-        return User(
-            id = userDetails.id,
-            name = userDetails.name,
-            userName = userDetails.userName,
-            profilePicturePath = userDetails.profilePicturePath,
-            includeAdult = userDetails.includeAdult
-        )
     }
 }
 
