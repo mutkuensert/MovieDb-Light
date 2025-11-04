@@ -9,6 +9,7 @@ import com.github.michaelbull.result.onSuccess
 import core.data.SessionManager
 import core.database.account.AccountDao
 import core.database.account.model.FavoriteMovieEntity
+import core.database.user.UserDetails
 import core.database.user.UserManager
 import core.domain.AccountRepository
 import core.domain.AuthStateListener
@@ -25,36 +26,23 @@ class AccountRepositoryImpl(
 ) : AccountRepository, AuthStateListener {
 
     override suspend fun fetchAccountDetails(): Result<User, ErrorMessage> {
-        val user = userManager.getUser()
+        val user = userManager.getUser()?.toUser()
         if (user != null) {
-            return Ok(
-                User(
-                    user.id,
-                    user.name,
-                    user.userName,
-                    user.profilePicturePath,
-                    user.includeAdult
-                )
-            )
+            return Ok(user)
         }
-        return accountService.getAccountDetails(sessionManager.getSessionId()!!)
+        val sessionId = requireNotNull(sessionManager.getSessionId()) {
+            "Session id can't be null here."
+        }
+        return accountService.getAccountDetails(sessionId)
             .mapBoth(success = { response ->
                 userManager.setCurrentUser(
-                    id = response.id,
-                    name = response.name,
-                    userName = response.username,
-                    profilePicturePath = response.avatar.tmdb.avatarPath,
-                    includeAdult = response.includeAdult,
+                    response.id,
+                    response.name,
+                    response.username,
+                    response.avatar.tmdb.avatarPath,
+                    response.includeAdult,
                 )
-                Ok(
-                    User(
-                        response.id,
-                        response.name,
-                        response.username,
-                        response.avatar.tmdb.avatarPath,
-                        response.includeAdult
-                    )
-                )
+                Ok(response.toUser())
             }, failure = {
                 Err(it.message)
             })
@@ -132,4 +120,24 @@ private fun mapToFavoriteMovieEntity(
     dto: FavoriteMoviesResultDto
 ): FavoriteMovieEntity {
     return FavoriteMovieEntity(id = dto.id)
+}
+
+private fun UserDetails.toUser(): User {
+    return User(
+        id,
+        name,
+        userName,
+        profilePicturePath,
+        includeAdult
+    )
+}
+
+private fun AccountDetailsResponse.toUser(): User {
+    return User(
+        id,
+        name,
+        username,
+        avatar.tmdb.avatarPath,
+        includeAdult
+    )
 }
