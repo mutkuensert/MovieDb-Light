@@ -2,10 +2,15 @@ plugins {
     id("base-library")
     kotlin("plugin.serialization")
     id("com.google.devtools.ksp")
+    alias(libs.plugins.androidx.room)
 }
 
 android {
     namespace = "core.database"
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 dependencies {

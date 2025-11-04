@@ -1,6 +1,7 @@
 package feature.movie.data
 
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.InvalidatingPagingSourceFactory
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -11,6 +12,7 @@ import core.data.network.mapToDomain
 import core.data.util.withDecimals
 import core.database.feature.movies.nowplaying.NowPlayingMovieDao
 import core.database.feature.movies.popular.PopularMovieDao
+import core.database.feature.movies.similar.SimilarMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.domain.AuthStateListener
@@ -33,100 +35,129 @@ class MovieRepositoryImpl(
     private val nowPlayingMovieDao: NowPlayingMovieDao,
     private val upcomingMovieDao: UpcomingMovieDao,
     private val topRatedMovieDao: TopRatedMovieDao,
+    private val similarMovieDao: SimilarMovieDao,
     private val sessionManager: SessionManager,
 ) : MovieRepository, AuthStateListener {
-    private var popularMovies: Flow<PagingData<Movie>> = getPopularMovies()
-    private var moviesNowPlaying: Flow<PagingData<Movie>> = getMoviesNowPlaying()
-    private var topRatedMovies: Flow<PagingData<Movie>> = getTopRatedMovies()
-    private var upcomingMovies: Flow<PagingData<Movie>> = getUpcomingMovies()
+    private val popularMoviesPagingSourceFactory = InvalidatingPagingSourceFactory {
+        popularMovieDao.getPagingSource()
+    }
+    private val nowPlayingMoviesPagingSourceFactory = InvalidatingPagingSourceFactory {
+        nowPlayingMovieDao.getPagingSource()
+    }
+    private val upcomingMoviesPagingSourceFactory = InvalidatingPagingSourceFactory {
+        upcomingMovieDao.getPagingSource()
+    }
+    private val topRatedMoviesPagingSourceFactory = InvalidatingPagingSourceFactory {
+        topRatedMovieDao.getPagingSource()
+    }
+    private val similarMoviesPagingSourceFactory = InvalidatingPagingSourceFactory {
+        similarMovieDao.getPagingSource()
+    }
 
     override fun getPopularMovies(countryCode: String?): Flow<PagingData<Movie>> {
-        popularMovies = Pager(
+        return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = PopularMoviesRemoteMediator(
                 { page -> movieService.getPopularMovies(page, countryCode) },
                 popularMovieDao,
             ),
-            pagingSourceFactory = { popularMovieDao.getPagingSource() }
+            pagingSourceFactory = { popularMoviesPagingSourceFactory() }
         ).flow.map { pagingData ->
             pagingData.map { entity ->
                 Movie(
                     id = entity.movie.id,
                     title = entity.movie.title,
                     imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
-                    voteAverage = entity.movie.voteAverage.withDecimals(1),
-                    isFavorite = entity.isFavorite.takeIf { sessionManager.loggedIn.value }
+                    voteAverage = entity.movie.voteAverage?.withDecimals(1),
+                    inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
                 )
             }
         }
-        return popularMovies
     }
 
 
     override fun getMoviesNowPlaying(countryCode: String?): Flow<PagingData<Movie>> {
-        moviesNowPlaying = Pager(
+        return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = NowPlayingMoviesRemoteMediator(
                 { page -> movieService.getMoviesNowPlaying(page, countryCode) },
                 nowPlayingMovieDao,
             ),
-            pagingSourceFactory = { nowPlayingMovieDao.getPagingSource() }
+            pagingSourceFactory = { nowPlayingMoviesPagingSourceFactory() }
         ).flow.map { pagingData ->
             pagingData.map { entity ->
                 Movie(
                     id = entity.movie.id,
                     title = entity.movie.title,
                     imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
-                    voteAverage = entity.movie.voteAverage.withDecimals(1),
-                    isFavorite = entity.isFavorite.takeIf { sessionManager.loggedIn.value }
+                    voteAverage = entity.movie.voteAverage?.withDecimals(1),
+                    inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
                 )
             }
         }
-        return moviesNowPlaying
     }
 
     override fun getUpcomingMovies(countryCode: String?): Flow<PagingData<Movie>> {
-        upcomingMovies = Pager(
+        return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = UpcomingMoviesRemoteMediator(
                 { page -> movieService.getUpcomingMovies(page, countryCode) },
                 upcomingMovieDao,
             ),
-            pagingSourceFactory = { upcomingMovieDao.getPagingSource() }
+            pagingSourceFactory = { upcomingMoviesPagingSourceFactory() }
         ).flow.map { pagingData ->
             pagingData.map { entity ->
                 Movie(
                     id = entity.movie.id,
                     title = entity.movie.title,
                     imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
-                    voteAverage = entity.movie.voteAverage.withDecimals(1),
-                    isFavorite = entity.isFavorite.takeIf { sessionManager.loggedIn.value }
+                    voteAverage = entity.movie.voteAverage?.withDecimals(1),
+                    inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
                 )
             }
         }
-        return upcomingMovies
     }
 
     override fun getTopRatedMovies(countryCode: String?): Flow<PagingData<Movie>> {
-        topRatedMovies = Pager(
+        return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = TopRatedMoviesRemoteMediator(
                 { page -> movieService.getTopRatedMovies(page, countryCode) },
                 topRatedMovieDao,
             ),
-            pagingSourceFactory = { topRatedMovieDao.getPagingSource() }
+            pagingSourceFactory = { topRatedMoviesPagingSourceFactory() }
         ).flow.map { pagingData ->
             pagingData.map { entity ->
                 Movie(
                     id = entity.movie.id,
                     title = entity.movie.title,
                     imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
-                    voteAverage = entity.movie.voteAverage.withDecimals(1),
-                    isFavorite = entity.isFavorite.takeIf { sessionManager.loggedIn.value }
+                    voteAverage = entity.movie.voteAverage?.withDecimals(1),
+                    inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
                 )
             }
         }
-        return topRatedMovies
+    }
+
+    override fun getSimilarMovies(movieId: Int): Flow<PagingData<Movie>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20),
+            remoteMediator = SimilarMoviesRemoteMediator(
+                { page -> movieService.getSimilarMovies(movieId, page) },
+                similarMovieDao,
+            ),
+            pagingSourceFactory = { similarMoviesPagingSourceFactory() }
+        ).flow.map { pagingData ->
+            pagingData.map { entity ->
+                Movie(
+                    id = entity.movie.id,
+                    title = entity.movie.title,
+                    imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                    voteAverage = entity.movie.voteAverage?.withDecimals(1),
+                    inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
+                )
+            }
+        }
     }
 
     override suspend fun getMovieDetails(movieId: Int): Result<MovieDetails, ErrorMessage> {
@@ -162,26 +193,20 @@ class MovieRepositoryImpl(
 
             flatrate?.map {
                 Provider(
+                    it.providerId,
                     it.providerName,
                     it.logoPath?.let { path -> TmdbImage.Logo(path) }?.w300Url
                 )
-            }?.distinctBy { it.name } ?: listOf()
+            }?.distinctBy { it.name }?.distinctBy { it.id } ?: listOf()
 
         }
     }
 
     override suspend fun onUnauthorized() {
-        popularMovies = popularMovies.map { pagingData ->
-            pagingData.map { it.copy(isFavorite = null) }
-        }
-        moviesNowPlaying = moviesNowPlaying.map { pagingData ->
-            pagingData.map { it.copy(isFavorite = null) }
-        }
-        topRatedMovies = topRatedMovies.map { pagingData ->
-            pagingData.map { it.copy(isFavorite = null) }
-        }
-        upcomingMovies = upcomingMovies.map { pagingData ->
-            pagingData.map { it.copy(isFavorite = null) }
-        }
+        popularMoviesPagingSourceFactory.invalidate()
+        nowPlayingMoviesPagingSourceFactory.invalidate()
+        topRatedMoviesPagingSourceFactory.invalidate()
+        upcomingMoviesPagingSourceFactory.invalidate()
+        similarMoviesPagingSourceFactory.invalidate()
     }
 }

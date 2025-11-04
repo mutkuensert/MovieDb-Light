@@ -21,6 +21,7 @@ val movieModule = module {
             get(),
             get(),
             get(),
+            get(),
         )
     }.binds(arrayOf(MovieRepository::class, AuthStateListener::class))
     viewModelOf(::MoviesViewModel)

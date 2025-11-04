@@ -4,6 +4,7 @@ import task.FeatureModuleCreatorTask
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
     id("com.google.devtools.ksp") version "2.2.10-2.0.2" apply false
+    alias(libs.plugins.androidx.room) apply false
 }
 
 tasks.register<CoreModuleCreatorTask>("createCoreModule") {

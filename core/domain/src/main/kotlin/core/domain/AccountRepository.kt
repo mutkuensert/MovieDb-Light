@@ -11,4 +11,9 @@ interface AccountRepository {
         movieId: Int
     ): Result<Unit, ErrorMessage>
 
+    suspend fun fetchWatchlistMovies()
+    suspend fun syncMovieWatchlistStatus(
+        inWatchlist: Boolean,
+        movieId: Int
+    ): Result<Unit, ErrorMessage>
 }

@@ -25,7 +25,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +44,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
@@ -52,9 +56,12 @@ import coil3.request.crossfade
 import core.ui.AppColors
 import core.ui.MoviedbLightTheme
 import core.ui.coil.debugPlaceholder
+import core.ui.component.InteractivePoster
+import core.ui.component.OneTimeEffect
 import core.ui.component.Poster
 import core.ui.component.PosterSize
 import feature.movie.presentation.R
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
@@ -64,10 +71,17 @@ data class MovieDetailRoute(val id: Int)
 @Composable
 fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
     val uiModel by viewModel.uiModel.collectAsStateWithLifecycle()
+    val similarMovies = viewModel.similarMovies.collectAsLazyPagingItems()
 
-    MovieDetail(uiModel, viewModel::handleStreamServicesInfoButton)
+    MovieDetail(
+        uiModel,
+        viewModel::handleStreamServicesInfoButton,
+        similarMovies,
+        viewModel::handleMovieClick,
+        viewModel::handleWatchlistClick,
+    )
 
-    LaunchedEffect(Unit) {
+    OneTimeEffect {
         viewModel.getDetails()
     }
 }
@@ -75,7 +89,10 @@ fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
 @Composable
 private fun MovieDetail(
     uiModel: MovieDetailUiModel,
-    onClickStreamingServicesInfoButton: () -> Unit
+    onClickStreamingServicesInfoButton: () -> Unit,
+    similarMovies: LazyPagingItems<MovieUiModel>,
+    onClickMovie: (movieId: Int) -> Unit,
+    onClickWatchlist: (MovieUiModel) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -214,23 +231,82 @@ private fun MovieDetail(
             }
         }
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
 
-        LazyRow(Modifier.height(280.dp)) {
-            itemsIndexed(uiModel.cast) { index, person ->
-                if (index == 0) {
-                    Spacer(Modifier.width(4.dp))
-                }
-                Person(
-                    person.name,
-                    person.character,
-                    person.imageUrl,
-                    Modifier.padding(horizontal = 4.dp)
+        Cast(uiModel)
+
+        if (similarMovies.itemCount != 0) {
+            Text(
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+                text = stringResource(R.string.similar),
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+
+        SimilarMovies(similarMovies, onClickMovie, onClickWatchlist)
+    }
+}
+
+@Composable
+private fun Cast(uiModel: MovieDetailUiModel, modifier: Modifier = Modifier) {
+    LazyRow(modifier.height(260.dp)) {
+        itemsIndexed(uiModel.cast) { index, person ->
+            if (index == 0) {
+                Spacer(Modifier.width(4.dp))
+            }
+            Person(
+                person.name,
+                person.character,
+                person.imageUrl,
+                Modifier.padding(horizontal = 4.dp)
+            )
+
+            if (index == uiModel.cast.lastIndex) {
+                Spacer(Modifier.width(4.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun SimilarMovies(
+    movies: LazyPagingItems<MovieUiModel>,
+    onClickMovie: (movieId: Int) -> Unit,
+    onWatchlistClick: (movie: MovieUiModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        item {
+            if (movies.loadState.refresh == LoadState.Loading) {
+                Box(
+                    modifier = Modifier
+                        .height(PosterSize.Large.height)
+                        .fillParentMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) { CircularProgressIndicator() }
+            }
+        }
+
+        items(
+            count = movies.itemCount,
+            key = movies.itemKey { it.id }
+        ) { index ->
+            val movie = movies[index]
+
+            if (movie != null) {
+                InteractivePoster(
+                    modifier = Modifier.padding(10.dp),
+                    url = movie.imageUrl,
+                    title = movie.title,
+                    vote = movie.voteAverage,
+                    onPosterClick = { onClickMovie(movie.id) },
+                    inWatchlist = movie.inWatchlist,
+                    onWatchlistClick = { onWatchlistClick(movie) }
                 )
-
-                if (index == uiModel.cast.lastIndex) {
-                    Spacer(Modifier.width(4.dp))
-                }
             }
         }
     }
@@ -316,6 +392,9 @@ private fun Person(
 @Composable
 private fun MovieDetailPreview() {
     MoviedbLightTheme {
+        val emptyPagingData =
+            flowOf(PagingData.from<MovieUiModel>(emptyList())).collectAsLazyPagingItems()
+
         MovieDetail(
             MovieDetailUiModel(
                 imageUrl = null,
@@ -334,6 +413,9 @@ private fun MovieDetailPreview() {
                     )
                 )
             ),
+            {},
+            emptyPagingData,
+            {},
             {}
         )
     }

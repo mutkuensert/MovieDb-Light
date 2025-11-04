@@ -4,4 +4,5 @@
     <string name="image">Image</string>
     <string name="info">Info</string>
     <string name="no_image_icon">No image icon</string>
+    <string name="watchlist_button">Watchlist button</string>
 </resources>

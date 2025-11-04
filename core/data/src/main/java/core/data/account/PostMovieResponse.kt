@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PostFavoriteMovieResponse(
+data class PostMovieResponse(
     @SerialName("status_code")
     val statusCode: Int,
     @SerialName("status_message")

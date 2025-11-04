@@ -6,17 +6,17 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.github.michaelbull.result.mapBoth
 import core.data.network.NetworkResult
+import core.database.feature.movies.toprated.TopRatedMovie
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieEntity
-import core.database.feature.movies.toprated.TopRatedMovie
-import feature.movie.data.remote.response.TopRatedMoviesResponse
+import core.data.model.common.MoviesResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 @OptIn(ExperimentalPagingApi::class)
 class TopRatedMoviesRemoteMediator(
-    private val getTopRatedMovies: suspend (page: Int) -> NetworkResult<TopRatedMoviesResponse>,
+    private val getTopRatedMovies: suspend (page: Int) -> NetworkResult<MoviesResponse>,
     private val topRatedMovieDao: TopRatedMovieDao
 ) : RemoteMediator<Int, TopRatedMovie>() {
 

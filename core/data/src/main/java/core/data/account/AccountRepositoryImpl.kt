@@ -7,8 +7,10 @@ import com.github.michaelbull.result.mapBoth
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import core.data.SessionManager
+import core.data.model.common.MovieDto
 import core.database.account.AccountDao
 import core.database.account.model.FavoriteMovieEntity
+import core.database.account.model.WatchlistMovieEntity
 import core.database.user.UserDetails
 import core.database.user.UserManager
 import core.domain.AccountRepository
@@ -51,7 +53,7 @@ class AccountRepositoryImpl(
     override suspend fun fetchFavoriteMovies() {
         withContext(Dispatchers.IO) {
             accountDao.clearAllFavoriteMovies()
-            val favoriteMovies = mutableListOf<FavoriteMoviesResultDto>()
+            val favoriteMovies = mutableListOf<MovieDto>()
 
             var endPage = 2
             var page = 1
@@ -59,7 +61,7 @@ class AccountRepositoryImpl(
                 accountService.getFavoriteMovies(
                     page = page,
                     sessionId = sessionManager.getSessionId()!!
-                ).onSuccess { response: FavoriteMoviesResponse ->
+                ).onSuccess { response ->
                     endPage = response.totalPages
 
                     if (response.results.isNotEmpty()) {
@@ -79,6 +81,37 @@ class AccountRepositoryImpl(
         }
     }
 
+    override suspend fun fetchWatchlistMovies() {
+        withContext(Dispatchers.IO) {
+            accountDao.clearAllWatchlistMovies()
+            val watchlistMovies = mutableListOf<MovieDto>()
+
+            var endPage = 2
+            var page = 1
+            while (page in 0..endPage) {
+                accountService.getWatchlistMovies(
+                    page = page,
+                    sessionId = sessionManager.requireSessionId()
+                ).onSuccess { response ->
+                    endPage = response.totalPages
+
+                    if (response.results.isNotEmpty()) {
+                        watchlistMovies.addAll(response.results)
+                    }
+                }.onFailure {
+                    break
+                }
+                page++
+            }
+
+            accountDao.insertWatchlistMovies(
+                *watchlistMovies
+                    .map(::mapToWatchlistMovieEntity)
+                    .toTypedArray()
+            )
+        }
+    }
+
     override suspend fun syncMovieFavoriteStatus(
         isFavorite: Boolean,
         movieId: Int
@@ -91,11 +124,11 @@ class AccountRepositoryImpl(
             }
 
             return@withContext accountService.postFavoriteMovie(
-                FavoriteMovieDto(
+                FavoriteMovieRequest(
                     favorite = isFavorite,
                     mediaId = movieId
                 ),
-                sessionId = sessionManager.getSessionId()!!
+                sessionId = sessionManager.requireSessionId()
             ).mapBoth(
                 success = {
                     Ok(Unit)
@@ -108,18 +141,54 @@ class AccountRepositoryImpl(
         }
     }
 
+    override suspend fun syncMovieWatchlistStatus(
+        inWatchlist: Boolean,
+        movieId: Int
+    ): Result<Unit, ErrorMessage> {
+        return withContext(Dispatchers.IO) {
+            if (inWatchlist) {
+                accountDao.insertWatchlistMovies(WatchlistMovieEntity(movieId))
+            } else {
+                accountDao.deleteWatchlistMovies(WatchlistMovieEntity(movieId))
+            }
+
+            return@withContext accountService.postWatchlistMovie(
+                WatchlistMovieRequest(
+                    watchlist = inWatchlist,
+                    mediaId = movieId
+                ),
+                sessionId = sessionManager.requireSessionId()
+            ).mapBoth(
+                success = {
+                    Ok(Unit)
+                },
+                failure = {
+                    accountDao.deleteWatchlistMovies(WatchlistMovieEntity(movieId))
+                    Err(it.message)
+                }
+            )
+        }
+    }
+
     override suspend fun onUnauthorized() {
         withContext(Dispatchers.IO) {
             accountDao.clearAllFavoriteMovies()
             accountDao.clearAllFavoriteTvShows()
+            userManager.removeCurrentUser()
         }
     }
 }
 
 private fun mapToFavoriteMovieEntity(
-    dto: FavoriteMoviesResultDto
+    dto: MovieDto
 ): FavoriteMovieEntity {
     return FavoriteMovieEntity(id = dto.id)
+}
+
+private fun mapToWatchlistMovieEntity(
+    dto: MovieDto
+): WatchlistMovieEntity {
+    return WatchlistMovieEntity(id = dto.id)
 }
 
 private fun UserDetails.toUser(): User {

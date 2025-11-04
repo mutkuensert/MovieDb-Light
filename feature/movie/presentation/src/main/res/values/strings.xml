@@ -11,4 +11,5 @@
     <string name="flag_icon">Flag icon</string>
     <string name="runtime">%s mins</string>
     <string name="streaming_services_info_button_icon">Streaming services info icon</string>
+    <string name="similar">Similar</string>
 </resources>

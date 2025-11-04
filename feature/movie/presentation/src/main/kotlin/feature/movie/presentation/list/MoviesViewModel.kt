@@ -40,8 +40,8 @@ class MoviesViewModel(
                 it.id,
                 it.title,
                 it.imageUrl,
-                it.voteAverage.toString(),
-                it.isFavorite
+                it.voteAverage?.toString(),
+                it.inWatchlist
             )
         }
     }
@@ -79,12 +79,12 @@ class MoviesViewModel(
         }
     }
 
-    fun handleFavoriteClick(movie: MovieUiModel) {
-        val isFavorite = requireNotNull(movie.isFavorite) {
+    fun handleWatchlistClick(movie: MovieUiModel) {
+        val inWatchlist = requireNotNull(movie.inWatchlist) {
             "Can't be null if button is visible"
         }
         viewModelScope.launch {
-            accountRepository.syncMovieFavoriteStatus(!isFavorite, movie.id)
+            accountRepository.syncMovieWatchlistStatus(!inWatchlist, movie.id)
         }
     }
 

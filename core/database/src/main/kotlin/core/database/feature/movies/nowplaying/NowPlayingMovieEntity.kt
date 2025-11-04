@@ -4,7 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import core.database.account.model.FavoriteMovieEntity
+import core.database.account.model.WatchlistMovieEntity
 
 @Entity
 data class NowPlayingMovieEntity(
@@ -12,7 +12,7 @@ data class NowPlayingMovieEntity(
     val page: Int,
     val title: String,
     val posterPath: String?,
-    val voteAverage: Float
+    val voteAverage: Float?
 ) {
     @PrimaryKey(autoGenerate = true)
     var primaryKey: Int = 0
@@ -24,7 +24,7 @@ data class NowPlayingMovie(
         parentColumn = "id",
         entityColumn = "id"
     )
-    val favorite: FavoriteMovieEntity?
+    val watchlistEntity: WatchlistMovieEntity?
 ) {
-    val isFavorite get() = favorite != null
+    val inWatchlist get() = watchlistEntity != null
 }

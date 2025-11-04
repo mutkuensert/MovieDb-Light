@@ -69,7 +69,7 @@ fun MoviesScreen(
         topRatedMovies,
         viewModel::handleMovieClick,
         viewModel::handleOpenCountryDialogClick,
-        viewModel::handleFavoriteClick,
+        viewModel::handleWatchlistClick,
         viewModel::handleDismissCountryDialog,
         viewModel::handleCountryClick
     )
@@ -86,7 +86,7 @@ private fun Movies(
     topRatedMovies: LazyPagingItems<MovieUiModel>,
     onClickMovie: (movieId: Int) -> Unit,
     onClickCountryDialog: () -> Unit,
-    onClickFavorite: (MovieUiModel) -> Unit,
+    onClickWatchlist: (MovieUiModel) -> Unit,
     onDismissCountryDialog: () -> Unit,
     onClickCountry: (String) -> Unit,
 ) {
@@ -110,7 +110,7 @@ private fun Movies(
         Movies(
             movies = upcomingMovies,
             onClickMovie = onClickMovie,
-            onFavoriteClick = onClickFavorite
+            onWatchlistClick = onClickWatchlist
         )
 
         MovieListTitle(stringResource(R.string.now_playing))
@@ -118,7 +118,7 @@ private fun Movies(
         Movies(
             movies = moviesNowPlaying,
             onClickMovie = onClickMovie,
-            onFavoriteClick = onClickFavorite
+            onWatchlistClick = onClickWatchlist
         )
 
         MovieListTitle(stringResource(R.string.popular))
@@ -126,7 +126,7 @@ private fun Movies(
         Movies(
             movies = popularMovies,
             onClickMovie = onClickMovie,
-            onFavoriteClick = onClickFavorite
+            onWatchlistClick = onClickWatchlist
         )
 
         MovieListTitle(stringResource(R.string.top_rated))
@@ -134,7 +134,7 @@ private fun Movies(
         Movies(
             movies = topRatedMovies,
             onClickMovie = onClickMovie,
-            onFavoriteClick = onClickFavorite
+            onWatchlistClick = onClickWatchlist
         )
     }
 
@@ -245,7 +245,7 @@ private fun Movies(
     modifier: Modifier = Modifier,
     movies: LazyPagingItems<MovieUiModel>,
     onClickMovie: (movieId: Int) -> Unit,
-    onFavoriteClick: (movie: MovieUiModel) -> Unit
+    onWatchlistClick: (movie: MovieUiModel) -> Unit
 ) {
     LazyRow(
         modifier = modifier.fillMaxWidth(),
@@ -255,7 +255,7 @@ private fun Movies(
             if (movies.loadState.refresh == LoadState.Loading) {
                 Box(
                     modifier = Modifier
-                        .height(PosterSize.Big.height)
+                        .height(PosterSize.Large.height)
                         .fillParentMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
@@ -275,8 +275,8 @@ private fun Movies(
                     title = movie.title,
                     vote = movie.voteAverage,
                     onPosterClick = { onClickMovie(movie.id) },
-                    isFavorite = movie.isFavorite,
-                    onFavoriteClick = { onFavoriteClick(movie) }
+                    inWatchlist = movie.inWatchlist,
+                    onWatchlistClick = { onWatchlistClick(movie) }
                 )
             }
         }
@@ -287,14 +287,14 @@ private fun Movies(
 @Composable
 private fun MoviesScreenPreview() {
     MoviedbLightTheme {
-        val emptyData =
+        val emptyPagingData =
             flowOf(PagingData.from<MovieUiModel>(emptyList())).collectAsLazyPagingItems()
         Movies(
             MoviesUiModel.initial(),
-            emptyData,
-            emptyData,
-            emptyData,
-            emptyData,
+            emptyPagingData,
+            emptyPagingData,
+            emptyPagingData,
+            emptyPagingData,
             {},
             {},
             {},

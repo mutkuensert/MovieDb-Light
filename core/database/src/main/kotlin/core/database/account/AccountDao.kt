@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import core.database.account.model.FavoriteMovieEntity
 import core.database.account.model.FavoriteTvShowEntity
+import core.database.account.model.WatchlistMovieEntity
 
 @Dao
 interface AccountDao {
@@ -19,6 +20,15 @@ interface AccountDao {
 
     @Query("DELETE FROM FavoriteMovieEntity")
     suspend fun clearAllFavoriteMovies()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWatchlistMovies(vararg movie: WatchlistMovieEntity)
+
+    @Delete
+    suspend fun deleteWatchlistMovies(vararg movie: WatchlistMovieEntity)
+
+    @Query("DELETE FROM WatchlistMovieEntity")
+    suspend fun clearAllWatchlistMovies()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavoriteTvShows(vararg favoriteTvShow: FavoriteTvShowEntity)

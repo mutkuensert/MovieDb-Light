@@ -2,7 +2,7 @@ package feature.profile.domain
 
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.flatMap
-import com.github.michaelbull.result.map
+import com.github.michaelbull.result.onSuccess
 import core.domain.AccountRepository
 import core.domain.AuthenticationRepository
 import core.domain.ErrorMessage
@@ -15,9 +15,8 @@ class StartSessionUseCase(
 
     suspend fun execute(): Result<User, ErrorMessage> {
         return authenticationRepository.startSession().flatMap {
-            accountRepository.fetchAccountDetails().map { user ->
-                accountRepository.fetchFavoriteMovies()
-                user
+            accountRepository.fetchAccountDetails().onSuccess {
+                accountRepository.fetchWatchlistMovies()
             }
         }
     }

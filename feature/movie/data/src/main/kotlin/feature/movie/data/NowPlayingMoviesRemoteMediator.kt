@@ -6,17 +6,17 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.github.michaelbull.result.mapBoth
 import core.data.network.NetworkResult
+import core.database.feature.movies.nowplaying.NowPlayingMovie
 import core.database.feature.movies.nowplaying.NowPlayingMovieDao
 import core.database.feature.movies.nowplaying.NowPlayingMovieEntity
-import core.database.feature.movies.nowplaying.NowPlayingMovie
-import feature.movie.data.remote.response.NowPlayingMoviesResponse
+import core.data.model.common.MoviesResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 @OptIn(ExperimentalPagingApi::class)
 class NowPlayingMoviesRemoteMediator(
-    private val getNowPlayingMovies: suspend (page: Int) -> NetworkResult<NowPlayingMoviesResponse>,
+    private val getNowPlayingMovies: suspend (page: Int) -> NetworkResult<MoviesResponse>,
     private val nowPlayingMovieDao: NowPlayingMovieDao,
 ) : RemoteMediator<Int, NowPlayingMovie>() {
 

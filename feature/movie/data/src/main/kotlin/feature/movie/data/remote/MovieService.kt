@@ -1,13 +1,10 @@
 package feature.movie.data.remote
 
+import core.data.model.common.MoviesResponse
 import core.data.model.common.ProvidersResponse
 import core.data.network.NetworkResult
 import feature.movie.data.remote.response.MovieCreditsResponse
 import feature.movie.data.remote.response.MovieDetailsResponse
-import feature.movie.data.remote.response.NowPlayingMoviesResponse
-import feature.movie.data.remote.response.PopularMoviesResponse
-import feature.movie.data.remote.response.TopRatedMoviesResponse
-import feature.movie.data.remote.response.UpcomingMoviesResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -18,25 +15,25 @@ interface MovieService {
     suspend fun getPopularMovies(
         @Query("page") page: Int,
         @Query("region") countryCode: String? = null
-    ): NetworkResult<PopularMoviesResponse>
+    ): NetworkResult<MoviesResponse>
 
     @GET("movie/now_playing")
     suspend fun getMoviesNowPlaying(
         @Query("page") page: Int,
         @Query("region") countryCode: String? = null
-    ): NetworkResult<NowPlayingMoviesResponse>
+    ): NetworkResult<MoviesResponse>
 
     @GET("movie/top_rated")
     suspend fun getTopRatedMovies(
         @Query("page") page: Int,
         @Query("region") countryCode: String? = null
-    ): NetworkResult<TopRatedMoviesResponse>
+    ): NetworkResult<MoviesResponse>
 
     @GET("movie/upcoming")
     suspend fun getUpcomingMovies(
         @Query("page") page: Int,
         @Query("region") countryCode: String? = null
-    ): NetworkResult<UpcomingMoviesResponse>
+    ): NetworkResult<MoviesResponse>
 
     @GET("movie/{movie_id}")
     suspend fun getMovieDetails(
@@ -52,4 +49,10 @@ interface MovieService {
     suspend fun getProviders(
         @Path("movie_id") movieId: Int
     ): NetworkResult<ProvidersResponse>
+
+    @GET("movie/{movie_id}/similar")
+    suspend fun getSimilarMovies(
+        @Path("movie_id") movieId: Int,
+        @Query("page") page: Int,
+    ): NetworkResult<MoviesResponse>
 }

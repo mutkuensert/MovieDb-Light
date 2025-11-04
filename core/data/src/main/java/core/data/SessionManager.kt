@@ -31,6 +31,12 @@ class SessionManager(context: Context) {
         return encryptedSharedPreferences.getString(KEY_SESSION_ID, null)
     }
 
+    fun requireSessionId(): String {
+        return requireNotNull(encryptedSharedPreferences.getString(KEY_SESSION_ID, null)) {
+            "Session id can't be null here."
+        }
+    }
+
     fun setRequestToken(token: String) {
         encryptedSharedPreferences.edit(commit = true) { putString(KEY_REQUEST_TOKEN, token) }
     }

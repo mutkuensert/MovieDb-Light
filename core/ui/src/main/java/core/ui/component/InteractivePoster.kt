@@ -48,16 +48,16 @@ import core.ui.palette.titleTextColor
 fun InteractivePoster(
     modifier: Modifier = Modifier,
     url: String?,
-    size: PosterSize = PosterSize.Big,
+    size: PosterSize = PosterSize.Large,
     title: String = "",
     vote: String? = null,
-    isFavorite: Boolean? = null,
-    onFavoriteClick: () -> Unit,
+    inWatchlist: Boolean? = null,
+    onWatchlistClick: () -> Unit,
     onPosterClick: () -> Unit
 ) {
     var infoButtonColor by remember { mutableStateOf(Color(0xFFFFFFFF)) }
     var textColor by remember { mutableStateOf(Color(0xFFFFFFFF)) }
-    val favoriteButtonColor = if (isFavorite == true) {
+    val watchlistButtonColor = if (inWatchlist == true) {
         Color(0xA6FFEB3B)
     } else {
         Color(0x80E1E1E1)
@@ -108,8 +108,8 @@ fun InteractivePoster(
 
         InfoButton(infoButtonColor) { isInfoVisible = !isInfoVisible }
 
-        if (isFavorite != null) {
-            FavoriteButton(favoriteButtonColor, onFavoriteClick)
+        if (inWatchlist != null) {
+            WatchlistButton(watchlistButtonColor, onWatchlistClick)
         }
     }
 }
@@ -124,7 +124,7 @@ private fun InfoView(
     val backgroundColorInContrastToText = if (textColor.isDark) {
         Color(0x99FFFFFF)
     } else {
-        Color(0x99000000)
+        Color(0xB3000000)
     }
 
     Column(
@@ -186,7 +186,7 @@ private fun BoxScope.InfoButton(color: Color, onClick: () -> Unit) {
 }
 
 @Composable
-private fun BoxScope.FavoriteButton(color: Color, onClick: () -> Unit) {
+private fun BoxScope.WatchlistButton(color: Color, onClick: () -> Unit) {
     Icon(
         modifier = Modifier
             .padding(16.dp)
@@ -195,6 +195,6 @@ private fun BoxScope.FavoriteButton(color: Color, onClick: () -> Unit) {
             .clickable { onClick.invoke() },
         imageVector = Icons.Default.Beenhere,
         tint = color,
-        contentDescription = stringResource(R.string.info)
+        contentDescription = stringResource(R.string.watchlist_button)
     )
 }

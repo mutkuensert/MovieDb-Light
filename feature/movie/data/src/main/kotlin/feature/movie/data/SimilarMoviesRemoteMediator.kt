@@ -6,28 +6,28 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.github.michaelbull.result.mapBoth
 import core.data.network.NetworkResult
-import core.database.feature.movies.popular.PopularMovie
-import core.database.feature.movies.popular.PopularMovieDao
-import core.database.feature.movies.popular.PopularMovieEntity
+import core.database.feature.movies.similar.SimilarMovie
+import core.database.feature.movies.similar.SimilarMovieDao
+import core.database.feature.movies.similar.SimilarMovieEntity
 import core.data.model.common.MoviesResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 @OptIn(ExperimentalPagingApi::class)
-class PopularMoviesRemoteMediator(
-    private val getPopularMovies: suspend (page: Int) -> NetworkResult<MoviesResponse>,
-    private val popularMovieDao: PopularMovieDao,
-) : RemoteMediator<Int, PopularMovie>() {
+class SimilarMoviesRemoteMediator(
+    private val getSimilarMovies: suspend (page: Int) -> NetworkResult<MoviesResponse>,
+    private val similarMovieDao: SimilarMovieDao,
+) : RemoteMediator<Int, SimilarMovie>() {
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, PopularMovie>
+        state: PagingState<Int, SimilarMovie>
     ): MediatorResult {
         return try {
             val page = when (loadType) {
                 LoadType.REFRESH -> {
-                    withContext(Dispatchers.IO) { popularMovieDao.clearAll() }
+                    withContext(Dispatchers.IO) { similarMovieDao.clearAll() }
                     1
                 }
 
@@ -36,7 +36,7 @@ class PopularMoviesRemoteMediator(
 
                 LoadType.APPEND -> {
                     val lastPageNumber = withContext(Dispatchers.IO) {
-                        popularMovieDao.getAll().lastOrNull()?.movie?.page
+                        similarMovieDao.getAll().lastOrNull()?.movie?.page
                     }
 
                     if (lastPageNumber == null) {
@@ -47,11 +47,11 @@ class PopularMoviesRemoteMediator(
                 }
             }
 
-            getPopularMovies.invoke(page).mapBoth(
+            getSimilarMovies.invoke(page).mapBoth(
                 success = { response ->
                     withContext(Dispatchers.IO) {
-                        popularMovieDao.insert(response.results.map {
-                            PopularMovieEntity(
+                        similarMovieDao.insert(response.results.map {
+                            SimilarMovieEntity(
                                 it.id,
                                 page,
                                 it.title,

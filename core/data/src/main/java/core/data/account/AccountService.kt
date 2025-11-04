@@ -1,5 +1,6 @@
 package core.data.account
 
+import core.data.model.common.MoviesResponse
 import core.data.network.NetworkResult
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -17,13 +18,27 @@ interface AccountService {
     suspend fun getFavoriteMovies(
         @Query("page") page: Int = 1,
         @Query("session_id") sessionId: String,
-    ): NetworkResult<FavoriteMoviesResponse>
+    ): NetworkResult<MoviesResponse>
 
     @POST("account/account_id/favorite")
     suspend fun postFavoriteMovie(
-        @Body favoriteMovieDto: FavoriteMovieDto,
+        @Body favoriteMovieRequest: FavoriteMovieRequest,
         @Query("session_id") sessionId: String,
-    ): NetworkResult<PostFavoriteMovieResponse>
+    ): NetworkResult<PostMovieResponse>
+
+    @GET("account/account_id/watchlist/movies")
+    suspend fun getWatchlistMovies(
+        @Query("page") page: Int = 1,
+        @Query("session_id") sessionId: String,
+        @Query("language") language: String = "en-US",
+        @Query("sort_by") sortBy: String = SortBy.CreatedAt.ascending
+    ): NetworkResult<MoviesResponse>
+
+    @POST("account/account_id/watchlist")
+    suspend fun postWatchlistMovie(
+        @Body watchlistMovieRequest: WatchlistMovieRequest,
+        @Query("session_id") sessionId: String,
+    ): NetworkResult<PostMovieResponse>
 
     @GET("account/account_id/favorite/tv")
     suspend fun getFavoriteTvShows(
