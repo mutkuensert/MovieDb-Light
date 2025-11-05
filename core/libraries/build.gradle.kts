@@ -5,7 +5,3 @@ plugins {
 android {
     namespace = "core.libraries"
 }
-
-dependencies {
-    implementation(libs.androidx.navigation.compose)
-}
