@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
+import core.domain.AccountRepository
 import core.domain.AuthState
 import core.domain.AuthenticationRepository
-import libraries.image.TmdbImage
 import core.ui.PopupHandler
 import feature.profile.domain.LogoutUseCase
 import feature.profile.domain.StartSessionUseCase
@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import libraries.image.TmdbImage
 
 const val KEY_CAME_FROM_TMDB_LOGIN = "cameFromTmdbLogin"
 
@@ -26,6 +27,7 @@ class ProfileViewModel(
     private val popupHandler: PopupHandler,
     private val startSessionUseCase: StartSessionUseCase,
     private val logoutUseCase: LogoutUseCase,
+    private val accountRepository: AccountRepository,
 ) : ViewModel() {
     private var cameFromTmdbLogin: Boolean = savedStateHandle[KEY_CAME_FROM_TMDB_LOGIN] ?: false
 
@@ -49,6 +51,23 @@ class ProfileViewModel(
             cameFromTmdbLogin = false
         } else {
             _shouldOpenLoginPage.value = false
+        }
+
+        if (loggedIn.value) {
+            viewModelScope.launch {
+                accountRepository.fetchAccountDetails().onSuccess { user ->
+                    _uiModel.update { model ->
+                        model.copy(
+                            profileImageUrl = user.profilePicturePath?.let { path ->
+                                TmdbImage.Profile(path)
+                            }?.w185Url,
+                            name = user.userName
+                        )
+                    }
+                }.onFailure {
+                    popupHandler.showSimpleMessage(it)
+                }
+            }
         }
     }
 

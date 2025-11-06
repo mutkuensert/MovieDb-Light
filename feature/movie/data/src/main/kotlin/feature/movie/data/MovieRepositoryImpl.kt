@@ -17,8 +17,10 @@ import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.domain.AuthStateListener
 import core.domain.ErrorMessage
+import core.domain.common.AccountStates
 import core.domain.common.Provider
 import feature.movie.data.remote.MovieService
+import feature.movie.data.remote.response.PostMovieRatingRequest
 import feature.movie.domain.Movie
 import feature.movie.domain.MovieDetails
 import feature.movie.domain.MovieRepository
@@ -26,6 +28,7 @@ import feature.movie.domain.Person
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import libraries.CountryManager
+import libraries.getYoutubeUrlByKey
 import libraries.image.TmdbImage
 
 @OptIn(ExperimentalPagingApi::class)
@@ -207,8 +210,27 @@ class MovieRepositoryImpl(
             val key = it.results.find { video ->
                 (video.official && video.type == "Trailer" || video.type == "Trailer") && video.site.lowercase() == "youtube"
             }?.key
-            key?.let { "https://www.youtube.com/watch?v=$key" }
+            key?.let { getYoutubeUrlByKey(key) }
         }
+    }
+
+    override suspend fun getAccountStates(movieId: Int): Result<AccountStates, ErrorMessage> {
+        return movieService.getAccountStates(movieId, sessionManager.requireSessionId())
+            .mapToDomain {
+                AccountStates(it.id, it.favorite, it.rated?.value?.withDecimals(1), it.watchlist)
+            }
+    }
+
+    override suspend fun rateMovie(movieId: Int, rating: Int): Result<Unit, ErrorMessage> {
+        return movieService.rateMovie(
+            movieId,
+            PostMovieRatingRequest(rating),
+            sessionManager.requireSessionId()
+        ).mapToDomain {}
+    }
+
+    override suspend fun removeRating(movieId: Int): Result<Unit, ErrorMessage> {
+        return movieService.deleteRating(movieId, sessionManager.requireSessionId()).mapToDomain { }
     }
 
     override suspend fun onUnauthorized() {

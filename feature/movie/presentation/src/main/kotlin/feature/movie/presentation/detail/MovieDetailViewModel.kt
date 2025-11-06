@@ -8,15 +8,19 @@ import androidx.paging.map
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import core.domain.AccountRepository
+import core.domain.AuthState
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import feature.movie.domain.MovieRepository
+import feature.movie.presentation.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import libraries.StrResource
+import kotlin.math.roundToInt
 
 class MovieDetailViewModel(
     private val movieRepository: MovieRepository,
@@ -24,12 +28,14 @@ class MovieDetailViewModel(
     private val popupHandler: PopupHandler,
     private val accountRepository: AccountRepository,
     private val navigator: Navigator,
+    private val authState: AuthState,
+    private val strResource: StrResource,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var movieId: Int = requireNotNull(savedStateHandle["id"]) {
         "Movie id can't be null"
     }
-    private val _uiModel = MutableStateFlow(MovieDetailUiModel.initial())
+    private val _uiModel = MutableStateFlow(MovieDetailUiModel.initial(movieId))
     val uiModel = _uiModel.asStateFlow()
 
     val similarMovies = movieRepository.getSimilarMovies(movieId).map {
@@ -77,11 +83,31 @@ class MovieDetailViewModel(
                 _uiModel.update {
                     it.copy(providerLogoUrls = providers.mapNotNull { provider -> provider.logoUrl })
                 }
+            }.onFailure {
+                popupHandler.showSimpleMessage(it)
             }
 
             movieRepository.getTrailerUrl(movieId).onSuccess { url ->
                 _uiModel.update {
                     it.copy(trailerUrl = url)
+                }
+            }.onFailure {
+                popupHandler.showSimpleMessage(it)
+            }
+
+            if (authState.loggedIn.value) {
+                movieRepository.getAccountStates(movieId).onSuccess { accountStates ->
+                    _uiModel.update {
+                        it.copy(
+                            showRateButton = true,
+                            userRate = accountStates.rate?.roundToInt()
+                                ?.toString(), //TODO("Implement a rating system supports floating number")
+                            inWatchlist = accountStates.watchlist,
+                            favorite = accountStates.favorite
+                        )
+                    }
+                }.onFailure {
+                    popupHandler.showSimpleMessage(it)
                 }
             }
 
@@ -90,19 +116,59 @@ class MovieDetailViewModel(
     }
 
     fun handleStreamServicesInfoButton() {
-        popupHandler.showSimpleMessage("Streaming services informations are provided by JustWatch.")
+        popupHandler.showSimpleMessage(strResource.get(R.string.streaming_services_informations_are_provided_by_justwatch))
     }
 
     fun handleMovieClick(movieId: Int) {
         navigator.navigateToRoute(MovieDetailRoute(movieId))
     }
 
-    fun handleWatchlistClick(movie: MovieUiModel) {
-        val inWatchlist = requireNotNull(movie.inWatchlist) {
-            "Can't be null if button is visible"
-        }
+    fun handleWatchlistClick(movieId: Int, inWatchlist: Boolean) {
         viewModelScope.launch {
-            accountRepository.syncMovieWatchlistStatus(!inWatchlist, movie.id)
+            accountRepository.syncMovieWatchlistStatus(movieId, inWatchlist).onSuccess {
+                _uiModel.update {
+                    it.copy(inWatchlist = !uiModel.value.inWatchlist!!)
+                }
+            }.onFailure {
+                popupHandler.showSimpleMessage(it)
+            }
+        }
+    }
+
+    fun handleFavoriteClick() {
+        viewModelScope.launch {
+            accountRepository.syncMovieFavoriteStatus(movieId, !uiModel.value.favorite!!)
+                .onSuccess {
+                    _uiModel.update {
+                        it.copy(favorite = !uiModel.value.favorite!!)
+                    }
+                }.onFailure {
+                    popupHandler.showSimpleMessage(it)
+                }
+        }
+    }
+
+    fun handleRateClick(value: Int) {
+        viewModelScope.launch {
+            movieRepository.rateMovie(movieId, value).onSuccess {
+                _uiModel.update {
+                    it.copy(userRate = value.toString())
+                }
+            }.onFailure {
+                popupHandler.showSimpleMessage(it)
+            }
+        }
+    }
+
+    fun handleRemoveRatingClick() {
+        viewModelScope.launch {
+            movieRepository.removeRating(movieId).onSuccess {
+                _uiModel.update {
+                    it.copy(userRate = null)
+                }
+            }.onFailure {
+                popupHandler.showSimpleMessage(it)
+            }
         }
     }
 }

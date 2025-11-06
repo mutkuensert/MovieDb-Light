@@ -8,13 +8,13 @@ import com.github.michaelbull.result.onSuccess
 import core.data.SessionManager
 import core.domain.AuthenticationRepository
 import core.domain.ErrorMessage
-import libraries.StrResources
+import libraries.StrResource
 import moviedblight.core.data.R
 
 class AuthenticationRepositoryImpl(
     private val authenticationService: AuthenticationService,
     private val sessionManager: SessionManager,
-    private val strResources: StrResources,
+    private val strResource: StrResource,
 ) : AuthenticationRepository {
 
     override suspend fun getRequestToken(): Result<String, ErrorMessage> {
@@ -30,7 +30,7 @@ class AuthenticationRepositoryImpl(
 
     override suspend fun startSession(): Result<Unit, ErrorMessage> {
         val requestToken = sessionManager.getRequestToken()
-            ?: return Err(strResources.get(R.string.something_is_wrong))
+            ?: return Err(strResource.get(R.string.something_is_wrong))
 
         return authenticationService.startSession(NewSessionRequest(requestToken))
             .mapBoth(success = {
@@ -58,7 +58,7 @@ class AuthenticationRepositoryImpl(
                     if (response.success) {
                         Ok(Unit)
                     } else {
-                        Err(strResources.get(R.string.logout_attempt_has_failed))
+                        Err(strResource.get(R.string.logout_attempt_has_failed))
                     }
                 },
                 failure = { error ->

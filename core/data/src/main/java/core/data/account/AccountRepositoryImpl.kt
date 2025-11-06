@@ -113,8 +113,8 @@ class AccountRepositoryImpl(
     }
 
     override suspend fun syncMovieFavoriteStatus(
+        movieId: Int,
         isFavorite: Boolean,
-        movieId: Int
     ): Result<Unit, ErrorMessage> {
         return withContext(Dispatchers.IO) {
             if (isFavorite) {
@@ -142,8 +142,8 @@ class AccountRepositoryImpl(
     }
 
     override suspend fun syncMovieWatchlistStatus(
+        movieId: Int,
         inWatchlist: Boolean,
-        movieId: Int
     ): Result<Unit, ErrorMessage> {
         return withContext(Dispatchers.IO) {
             if (inWatchlist) {

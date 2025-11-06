@@ -1,10 +1,10 @@
-package core.data.account
+package core.data.model.common
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PostMovieResponse(
+data class GenericStatusResponse(
     @SerialName("status_code")
     val statusCode: Int,
     @SerialName("status_message")

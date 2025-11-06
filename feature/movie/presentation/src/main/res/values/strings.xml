@@ -13,4 +13,11 @@
     <string name="streaming_services_info_button_icon">Streaming services info icon</string>
     <string name="similar">Similar</string>
     <string name="trailer">Trailer</string>
+    <string name="add_to_or_remove_from_watchlist_button">Add to or remove from watchlist button</string>
+    <string name="rate_button">Rate button</string>
+    <string name="add_to_or_remove_from_favorites_button">Add to or remove from favorites button</string>
+    <string name="rate">%s/10</string>
+    <string name="rate_the_movie">Rate the movie</string>
+    <string name="remove_your_rating">Remove your rating</string>
+    <string name="streaming_services_informations_are_provided_by_justwatch">Streaming services informations are provided by JustWatch.</string>
 </resources>

@@ -3,6 +3,8 @@ package feature.movie.presentation.detail
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,13 +20,24 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Beenhere
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +53,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
@@ -82,6 +96,9 @@ fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
         similarMovies,
         viewModel::handleMovieClick,
         viewModel::handleWatchlistClick,
+        viewModel::handleFavoriteClick,
+        viewModel::handleRateClick,
+        viewModel::handleRemoveRatingClick,
     )
 
     OneTimeEffect {
@@ -94,8 +111,11 @@ private fun MovieDetail(
     uiModel: MovieDetailUiModel,
     onClickStreamingServicesInfoButton: () -> Unit,
     similarMovies: LazyPagingItems<MovieUiModel>,
-    onClickMovie: (movieId: Int) -> Unit,
-    onClickWatchlist: (MovieUiModel) -> Unit,
+    onClickMovie: (id: Int) -> Unit,
+    onClickWatchlist: (id: Int, inWatchlist: Boolean) -> Unit,
+    onClickFavorite: () -> Unit,
+    onRateClick: (value: Int) -> Unit,
+    onRemoveRatingClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -106,12 +126,51 @@ private fun MovieDetail(
         MoviePoster(uiModel.imageUrl, uiModel.year, uiModel.vote, uiModel.runtime)
 
         Column(Modifier.padding(horizontal = 16.dp)) {
-            Providers(
-                uiModel.providerLogoUrls,
-                onClickStreamingServicesInfoButton,
-                Modifier.padding(top = 4.dp)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Providers(
+                    uiModel.providerLogoUrls,
+                    onClickStreamingServicesInfoButton,
+                    Modifier
+                        .padding(top = 4.dp)
+                        .weight(1f, fill = false)
+                )
+
+                Row(
+                    Modifier.padding(top = 8.dp, start = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (uiModel.favorite != null) {
+                        FavoriteButton(
+                            uiModel.favorite,
+                            onClickFavorite
+                        )
+                    }
+                    if (uiModel.showRateButton) {
+                        RateButton(
+                            uiModel.userRate,
+                            onRateClick,
+                            onRemoveRatingClick,
+                            Modifier.padding(start = 8.dp)
+                        )
+                    }
+
+                    if (uiModel.inWatchlist != null) {
+                        WatchlistButton(
+                            uiModel.inWatchlist,
+                            {
+                                onClickWatchlist(uiModel.id, !uiModel.inWatchlist)
+                            },
+                            Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+            }
+
             Overview(uiModel.overview, Modifier.padding(top = 8.dp))
+
             if (uiModel.trailerUrl != null) {
                 val context = LocalContext.current
                 PrimaryButton(
@@ -244,24 +303,25 @@ private fun Providers(
     onClickStreamingServicesInfoButton: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        providerLogoUrls.forEachIndexed { index, logoUrl ->
-            AsyncImage(
-                model = logoUrl,
-                error = debugPlaceholder(libraries.R.drawable.tmdb_logo_blue_square),
-                modifier = Modifier
-                    .height(36.dp)
-                    .clip(MaterialTheme.shapes.extraSmall),
-                contentDescription = stringResource(core.ui.R.string.image)
-            )
-            if (index != providerLogoUrls.lastIndex) {
-                Spacer(Modifier.width(4.dp))
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier.horizontalScroll(rememberScrollState()),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            providerLogoUrls.forEachIndexed { index, logoUrl ->
+                AsyncImage(
+                    model = logoUrl,
+                    error = debugPlaceholder(libraries.R.drawable.tmdb_logo_blue_square),
+                    modifier = Modifier
+                        .height(36.dp)
+                        .clip(MaterialTheme.shapes.extraSmall),
+                    contentDescription = stringResource(core.ui.R.string.image)
+                )
+                if (index != providerLogoUrls.lastIndex) {
+                    Spacer(Modifier.width(4.dp))
+                }
             }
         }
-
         if (providerLogoUrls.isNotEmpty()) {
             IconButton(onClickStreamingServicesInfoButton, Modifier.padding(start = 2.dp)) {
                 Icon(
@@ -300,7 +360,7 @@ private fun Cast(uiModel: MovieDetailUiModel, modifier: Modifier = Modifier) {
 private fun SimilarMovies(
     movies: LazyPagingItems<MovieUiModel>,
     onClickMovie: (movieId: Int) -> Unit,
-    onWatchlistClick: (movie: MovieUiModel) -> Unit,
+    onWatchlistClick: (id: Int, inWatchlist: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
@@ -332,7 +392,7 @@ private fun SimilarMovies(
                     vote = movie.voteAverage,
                     onPosterClick = { onClickMovie(movie.id) },
                     inWatchlist = movie.inWatchlist,
-                    onWatchlistClick = { onWatchlistClick(movie) }
+                    onWatchlistClick = { onWatchlistClick(movie.id, !movie.inWatchlist!!) }
                 )
             }
         }
@@ -415,6 +475,174 @@ private fun Person(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun WatchlistButton(
+    inWatchlist: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val color = if (inWatchlist) {
+        Color(0xFFFFEB3B)
+    } else {
+        Color(0xFFE1E1E1)
+    }
+    TooltipBox(
+        modifier = modifier,
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            PlainTooltip { Text(stringResource(R.string.add_to_or_remove_from_watchlist_button)) }
+        },
+        state = rememberTooltipState()
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(32.dp)
+                .clickable { onClick.invoke() },
+            imageVector = Icons.Default.Beenhere,
+            tint = color,
+            contentDescription = stringResource(core.ui.R.string.watchlist_button)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FavoriteButton(
+    favorite: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val color = if (favorite) {
+        Color(0xFFD00000)
+    } else {
+        Color(0xFFE1E1E1)
+    }
+    TooltipBox(
+        modifier = modifier,
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            PlainTooltip { Text(stringResource(R.string.add_to_or_remove_from_favorites_button)) }
+        },
+        state = rememberTooltipState()
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(32.dp)
+                .clickable { onClick.invoke() },
+            imageVector = Icons.Default.Favorite,
+            tint = color,
+            contentDescription = stringResource(R.string.add_to_or_remove_from_favorites_button)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RateButton(
+    rate: String?,
+    onRateClick: (rate: Int) -> Unit,
+    onRemoveRatingClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var isRateBottomSheetVisible by remember { mutableStateOf(false) }
+    val color = if (rate != null) {
+        Color(0xFFFFEB3B)
+    } else {
+        Color(0xFFE1E1E1)
+    }
+    Row(
+        modifier
+            .clickable { isRateBottomSheetVisible = true }
+            .background(
+                MaterialTheme.colorScheme.secondary,
+                MaterialTheme.shapes.extraLarge
+            )
+            .padding(horizontal = 12.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            modifier = Modifier
+                .padding(end = 4.dp)
+                .size(20.dp),
+            imageVector = if (rate != null) Icons.Filled.Star else Icons.Filled.StarBorder,
+            tint = color,
+            contentDescription = stringResource(R.string.rate_button)
+        )
+
+        Text(stringResource(R.string.rate, rate ?: ""))
+    }
+
+    if (isRateBottomSheetVisible) {
+        RateBottomSheet(
+            rate?.toIntOrNull(),
+            { isRateBottomSheetVisible = false },
+            onRateClick,
+            onRemoveRatingClick
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RateBottomSheet(
+    rate: Int?,
+    onDismiss: () -> Unit,
+    onClickRate: (rate: Int) -> Unit,
+    onRemoveRate: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.surface,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = stringResource(R.string.rate_the_movie),
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            Row(
+                Modifier
+                    .padding(top = 16.dp)
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                (1..10).forEach { value ->
+                    Icon(
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                            .size(24.dp)
+                            .clickable {
+                                onClickRate(value)
+                                onDismiss()
+                            },
+                        imageVector = if (rate != null && value <= rate) Icons.Filled.Star else Icons.Filled.StarBorder,
+                        tint = if (rate != null && value <= rate) {
+                            AppColors.star
+                        } else {
+                            MaterialTheme.colorScheme.onPrimary
+                        },
+                        contentDescription = stringResource(R.string.rate_button)
+                    )
+                }
+            }
+
+            TextButton({
+                onRemoveRate()
+                onDismiss()
+            }, Modifier.padding(vertical = 16.dp)) {
+                Text(
+                    stringResource(R.string.remove_your_rating),
+                    textDecoration = TextDecoration.Underline
+                )
+            }
+        }
+    }
+}
+
 @Preview(showSystemUi = false)
 @Composable
 private fun MovieDetailPreview() {
@@ -424,9 +652,14 @@ private fun MovieDetailPreview() {
 
         MovieDetail(
             MovieDetailUiModel(
+                id = -1,
                 imageUrl = null,
                 title = "pharetra",
                 vote = "7.1",
+                showRateButton = true,
+                userRate = "4",
+                inWatchlist = true,
+                favorite = true,
                 runtime = "120",
                 year = "2010",
                 overview = LoremIpsum(20).values.joinToString(" "),
@@ -444,7 +677,10 @@ private fun MovieDetailPreview() {
             {},
             emptyPagingData,
             {},
+            { _, _ -> },
             {},
+            {},
+            {}
         )
     }
 }

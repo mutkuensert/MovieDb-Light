@@ -4,6 +4,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val librariesModule = module {
-    single { StrResources(androidContext()) }
+    single { StrResource(androidContext()) }
     single { AppScope() }
 }

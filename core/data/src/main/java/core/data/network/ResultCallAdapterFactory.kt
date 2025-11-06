@@ -3,7 +3,7 @@ package core.data.network
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
-import libraries.StrResources
+import libraries.StrResource
 import kotlinx.serialization.json.Json
 import moviedblight.core.data.R
 import okhttp3.Request
@@ -20,7 +20,7 @@ import javax.net.ssl.SSLPeerUnverifiedException
 
 internal class ResultCallAdapterFactory(
     private val json: Json,
-    private val strResources: StrResources,
+    private val strResource: StrResource,
 ) : CallAdapter.Factory() {
 
     override fun get(
@@ -36,14 +36,14 @@ internal class ResultCallAdapterFactory(
         if (getRawType(type) != Result::class.java) return null
 
         val responseType = getParameterUpperBound(0, type)
-        return ResultCallAdapter<Any>(responseType, json, strResources)
+        return ResultCallAdapter<Any>(responseType, json, strResource)
     }
 }
 
 private class ResultCallAdapter<T>(
     private val type: Type,
     private val json: Json,
-    private val strResources: StrResources
+    private val strResource: StrResource
 ) : CallAdapter<T, Call<Result<T, NetworkError>>> {
 
     override fun responseType(): Type {
@@ -51,7 +51,7 @@ private class ResultCallAdapter<T>(
     }
 
     override fun adapt(call: Call<T>): Call<Result<T, NetworkError>> {
-        return ResultCall(call, type, json, strResources)
+        return ResultCall(call, type, json, strResource)
     }
 }
 
@@ -59,7 +59,7 @@ private class ResultCall<T>(
     private val call: Call<T>,
     private val successType: Type,
     private val json: Json,
-    private val strResources: StrResources,
+    private val strResource: StrResource,
 ) : Call<Result<T, NetworkError>> {
 
     override fun enqueue(callback: Callback<Result<T, NetworkError>>) {
@@ -82,7 +82,7 @@ private class ResultCall<T>(
                         NetworkError(
                             httpCode = sslCertificateError,
                             statusCode = null,
-                            message = strResources.get(R.string.something_is_wrong)
+                            message = strResource.get(R.string.something_is_wrong)
                         )
                     )
                 } else {
@@ -90,7 +90,7 @@ private class ResultCall<T>(
                         NetworkError(
                             httpCode = null,
                             statusCode = null,
-                            strResources.get(R.string.unknown_request_error)
+                            strResource.get(R.string.unknown_request_error)
                         )
                     )
                 }
@@ -118,7 +118,7 @@ private class ResultCall<T>(
                 )
             }
 
-            val userFriendlyMessage = HttpErrorCodeMessageProvider(strResources)
+            val userFriendlyMessage = HttpErrorCodeMessageProvider(strResource)
                 .getUserFriendlyMessage(code())
             return Err(
                 NetworkError(
@@ -140,7 +140,7 @@ private class ResultCall<T>(
     }
 
     override fun clone(): Call<Result<T, NetworkError>> =
-        ResultCall(call.clone(), successType, json, strResources)
+        ResultCall(call.clone(), successType, json, strResource)
 
     override fun execute(): Response<Result<T, NetworkError>> =
         throw UnsupportedOperationException()

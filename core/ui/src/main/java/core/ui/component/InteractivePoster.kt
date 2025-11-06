@@ -57,11 +57,6 @@ fun InteractivePoster(
 ) {
     var infoButtonColor by remember { mutableStateOf(Color(0xFFFFFFFF)) }
     var textColor by remember { mutableStateOf(Color(0xFFFFFFFF)) }
-    val watchlistButtonColor = if (inWatchlist == true) {
-        Color(0xA6FFEB3B)
-    } else {
-        Color(0x80E1E1E1)
-    }
     var isInfoVisible by remember { mutableStateOf(false) }
 
     val blurModifier: Modifier = if (isInfoVisible) {
@@ -112,7 +107,7 @@ fun InteractivePoster(
         InfoButton(infoButtonColor) { isInfoVisible = !isInfoVisible }
 
         if (inWatchlist != null) {
-            WatchlistButton(watchlistButtonColor, onWatchlistClick)
+            WatchlistButton(inWatchlist, onWatchlistClick)
         }
     }
 }
@@ -189,7 +184,12 @@ private fun BoxScope.InfoButton(color: Color, onClick: () -> Unit) {
 }
 
 @Composable
-private fun BoxScope.WatchlistButton(color: Color, onClick: () -> Unit) {
+private fun BoxScope.WatchlistButton(inWatchlist: Boolean?, onClick: () -> Unit) {
+    val color = if (inWatchlist == true) {
+        Color(0xA6FFEB3B)
+    } else {
+        Color(0x80E1E1E1)
+    }
     Icon(
         modifier = Modifier
             .padding(16.dp)

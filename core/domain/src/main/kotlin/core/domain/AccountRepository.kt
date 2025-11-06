@@ -7,13 +7,13 @@ interface AccountRepository {
     suspend fun fetchAccountDetails(): Result<User, ErrorMessage>
     suspend fun fetchFavoriteMovies()
     suspend fun syncMovieFavoriteStatus(
+        movieId: Int,
         isFavorite: Boolean,
-        movieId: Int
     ): Result<Unit, ErrorMessage>
 
     suspend fun fetchWatchlistMovies()
     suspend fun syncMovieWatchlistStatus(
+        movieId: Int,
         inWatchlist: Boolean,
-        movieId: Int
     ): Result<Unit, ErrorMessage>
 }

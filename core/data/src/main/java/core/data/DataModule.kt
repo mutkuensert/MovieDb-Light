@@ -15,8 +15,8 @@ import core.domain.AccountRepository
 import core.domain.AuthState
 import core.domain.AuthStateListener
 import core.domain.AuthenticationRepository
-import libraries.StrResources
 import kotlinx.serialization.json.Json
+import libraries.StrResource
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -32,7 +32,7 @@ val dataModule = module {
     single {
         Retrofit.Builder()
             .client(getClient(get(), get()))
-            .addCallAdapterFactory(ResultCallAdapterFactory(get<Json>(), get<StrResources>()))
+            .addCallAdapterFactory(ResultCallAdapterFactory(get<Json>(), get<StrResource>()))
             .baseUrl(Configs.BASE_URL)
             .addConverterFactory(get<Json>().asConverterFactory("application/json; charset=UTF8".toMediaType()))
             .build()

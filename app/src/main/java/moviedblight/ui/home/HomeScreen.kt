@@ -83,7 +83,7 @@ fun HomeScreen(navigator: Navigator) {
                 Box(
                     Modifier
                         .fillMaxSize()
-                        .background(color = Color(0x1E000000))
+                        .background(color = Color(0x75000000))
                 ) {
                     CircularProgressIndicator(
                         Modifier
