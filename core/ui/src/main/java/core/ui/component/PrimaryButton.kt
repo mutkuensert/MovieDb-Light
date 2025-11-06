@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import core.ui.MoviedbLightTheme
 
 @Composable
 fun PrimaryButton(
@@ -22,6 +23,7 @@ fun PrimaryButton(
     text: String,
     modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colorScheme.onPrimary,
+    disabledTextColor: Color = MaterialTheme.colorScheme.primary,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
     enabled: Boolean = true,
 ) {
@@ -41,7 +43,8 @@ fun PrimaryButton(
             modifier = Modifier.align(Alignment.CenterVertically),
             textAlign = TextAlign.Center,
             text = text,
-            color = textColor
+            style = MaterialTheme.typography.titleMedium,
+            color = if (enabled) textColor else disabledTextColor
         )
     }
 }
@@ -49,11 +52,11 @@ fun PrimaryButton(
 @Preview
 @Composable
 private fun PrimaryButtonPreview() {
-    PrimaryButton(onClick = {}, text = "button text")
+    MoviedbLightTheme { PrimaryButton(onClick = {}, text = "button text") }
 }
 
 @Preview
 @Composable
 private fun DisabledPrimaryButtonPreview() {
-    PrimaryButton(onClick = {}, text = "button text", enabled = false)
+    MoviedbLightTheme { PrimaryButton(onClick = {}, text = "button text", enabled = false) }
 }

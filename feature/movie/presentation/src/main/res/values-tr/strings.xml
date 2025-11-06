@@ -12,4 +12,5 @@
     <string name="runtime">%s dakika</string>
     <string name="streaming_services_info_button_icon">Streaming servisleri için bilgi butonu ikonu</string>
     <string name="similar">Benzer</string>
+    <string name="trailer">Fragman</string>
 </resources>

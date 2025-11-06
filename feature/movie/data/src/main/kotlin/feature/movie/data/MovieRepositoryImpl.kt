@@ -18,8 +18,6 @@ import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.domain.AuthStateListener
 import core.domain.ErrorMessage
 import core.domain.common.Provider
-import libraries.CountryManager
-import libraries.image.TmdbImage
 import feature.movie.data.remote.MovieService
 import feature.movie.domain.Movie
 import feature.movie.domain.MovieDetails
@@ -27,6 +25,8 @@ import feature.movie.domain.MovieRepository
 import feature.movie.domain.Person
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import libraries.CountryManager
+import libraries.image.TmdbImage
 
 @OptIn(ExperimentalPagingApi::class)
 class MovieRepositoryImpl(
@@ -199,6 +199,15 @@ class MovieRepositoryImpl(
                 )
             }?.distinctBy { it.name }?.distinctBy { it.id } ?: listOf()
 
+        }
+    }
+
+    override suspend fun getTrailerUrl(movieId: Int): Result<String?, ErrorMessage> {
+        return movieService.getVideos(movieId).mapToDomain {
+            val key = it.results.find { video ->
+                (video.official && video.type == "Trailer" || video.type == "Trailer") && video.site.lowercase() == "youtube"
+            }?.key
+            key?.let { "https://www.youtube.com/watch?v=$key" }
         }
     }
 

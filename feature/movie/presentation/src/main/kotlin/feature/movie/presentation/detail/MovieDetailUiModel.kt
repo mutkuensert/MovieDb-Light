@@ -7,6 +7,7 @@ data class MovieDetailUiModel(
     val runtime: String,
     val year: String,
     val overview: String,
+    val trailerUrl: String?,
     val providerLogoUrls: List<String>,
     val cast: List<PersonUiModel>
 ) {
@@ -19,6 +20,7 @@ data class MovieDetailUiModel(
                 runtime = "",
                 year = "",
                 overview = "",
+                trailerUrl = null,
                 providerLogoUrls = emptyList(),
                 cast = emptyList()
             )

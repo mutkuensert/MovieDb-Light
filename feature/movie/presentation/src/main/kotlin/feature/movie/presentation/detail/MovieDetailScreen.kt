@@ -1,5 +1,6 @@
 package feature.movie.presentation.detail
 
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -43,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -60,6 +62,7 @@ import core.ui.component.InteractivePoster
 import core.ui.component.OneTimeEffect
 import core.ui.component.Poster
 import core.ui.component.PosterSize
+import core.ui.component.PrimaryButton
 import feature.movie.presentation.R
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.serialization.Serializable
@@ -100,134 +103,27 @@ private fun MovieDetail(
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState()),
     ) {
-        var loadedImage by remember { mutableStateOf(false) }
-        var loading by remember { mutableStateOf(true) }
+        MoviePoster(uiModel.imageUrl, uiModel.year, uiModel.vote, uiModel.runtime)
 
-        Box {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(uiModel.imageUrl)
-                    .crossfade(true)
-                    .allowHardware(true)
-                    .build(),
-                onLoading = { loading = true },
-                onSuccess = {
-                    loading = false
-                    loadedImage = true
-                },
-                onError = { loading = false },
-                error = debugPlaceholder(core.ui.R.drawable.debug_placeholder_dog),
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier.fillMaxWidth(),
-                contentDescription = stringResource(core.ui.R.string.image)
-            )
-
-            if (loading) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(160.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
-                }
-            }
-
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(36.dp)
-                    .align(Alignment.BottomCenter)
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                Color(0xCB000000)
-                            ),
-                        )
-                    )
-            )
-
-            if (loadedImage) {
-                YearVoteRuntimeText(
-                    Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(start = 16.dp, bottom = 2.dp),
-                    uiModel.year,
-                    uiModel.vote,
-                    uiModel.runtime
-                )
-            }
-        }
         Column(Modifier.padding(horizontal = 16.dp)) {
-            if (!loadedImage) {
-                YearVoteRuntimeText(
-                    Modifier.padding(bottom = 4.dp, top = 4.dp),
-                    uiModel.year,
-                    uiModel.vote,
-                    uiModel.runtime
+            Providers(
+                uiModel.providerLogoUrls,
+                onClickStreamingServicesInfoButton,
+                Modifier.padding(top = 4.dp)
+            )
+            Overview(uiModel.overview, Modifier.padding(top = 8.dp))
+            if (uiModel.trailerUrl != null) {
+                val context = LocalContext.current
+                PrimaryButton(
+                    {
+                        val intent = CustomTabsIntent.Builder()
+                            .setShareState(CustomTabsIntent.SHARE_STATE_ON)
+                            .build()
+                        intent.launchUrl(context, uiModel.trailerUrl.toUri())
+                    },
+                    stringResource(R.string.trailer),
+                    Modifier.padding(top = 8.dp)
                 )
-            }
-
-            Row(
-                Modifier.padding(top = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                uiModel.providerLogoUrls.forEachIndexed { index, logoUrl ->
-                    AsyncImage(
-                        model = logoUrl,
-                        error = debugPlaceholder(core.libraries.R.drawable.tmdb_logo_blue_square),
-                        modifier = Modifier
-                            .height(36.dp)
-                            .clip(MaterialTheme.shapes.extraSmall),
-                        contentDescription = stringResource(core.ui.R.string.image)
-                    )
-                    if (index != uiModel.providerLogoUrls.lastIndex) {
-                        Spacer(Modifier.width(4.dp))
-                    }
-                }
-
-                if (uiModel.providerLogoUrls.isNotEmpty()) {
-                    IconButton(onClickStreamingServicesInfoButton, Modifier.padding(start = 2.dp)) {
-                        Icon(
-                            modifier = Modifier.height(24.dp),
-                            imageVector = Icons.Filled.Info,
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            contentDescription = stringResource(R.string.streaming_services_info_button_icon)
-                        )
-                    }
-                }
-            }
-
-            var isOverviewShrinked by remember { mutableStateOf(true) }
-
-            Box {
-                Text(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .clickable {
-                            isOverviewShrinked = !isOverviewShrinked
-                        }
-                        .then(if (isOverviewShrinked) Modifier.height(92.dp) else Modifier),
-                    text = uiModel.overview,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                if (isOverviewShrinked) {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(36.dp)
-                            .align(Alignment.BottomEnd)
-                            .background(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(
-                                        Color.Transparent,
-                                        MaterialTheme.colorScheme.background
-                                    ),
-                                )
-                            )
-                    )
-                }
             }
         }
 
@@ -245,6 +141,137 @@ private fun MovieDetail(
         }
 
         SimilarMovies(similarMovies, onClickMovie, onClickWatchlist)
+    }
+}
+
+@Composable
+private fun MoviePoster(
+    imageUrl: String?,
+    year: String,
+    vote: String,
+    runtime: String,
+    modifier: Modifier = Modifier,
+) {
+    var loading by remember { mutableStateOf(true) }
+
+    Box(modifier) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .crossfade(true)
+                .allowHardware(true)
+                .build(),
+            onLoading = { loading = true },
+            onSuccess = { loading = false },
+            onError = { loading = false },
+            error = debugPlaceholder(core.ui.R.drawable.debug_placeholder_dog),
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxWidth(),
+            contentDescription = stringResource(core.ui.R.string.image)
+        )
+
+        if (loading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
+            }
+        }
+
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(36.dp)
+                .align(Alignment.BottomCenter)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            Color(0xCB000000)
+                        ),
+                    )
+                )
+        )
+        YearVoteRuntimeText(
+            Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 16.dp, bottom = 2.dp),
+            year,
+            vote,
+            runtime
+        )
+    }
+}
+
+@Composable
+private fun Overview(overview: String, modifier: Modifier = Modifier) {
+    var isOverviewShrinked by remember { mutableStateOf(true) }
+
+    Box(modifier.clickable {
+        isOverviewShrinked = !isOverviewShrinked
+    }) {
+        Text(
+            modifier = Modifier
+                .then(if (isOverviewShrinked) Modifier.height(92.dp) else Modifier),
+            text = overview,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        if (isOverviewShrinked) {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(36.dp)
+                    .align(Alignment.BottomEnd)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                MaterialTheme.colorScheme.background
+                            ),
+                        )
+                    )
+            )
+        }
+    }
+}
+
+@Composable
+private fun Providers(
+    providerLogoUrls: List<String>,
+    onClickStreamingServicesInfoButton: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        providerLogoUrls.forEachIndexed { index, logoUrl ->
+            AsyncImage(
+                model = logoUrl,
+                error = debugPlaceholder(libraries.R.drawable.tmdb_logo_blue_square),
+                modifier = Modifier
+                    .height(36.dp)
+                    .clip(MaterialTheme.shapes.extraSmall),
+                contentDescription = stringResource(core.ui.R.string.image)
+            )
+            if (index != providerLogoUrls.lastIndex) {
+                Spacer(Modifier.width(4.dp))
+            }
+        }
+
+        if (providerLogoUrls.isNotEmpty()) {
+            IconButton(onClickStreamingServicesInfoButton, Modifier.padding(start = 2.dp)) {
+                Icon(
+                    modifier = Modifier.height(24.dp),
+                    imageVector = Icons.Filled.Info,
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    contentDescription = stringResource(R.string.streaming_services_info_button_icon)
+                )
+            }
+        }
     }
 }
 
@@ -404,6 +431,7 @@ private fun MovieDetailPreview() {
                 year = "2010",
                 overview = LoremIpsum(20).values.joinToString(" "),
                 providerLogoUrls = listOf("path", "path2"),
+                trailerUrl = "123",
                 cast = listOf(
                     PersonUiModel(
                         id = 2722,
@@ -416,7 +444,7 @@ private fun MovieDetailPreview() {
             {},
             emptyPagingData,
             {},
-            {}
+            {},
         )
     }
 }

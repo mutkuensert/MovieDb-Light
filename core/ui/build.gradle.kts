@@ -16,4 +16,5 @@ dependencies {
     api(libs.palette)
     api(libs.coil.compose)
     api(libs.coil.network.okhttp)
+    api(libs.androidx.browser)
 }

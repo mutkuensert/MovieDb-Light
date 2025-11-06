@@ -15,4 +15,5 @@ interface MovieRepository {
     suspend fun getMovieDetails(movieId: Int): Result<MovieDetails, ErrorMessage>
     suspend fun getMovieCast(movieId: Int): Result<List<Person>, ErrorMessage>
     suspend fun getProviders(movieId: Int): Result<List<Provider>, ErrorMessage>
+    suspend fun getTrailerUrl(movieId: Int): Result<String?, ErrorMessage>
 }

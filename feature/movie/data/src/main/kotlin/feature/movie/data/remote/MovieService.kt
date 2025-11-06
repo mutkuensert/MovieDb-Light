@@ -1,10 +1,11 @@
 package feature.movie.data.remote
 
 import core.data.model.common.MoviesResponse
-import core.data.model.common.ProvidersResponse
 import core.data.network.NetworkResult
 import feature.movie.data.remote.response.MovieCreditsResponse
 import feature.movie.data.remote.response.MovieDetailsResponse
+import feature.movie.data.remote.response.MovieVideosResponse
+import feature.movie.data.remote.response.ProvidersResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -55,4 +56,9 @@ interface MovieService {
         @Path("movie_id") movieId: Int,
         @Query("page") page: Int,
     ): NetworkResult<MoviesResponse>
+
+    @GET("movie/{movie_id}/videos")
+    suspend fun getVideos(
+        @Path("movie_id") movieId: Int,
+    ): NetworkResult<MovieVideosResponse>
 }

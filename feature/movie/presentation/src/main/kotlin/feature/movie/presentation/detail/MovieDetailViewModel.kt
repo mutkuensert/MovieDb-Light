@@ -79,6 +79,12 @@ class MovieDetailViewModel(
                 }
             }
 
+            movieRepository.getTrailerUrl(movieId).onSuccess { url ->
+                _uiModel.update {
+                    it.copy(trailerUrl = url)
+                }
+            }
+
             loadingAnimator.stop()
         }
     }

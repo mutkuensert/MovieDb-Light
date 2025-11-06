@@ -12,4 +12,5 @@
     <string name="runtime">%s mins</string>
     <string name="streaming_services_info_button_icon">Streaming services info icon</string>
     <string name="similar">Similar</string>
+    <string name="trailer">Trailer</string>
 </resources>
