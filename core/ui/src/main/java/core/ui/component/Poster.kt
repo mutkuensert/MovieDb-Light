@@ -38,7 +38,8 @@ fun Poster(
     modifier: Modifier = Modifier,
     url: String?,
     posterSize: PosterSize = PosterSize.Medium,
-    onSuccess: (AsyncImagePainter.State.Success) -> Unit = {}
+    onSuccess: (AsyncImagePainter.State.Success) -> Unit = {},
+    onError: (AsyncImagePainter.State.Error) -> Unit = {}
 ) {
     val imageSizeModifier = when (posterSize) {
         PosterSize.MaxHeight -> Modifier.fillMaxHeight()
@@ -62,6 +63,7 @@ fun Poster(
             onError = {
                 loading = false
                 error = true
+                onError(it)
             },
             error = debugPlaceholder(R.drawable.debug_placeholder_dog),
             modifier = modifier

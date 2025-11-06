@@ -91,6 +91,9 @@ fun InteractivePoster(
                 val bitmap = state.result.image.toBitmap().copy(Bitmap.Config.ARGB_8888, true)
                 infoButtonColor = bitmap.titleTextColor
                 textColor = bitmap.bodyTextColor
+            },
+            onError = {
+                imageWidth = size.estimatedWidth
             }
         )
 
