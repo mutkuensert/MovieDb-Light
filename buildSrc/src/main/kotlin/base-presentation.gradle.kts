@@ -15,6 +15,5 @@ dependencies {
     implementation(project(":core:domain"))
     baseAndroid()
     compose()
-    implementation(project(":core:libraries"))
     implementation(getLibrary("kotlinx.serialization"))
 }

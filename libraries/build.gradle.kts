@@ -3,5 +3,5 @@ plugins {
 }
 
 android {
-    namespace = "core.libraries"
+    namespace = "libraries"
 }

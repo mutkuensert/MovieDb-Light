@@ -7,7 +7,7 @@ import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import core.domain.AuthState
 import core.domain.AuthenticationRepository
-import core.libraries.image.TmdbImage
+import libraries.image.TmdbImage
 import core.ui.PopupHandler
 import feature.profile.domain.LogoutUseCase
 import feature.profile.domain.StartSessionUseCase

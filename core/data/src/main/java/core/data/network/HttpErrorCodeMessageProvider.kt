@@ -1,6 +1,6 @@
 package core.data.network
 
-import core.libraries.StrResources
+import libraries.StrResources
 import moviedblight.core.data.R
 
 internal class HttpErrorCodeMessageProvider(private val strResources: StrResources) {

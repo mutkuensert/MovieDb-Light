@@ -1,4 +1,4 @@
-package core.libraries
+package libraries
 
 import java.util.Locale
 

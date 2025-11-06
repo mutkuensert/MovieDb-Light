@@ -4,9 +4,9 @@ import android.app.Application
 import com.mutkuensert.moviedblight.BuildConfig
 import core.data.dataModule
 import core.database.databaseModule
-import core.injection.feature.movies.movieModule
-import core.injection.feature.movies.profileModule
-import core.libraries.librariesModule
+import injection.movieModule
+import injection.profileModule
+import libraries.librariesModule
 import core.ui.uiModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger

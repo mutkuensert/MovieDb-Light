@@ -1,4 +1,4 @@
-package core.injection.feature.movies
+package injection
 
 import feature.profile.domain.LogoutUseCase
 import feature.profile.domain.StartSessionUseCase

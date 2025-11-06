@@ -1,4 +1,4 @@
-package core.injection.feature.movies
+package injection
 
 import core.domain.AuthStateListener
 import feature.movie.data.MovieRepositoryImpl

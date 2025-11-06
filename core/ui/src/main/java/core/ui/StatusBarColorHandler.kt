@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import core.libraries.setStatusBarContentDark
-import core.libraries.setStatusBarContentLight
+import libraries.setStatusBarContentDark
+import libraries.setStatusBarContentLight
 
 @Composable
 fun StatusBarColorHandler(backgroundColor: Color) {

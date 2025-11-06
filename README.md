@@ -29,6 +29,54 @@ Each feature follows the principles of clean architecture with:
 - **Domain Layer**: Contains business logic, use cases, and entity models
 - **Data Layer**: Handles data operations, repositories, and external service interactions
 
+```mermaid
+graph TD
+
+    App[app]
+    Feature-injection[feature-injection]
+    Libraries[libraries]
+
+    subgraph Core[Core]
+        C1[core-database]
+        C2[core-data]
+        C3[core-domain]
+        C4[core-ui]
+    end
+
+    subgraph Feature[feature]
+        F1[feature-data]
+        F2[feature-domain]
+        F3[feature-presentation]
+    end
+
+%% Libraries module dependencies
+    Feature --> Libraries
+    Core --> Libraries
+    App --> Libraries
+
+%% Core module dependencies
+    C2 --> C1
+    C2 --> C3
+
+%% Feature module dependencies
+    F1 --> C2
+    F2 --> C3
+    F3 --> C4
+    F1 --> F2
+    F3 --> F2
+
+%% feature-injection dependencies
+    Feature-injection --> Core
+    Feature-injection --> Feature
+    Feature-injection --> Libraries
+
+%% App dependencies
+    App --> Core
+    App --> Feature-injection
+    App --> F3
+
+```
+
 ## Module Structure
 
 ### Core Modules
@@ -206,7 +254,7 @@ The adapter handles different types of errors:
 - Parsing errors
 
 Each error is transformed into a user-friendly message using
-the [StrResources](./core/data/src/main/java/core/data/StrResources.kt).
+the [StrResources](./libraries/src/main/kotlin/libraries/StrResources.kt).
 
 #### Creating and Using a Service
 

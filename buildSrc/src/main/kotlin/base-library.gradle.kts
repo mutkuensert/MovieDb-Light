@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":core:libraries"))
+    implementation(project(":libraries"))
 }

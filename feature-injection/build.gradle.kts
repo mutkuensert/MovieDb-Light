@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "core.injection"
+    namespace = "injection"
 }
 
 dependencies {

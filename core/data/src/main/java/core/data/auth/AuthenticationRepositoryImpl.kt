@@ -8,7 +8,7 @@ import com.github.michaelbull.result.onSuccess
 import core.data.SessionManager
 import core.domain.AuthenticationRepository
 import core.domain.ErrorMessage
-import core.libraries.StrResources
+import libraries.StrResources
 import moviedblight.core.data.R
 
 class AuthenticationRepositoryImpl(

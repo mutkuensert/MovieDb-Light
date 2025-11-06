@@ -1,4 +1,4 @@
-package core.libraries
+package libraries
 
 import android.app.Activity
 import android.content.Context

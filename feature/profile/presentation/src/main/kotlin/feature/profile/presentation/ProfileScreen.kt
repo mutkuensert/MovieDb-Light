@@ -40,13 +40,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import core.libraries.Constants.APP_DEEP_LINK
+import libraries.Constants.APP_DEEP_LINK
 import core.ui.MoviedbLightTheme
 import core.ui.StatusBarColorHandler
 import core.ui.component.PrimaryButton
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
-import core.libraries.R as librariesR
+import libraries.R as librariesR
 
 const val ProfileDeeplink = "${APP_DEEP_LINK}/profile"
 

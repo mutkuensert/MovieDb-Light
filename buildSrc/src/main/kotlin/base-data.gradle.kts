@@ -8,5 +8,4 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(getLibrary("kotlinx.serialization"))
     implementation(getLibrary("retrofit"))
-    implementation(project(":core:libraries"))
 }

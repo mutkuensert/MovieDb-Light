@@ -18,8 +18,8 @@ import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.domain.AuthStateListener
 import core.domain.ErrorMessage
 import core.domain.common.Provider
-import core.libraries.CountryManager
-import core.libraries.image.TmdbImage
+import libraries.CountryManager
+import libraries.image.TmdbImage
 import feature.movie.data.remote.MovieService
 import feature.movie.domain.Movie
 import feature.movie.domain.MovieDetails

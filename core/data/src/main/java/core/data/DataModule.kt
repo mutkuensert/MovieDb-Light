@@ -15,7 +15,7 @@ import core.domain.AccountRepository
 import core.domain.AuthState
 import core.domain.AuthStateListener
 import core.domain.AuthenticationRepository
-import core.libraries.StrResources
+import libraries.StrResources
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
