@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.StatusBarBackgroundColorHandler
-import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
+import feature.movie.presentation.list.MoviesRoute
+import feature.profile.presentation.LoginRoute
 
 class HomeViewModel(
     private val navigator: Navigator,
@@ -16,11 +17,11 @@ class HomeViewModel(
     val statusBarContentColor = statusBarBackgroundColorHandler.color
 
     fun navigateToMovies() {
-        navigator.navigateToTab(NavTab.MovieTab)
+        navigator.navigateToTab(MoviesRoute)
     }
 
     fun navigateToProfile() {
-        navigator.navigateToTab(NavTab.ProfileTab)
+        navigator.navigateToTab(LoginRoute())
     }
 
     fun closePopup() {

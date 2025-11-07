@@ -9,7 +9,7 @@ import core.domain.AccountRepository
 import core.ui.navigation.Navigator
 import feature.movie.domain.Movie
 import feature.movie.domain.MovieRepository
-import feature.movie.presentation.detail.MovieDetailRoute
+import core.ui.route.MovieDetailRoute
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

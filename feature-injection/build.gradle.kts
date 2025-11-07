@@ -13,6 +13,7 @@ dependencies {
     implementation(projects.feature.movie.data)
     implementation(projects.feature.movie.domain)
     implementation(projects.feature.movie.presentation)
+    implementation(projects.feature.profile.data)
     implementation(projects.feature.profile.domain)
     implementation(projects.feature.profile.presentation)
     implementation(libs.retrofit)

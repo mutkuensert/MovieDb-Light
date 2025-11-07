@@ -2,4 +2,7 @@
 <resources>
     <string name="login">Giriş yap</string>
     <string name="logout_button_icon">Çıkış yap butonunun simgesi</string>
+    <string name="favorite_movies">Favori filmler</string>
+    <string name="watchlist_movies">İzleme listesindeki filmler</string>
+    <string name="rated_movies">Puan verilen filmler</string>
 </resources>

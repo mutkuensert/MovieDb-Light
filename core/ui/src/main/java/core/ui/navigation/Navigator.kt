@@ -11,7 +11,7 @@ class Navigator {
         this.controller = controller
     }
 
-    fun navigateToTab(tab: NavTab) {
+    fun navigateToTab(tab: Any) {
         controller.navigate(tab) {
             val startDestination = controller.graph.findStartDestination()
             popUpTo(startDestination.id) {
@@ -24,5 +24,9 @@ class Navigator {
 
     fun navigateToRoute(route: Any) {
         controller.navigate(route)
+    }
+
+    fun navigateBack() {
+        controller.popBackStack()
     }
 }

@@ -2,4 +2,7 @@
 <resources>
     <string name="login">Login</string>
     <string name="logout_button_icon">Logout button icon</string>
+    <string name="favorite_movies">Favorite movies</string>
+    <string name="watchlist_movies">Watchlist movies</string>
+    <string name="rated_movies">Rated movies</string>
 </resources>

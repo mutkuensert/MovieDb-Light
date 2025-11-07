@@ -12,6 +12,7 @@ import core.domain.AuthState
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
+import core.ui.route.MovieDetailRoute
 import feature.movie.domain.MovieRepository
 import feature.movie.presentation.R
 import kotlinx.coroutines.flow.MutableStateFlow

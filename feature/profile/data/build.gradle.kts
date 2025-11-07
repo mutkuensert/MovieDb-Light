@@ -1,5 +1,5 @@
 plugins {
-    id("base-library")
+    id("base-data")
 }
 
 android {
@@ -8,4 +8,5 @@ android {
 
 dependencies {
     implementation(projects.feature.profile.domain)
+    implementation(libs.androidx.paging.runtime)
 }

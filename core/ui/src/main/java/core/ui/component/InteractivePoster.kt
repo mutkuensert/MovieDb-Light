@@ -52,7 +52,7 @@ fun InteractivePoster(
     title: String = "",
     vote: String? = null,
     inWatchlist: Boolean? = null,
-    onWatchlistClick: () -> Unit,
+    onWatchlistClick: () -> Unit = {},
     onPosterClick: () -> Unit
 ) {
     var infoButtonColor by remember { mutableStateOf(Color(0xFFFFFFFF)) }

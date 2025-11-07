@@ -52,4 +52,12 @@ interface AccountService {
         @Body favoriteTvShowDto: FavoriteTvShowDto,
         @Query("session_id") sessionId: String,
     ): NetworkResult<PostFavoriteTvShowResponse>
+
+    @GET("account/account_id/rated/movies")
+    suspend fun getRatedMovies(
+        @Query("page") page: Int = 1,
+        @Query("session_id") sessionId: String,
+        @Query("language") language: String = "en-US",
+        @Query("sort_by") sortBy: String = SortBy.CreatedAt.ascending
+    ): NetworkResult<MoviesResponse>
 }

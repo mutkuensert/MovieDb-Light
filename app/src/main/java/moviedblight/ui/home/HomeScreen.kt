@@ -48,11 +48,13 @@ import core.ui.PopupConfig
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
 import feature.movie.presentation.R
-import feature.movie.presentation.detail.MovieDetailRoute
+import core.ui.route.MovieDetailRoute
 import feature.movie.presentation.detail.MovieDetailScreen
 import feature.movie.presentation.list.MoviesRoute
 import feature.movie.presentation.list.MoviesScreen
-import feature.profile.presentation.ProfileDeeplink
+import feature.profile.presentation.LoginDeeplink
+import feature.profile.presentation.LoginRoute
+import feature.profile.presentation.LoginScreen
 import feature.profile.presentation.ProfileRoute
 import feature.profile.presentation.ProfileScreen
 import org.koin.androidx.compose.koinViewModel
@@ -174,12 +176,16 @@ fun MainNavigation(
                 }
             }
 
-            navigation<NavTab.ProfileTab>(ProfileRoute()) {
-                composable<ProfileRoute>(
+            navigation<NavTab.ProfileTab>(LoginRoute()) {
+                composable<LoginRoute>(
                     deepLinks = listOf(
-                        navDeepLink<ProfileRoute>(basePath = ProfileDeeplink)
+                        navDeepLink<LoginRoute>(basePath = LoginDeeplink)
                     )
                 ) {
+                    LoginScreen()
+                }
+
+                composable<ProfileRoute> {
                     ProfileScreen()
                 }
             }

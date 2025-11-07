@@ -8,4 +8,5 @@ android {
 
 dependencies {
     implementation(projects.feature.profile.domain)
+    implementation(libs.androidx.paging.compose)
 }

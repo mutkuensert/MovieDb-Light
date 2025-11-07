@@ -1,8 +1,5 @@
 package feature.profile.presentation
 
-import android.content.Context
-import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,113 +11,110 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import coil3.compose.AsyncImage
-import libraries.Constants.APP_DEEP_LINK
 import core.ui.MoviedbLightTheme
 import core.ui.StatusBarColorHandler
-import core.ui.component.PrimaryButton
+import core.ui.component.InteractivePoster
+import core.ui.component.PosterSize
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
-import libraries.R as librariesR
-
-const val ProfileDeeplink = "${APP_DEEP_LINK}/profile"
 
 @Serializable
-data class ProfileRoute(val cameFromTmdbLogin: Boolean = false)
+object ProfileRoute
 
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
-    val loggedIn by viewModel.loggedIn.collectAsStateWithLifecycle()
-    val shouldOpenLoginWebPage by viewModel.shouldOpenLoginWebPage.collectAsStateWithLifecycle()
     val uiModel by viewModel.uiModel.collectAsStateWithLifecycle()
+    val favoriteMovies = viewModel.favoriteMovies.collectAsLazyPagingItems()
+    val watchlistMovies = viewModel.watchlistMovies.collectAsLazyPagingItems()
+    val ratedMovies = viewModel.ratedMovies.collectAsLazyPagingItems()
 
-    if (loggedIn) {
-        LoggedInProfile(uiModel, viewModel::logout)
-    } else {
-        LoggedOutProfile(
-            shouldOpenLoginWebPage,
-            viewModel::login,
-            viewModel.requestToken
-        )
-    }
+    Profile(
+        uiModel,
+        favoriteMovies,
+        watchlistMovies,
+        ratedMovies,
+        viewModel::handleMovieClick,
+        viewModel::logout
+    )
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.initScreen() }
     StatusBarColorHandler(MaterialTheme.colorScheme.background)
 }
 
 @Composable
-private fun LoggedOutProfile(
-    shouldOpenLoginWebPage: Boolean,
-    onLoginClick: () -> Unit,
-    requestToken: String?
+private fun Profile(
+    uiModel: ProfileUiModel,
+    favoriteMovies: LazyPagingItems<MovieUiModel>,
+    watchlistMovies: LazyPagingItems<MovieUiModel>,
+    ratedMovies: LazyPagingItems<MovieUiModel>,
+    onClickMovie: (movieId: Int) -> Unit,
+    onLogoutClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            modifier = Modifier.weight(1f),
-            painter = painterResource(librariesR.drawable.tmdb_logo_blue_square),
-            contentDescription = null
-        )
-
-        PrimaryButton(
-            onClick = onLoginClick,
-            text = stringResource(R.string.login),
-            textColor = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 40.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-        )
-    }
-
-    val context = LocalContext.current
-    LaunchedEffect(shouldOpenLoginWebPage) {
-        if (shouldOpenLoginWebPage) {
-            launchLoginWebPage(
-                requireNotNull(requestToken) { "Cannot be null if should open" },
-                context
-            )
-        }
-    }
-}
-
-@Composable
-private fun LoggedInProfile(uiModel: ProfileUiModel, onLogoutClick: () -> Unit) {
     Column(
         Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(MaterialTheme.colorScheme.background)
     ) {
         TopBar(uiModel.profileImageUrl, uiModel.name, onLogoutClick)
+
+        Text(
+            modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+            text = stringResource(R.string.favorite_movies),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Movies(favoriteMovies, onClickMovie)
+
+        Text(
+            modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+            text = stringResource(R.string.watchlist_movies),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Movies(watchlistMovies, onClickMovie)
+
+        Text(
+            modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+            text = stringResource(R.string.rated_movies),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Movies(ratedMovies, onClickMovie)
     }
 }
 
@@ -169,46 +163,60 @@ private fun TopBar(
     }
 }
 
-private fun launchLoginWebPage(requestToken: String, context: Context) {
-    val intent = CustomTabsIntent.Builder()
-        .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
-        .build()
+@Composable
+private fun Movies(
+    movies: LazyPagingItems<MovieUiModel>,
+    onClickMovie: (movieId: Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        item {
+            if (movies.loadState.refresh == LoadState.Loading) {
+                Box(
+                    modifier = Modifier
+                        .height(PosterSize.Large.height)
+                        .fillParentMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) { CircularProgressIndicator() }
+            }
+        }
 
-    var uri = ("https://www.themoviedb.org/authenticate/" +
-            requestToken +
-            "?redirect_to" +
-            "=$ProfileDeeplink?$KEY_CAME_FROM_TMDB_LOGIN=true").toUri()
-    if (uri.scheme == null) {
-        uri = uri
-            .buildUpon()
-            .scheme("https")
-            .build()
+        items(
+            count = movies.itemCount,
+            key = movies.itemKey { it.id }
+        ) { index ->
+            val movie = movies[index]
+
+            if (movie != null) {
+                InteractivePoster(
+                    modifier = Modifier.padding(10.dp),
+                    url = movie.imageUrl,
+                    title = movie.title,
+                    vote = movie.voteAverage,
+                    onPosterClick = { onClickMovie(movie.id) },
+                )
+            }
+        }
     }
-
-    intent.launchUrl(context, uri)
 }
 
 @Preview
 @Composable
-private fun LoggedOutProfilePreview() {
+private fun ProfilePreview() {
+    val emptyLazyPagingItems = flowOf(PagingData.empty<MovieUiModel>()).collectAsLazyPagingItems()
     MoviedbLightTheme {
-        LoggedOutProfile(
-            false,
-            {},
-            null
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun LoggedInProfilePreview() {
-    MoviedbLightTheme {
-        LoggedInProfile(
+        Profile(
             ProfileUiModel(
                 null,
                 "Your name"
             ),
+            emptyLazyPagingItems,
+            emptyLazyPagingItems,
+            emptyLazyPagingItems,
+            {},
             {}
         )
     }

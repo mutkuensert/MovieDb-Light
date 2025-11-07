@@ -1,6 +1,7 @@
 package feature.movie.presentation.detail
 
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -20,24 +21,29 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Beenhere
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.PlainTooltip
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -79,11 +85,7 @@ import core.ui.component.PosterSize
 import core.ui.component.PrimaryButton
 import feature.movie.presentation.R
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
-
-@Serializable
-data class MovieDetailRoute(val id: Int)
 
 @Composable
 fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
@@ -117,89 +119,115 @@ private fun MovieDetail(
     onRateClick: (value: Int) -> Unit,
     onRemoveRatingClick: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState()),
-    ) {
-        MoviePoster(uiModel.imageUrl, uiModel.year, uiModel.vote, uiModel.runtime)
+    Scaffold(
+        floatingActionButton = {
+            var extended by remember { mutableStateOf(false) }
 
-        Column(Modifier.padding(horizontal = 16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Providers(
-                    uiModel.providerLogoUrls,
-                    onClickStreamingServicesInfoButton,
-                    Modifier
-                        .padding(top = 4.dp)
-                        .weight(1f, fill = false)
-                )
-
-                Row(
-                    Modifier.padding(top = 8.dp, start = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    Modifier.animateContentSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    if (uiModel.favorite != null) {
-                        FavoriteButton(
-                            uiModel.favorite,
-                            onClickFavorite
-                        )
-                    }
-                    if (uiModel.showRateButton) {
-                        RateButton(
-                            uiModel.userRate,
-                            onRateClick,
-                            onRemoveRatingClick,
-                            Modifier.padding(start = 8.dp)
-                        )
-                    }
+                    if (extended) {
+                        if (uiModel.favorite != null) {
+                            FavoriteButton(
+                                uiModel.favorite,
+                                onClickFavorite
+                            )
+                        }
 
-                    if (uiModel.inWatchlist != null) {
-                        WatchlistButton(
-                            uiModel.inWatchlist,
-                            {
-                                onClickWatchlist(uiModel.id, !uiModel.inWatchlist)
-                            },
-                            Modifier.padding(start = 8.dp)
+                        if (uiModel.inWatchlist != null) {
+                            WatchlistButton(
+                                uiModel.inWatchlist,
+                                {
+                                    onClickWatchlist(uiModel.id, !uiModel.inWatchlist)
+                                }
+                            )
+                        }
+
+                        if (uiModel.showRateButton) {
+                            RateButton(
+                                uiModel.userRate,
+                                onRateClick,
+                                onRemoveRatingClick
+                            )
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(8.dp))
+
+                if (uiModel.showRateButton || uiModel.favorite != null || uiModel.inWatchlist != null) {
+                    FloatingActionButton(
+                        onClick = { extended = !extended },
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        Icon(
+                            if (extended) Icons.Filled.KeyboardArrowDown else Icons.Filled.Add,
+                            "Small floating action button."
                         )
                     }
                 }
             }
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            MoviePoster(uiModel.imageUrl, uiModel.year, uiModel.vote, uiModel.runtime)
 
-            Overview(uiModel.overview, Modifier.padding(top = 8.dp))
+            Column(Modifier.padding(horizontal = 16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Providers(
+                        uiModel.providerLogoUrls,
+                        onClickStreamingServicesInfoButton,
+                        Modifier.padding(top = 4.dp)
+                    )
+                }
 
-            if (uiModel.trailerUrl != null) {
-                val context = LocalContext.current
-                PrimaryButton(
-                    {
-                        val intent = CustomTabsIntent.Builder()
-                            .setShareState(CustomTabsIntent.SHARE_STATE_ON)
-                            .build()
-                        intent.launchUrl(context, uiModel.trailerUrl.toUri())
-                    },
-                    stringResource(R.string.trailer),
-                    Modifier.padding(top = 8.dp)
+                Overview(uiModel.overview, Modifier.padding(top = 8.dp))
+
+                if (uiModel.trailerUrl != null) {
+                    val context = LocalContext.current
+                    PrimaryButton(
+                        {
+                            val intent = CustomTabsIntent.Builder()
+                                .setShareState(CustomTabsIntent.SHARE_STATE_ON)
+                                .build()
+                            intent.launchUrl(context, uiModel.trailerUrl.toUri())
+                        },
+                        stringResource(R.string.trailer),
+                        Modifier.padding(top = 8.dp)
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            Cast(uiModel)
+
+            if (similarMovies.itemCount != 0) {
+                Text(
+                    modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+                    text = stringResource(R.string.similar),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
+
+            SimilarMovies(similarMovies, onClickMovie, onClickWatchlist)
         }
-
-        Spacer(Modifier.height(16.dp))
-
-        Cast(uiModel)
-
-        if (similarMovies.itemCount != 0) {
-            Text(
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-                text = stringResource(R.string.similar),
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-
-        SimilarMovies(similarMovies, onClickMovie, onClickWatchlist)
     }
 }
 
@@ -495,14 +523,17 @@ private fun WatchlistButton(
         },
         state = rememberTooltipState()
     ) {
-        Icon(
-            modifier = Modifier
-                .size(32.dp)
-                .clickable { onClick.invoke() },
-            imageVector = Icons.Default.Beenhere,
-            tint = color,
-            contentDescription = stringResource(core.ui.R.string.watchlist_button)
-        )
+        FloatingActionButton(
+            onClick,
+            containerColor = MaterialTheme.colorScheme.surface
+        ) {
+            Icon(
+                modifier = Modifier.size(28.dp),
+                imageVector = Icons.Default.Beenhere,
+                tint = color,
+                contentDescription = stringResource(core.ui.R.string.watchlist_button)
+            )
+        }
     }
 }
 
@@ -526,14 +557,17 @@ private fun FavoriteButton(
         },
         state = rememberTooltipState()
     ) {
-        Icon(
-            modifier = Modifier
-                .size(32.dp)
-                .clickable { onClick.invoke() },
-            imageVector = Icons.Default.Favorite,
-            tint = color,
-            contentDescription = stringResource(R.string.add_to_or_remove_from_favorites_button)
-        )
+        FloatingActionButton(
+            onClick,
+            containerColor = MaterialTheme.colorScheme.surface
+        ) {
+            Icon(
+                modifier = Modifier.size(28.dp),
+                imageVector = Icons.Default.Favorite,
+                tint = color,
+                contentDescription = stringResource(R.string.add_to_or_remove_from_favorites_button)
+            )
+        }
     }
 }
 
@@ -555,10 +589,10 @@ private fun RateButton(
         modifier
             .clickable { isRateBottomSheetVisible = true }
             .background(
-                MaterialTheme.colorScheme.secondary,
-                MaterialTheme.shapes.extraLarge
+                MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp),
+                MaterialTheme.shapes.medium
             )
-            .padding(horizontal = 12.dp, vertical = 4.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
