@@ -37,13 +37,16 @@ data class LoginRoute(val cameFromTmdbLogin: Boolean = false)
 @Composable
 fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
     val shouldOpenLoginWebPage by viewModel.shouldOpenLoginWebPage.collectAsStateWithLifecycle()
+    val loggedIn by viewModel.loggedIn.collectAsStateWithLifecycle()
 
     OneTimeEffect {
-        if (viewModel.loggedIn.value) {
+        if (loggedIn) {
             viewModel.navigateToProfile()
         }
     }
-    Login(shouldOpenLoginWebPage, viewModel::login, viewModel.requestToken)
+    if (!loggedIn) {
+        Login(shouldOpenLoginWebPage, viewModel::login, viewModel.requestToken)
+    }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.initScreen() }
     StatusBarColorHandler(MaterialTheme.colorScheme.background)

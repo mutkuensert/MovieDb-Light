@@ -4,7 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import core.database.account.model.WatchlistMovieEntity
+import core.database.account.model.WatchlistMovieIdEntity
 
 @Entity
 data class NowPlayingMovieEntity(
@@ -24,7 +24,7 @@ data class NowPlayingMovie(
         parentColumn = "id",
         entityColumn = "id"
     )
-    val watchlistEntity: WatchlistMovieEntity?
+    val watchlistEntity: WatchlistMovieIdEntity?
 ) {
     val inWatchlist get() = watchlistEntity != null
 }

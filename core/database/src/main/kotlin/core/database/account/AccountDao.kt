@@ -5,30 +5,30 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import core.database.account.model.FavoriteMovieEntity
+import core.database.account.model.FavoriteMovieIdEntity
 import core.database.account.model.FavoriteTvShowEntity
-import core.database.account.model.WatchlistMovieEntity
+import core.database.account.model.WatchlistMovieIdEntity
 
 @Dao
 interface AccountDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertFavoriteMovies(vararg favoriteMovie: FavoriteMovieEntity)
+    suspend fun insertFavoriteMovieIds(vararg favoriteMovie: FavoriteMovieIdEntity)
 
     @Delete
-    suspend fun deleteFavoriteMovies(vararg favoriteMovie: FavoriteMovieEntity)
+    suspend fun deleteFavoriteMovieIds(vararg favoriteMovie: FavoriteMovieIdEntity)
 
-    @Query("DELETE FROM FavoriteMovieEntity")
-    suspend fun clearAllFavoriteMovies()
+    @Query("DELETE FROM FavoriteMovieIdEntity")
+    suspend fun clearAllFavoriteMovieIds()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWatchlistMovies(vararg movie: WatchlistMovieEntity)
+    suspend fun insertWatchlistMovieIds(vararg movie: WatchlistMovieIdEntity)
 
     @Delete
-    suspend fun deleteWatchlistMovies(vararg movie: WatchlistMovieEntity)
+    suspend fun deleteWatchlistMovieIds(vararg movie: WatchlistMovieIdEntity)
 
-    @Query("DELETE FROM WatchlistMovieEntity")
-    suspend fun clearAllWatchlistMovies()
+    @Query("DELETE FROM WatchlistMovieIdEntity")
+    suspend fun clearAllWatchlistMovieIds()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavoriteTvShows(vararg favoriteTvShow: FavoriteTvShowEntity)
