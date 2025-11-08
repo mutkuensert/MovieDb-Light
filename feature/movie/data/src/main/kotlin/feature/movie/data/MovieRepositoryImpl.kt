@@ -61,8 +61,10 @@ class MovieRepositoryImpl(
         return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = PopularMoviesRemoteMediator(
-                { page -> movieService.getPopularMovies(page, countryCode) },
-                popularMovieDao,
+                getMovies = { page ->
+                    movieService.getPopularMovies(page, countryCode)
+                },
+                popularMovieDao
             ),
             pagingSourceFactory = { popularMoviesPagingSourceFactory() }
         ).flow.map { pagingData ->
@@ -83,8 +85,10 @@ class MovieRepositoryImpl(
         return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = NowPlayingMoviesRemoteMediator(
-                { page -> movieService.getMoviesNowPlaying(page, countryCode) },
-                nowPlayingMovieDao,
+                getMovies = { page ->
+                    movieService.getMoviesNowPlaying(page, countryCode)
+                },
+                nowPlayingMovieDao
             ),
             pagingSourceFactory = { nowPlayingMoviesPagingSourceFactory() }
         ).flow.map { pagingData ->
@@ -104,8 +108,10 @@ class MovieRepositoryImpl(
         return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = UpcomingMoviesRemoteMediator(
-                { page -> movieService.getUpcomingMovies(page, countryCode) },
-                upcomingMovieDao,
+                getMovies = { page ->
+                    movieService.getUpcomingMovies(page, countryCode)
+                },
+                upcomingMovieDao
             ),
             pagingSourceFactory = { upcomingMoviesPagingSourceFactory() }
         ).flow.map { pagingData ->
@@ -125,8 +131,10 @@ class MovieRepositoryImpl(
         return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = TopRatedMoviesRemoteMediator(
-                { page -> movieService.getTopRatedMovies(page, countryCode) },
-                topRatedMovieDao,
+                getMovies = { page ->
+                    movieService.getTopRatedMovies(page, countryCode)
+                },
+                topRatedMovieDao
             ),
             pagingSourceFactory = { topRatedMoviesPagingSourceFactory() }
         ).flow.map { pagingData ->
@@ -146,8 +154,10 @@ class MovieRepositoryImpl(
         return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = SimilarMoviesRemoteMediator(
-                { page -> movieService.getSimilarMovies(movieId, page) },
-                similarMovieDao,
+                getMovies = { page ->
+                    movieService.getSimilarMovies(movieId, page)
+                },
+                similarMovieDao
             ),
             pagingSourceFactory = { similarMoviesPagingSourceFactory() }
         ).flow.map { pagingData ->

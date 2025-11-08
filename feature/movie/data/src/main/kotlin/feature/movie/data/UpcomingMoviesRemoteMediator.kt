@@ -1,75 +1,43 @@
 package feature.movie.data
 
-import androidx.paging.ExperimentalPagingApi
-import androidx.paging.LoadType
-import androidx.paging.PagingState
-import androidx.paging.RemoteMediator
-import com.github.michaelbull.result.mapBoth
+import core.data.model.common.MoviesResponse
 import core.data.network.NetworkResult
 import core.database.feature.movies.upcoming.UpcomingMovie
 import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieEntity
-import core.data.model.common.MoviesResponse
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import timber.log.Timber
 
-@OptIn(ExperimentalPagingApi::class)
 class UpcomingMoviesRemoteMediator(
-    private val getUpcomingMovies: suspend (page: Int) -> NetworkResult<MoviesResponse>,
+    private val getMovies: suspend (page: Int) -> NetworkResult<MoviesResponse>,
     private val upcomingMovieDao: UpcomingMovieDao,
-) : RemoteMediator<Int, UpcomingMovie>() {
+) : GenericRemoteMediator<MoviesResponse, UpcomingMovie>() {
+    override suspend fun onFetchPaginatedData(page: Int): NetworkResult<MoviesResponse> {
+        return getMovies(page)
+    }
 
-    override suspend fun load(
-        loadType: LoadType,
-        state: PagingState<Int, UpcomingMovie>
-    ): MediatorResult {
-        return try {
-            val page = when (loadType) {
-                LoadType.REFRESH -> {
-                    withContext(Dispatchers.IO) { upcomingMovieDao.clearAll() }
-                    1
-                }
+    override suspend fun onClearAllCachedData() {
+        upcomingMovieDao.clearAll()
+    }
 
-                LoadType.PREPEND ->
-                    return MediatorResult.Success(endOfPaginationReached = true)
+    override suspend fun onGetLastPageInCache(): Int? {
+        return upcomingMovieDao.getAll().lastOrNull()?.movie?.page
+    }
 
-                LoadType.APPEND -> {
-                    val lastPageNumber = withContext(Dispatchers.IO) {
-                        upcomingMovieDao.getAll().lastOrNull()?.movie?.page
-                    }
-
-                    if (lastPageNumber == null) {
-                        return MediatorResult.Success(endOfPaginationReached = true)
-                    } else {
-                        lastPageNumber + 1
-                    }
-                }
-            }
-
-            getUpcomingMovies.invoke(page).mapBoth(
-                success = { response ->
-                    withContext(Dispatchers.IO) {
-                        upcomingMovieDao.insert(response.results.map {
-                            UpcomingMovieEntity(
-                                it.id,
-                                page,
-                                it.title,
-                                it.posterPath,
-                                it.voteAverage
-                            )
-                        })
-                    }
-                    MediatorResult.Success(endOfPaginationReached = response.results.isEmpty())
-                },
-                failure = {
-                    Timber.w(it.message)
-                    MediatorResult.Success(endOfPaginationReached = true)
-                }
+    override suspend fun onInsertDataIntoCache(
+        paginatedData: MoviesResponse,
+        page: Int
+    ) {
+        upcomingMovieDao.insert(paginatedData.results.map {
+            UpcomingMovieEntity(
+                it.id,
+                page,
+                it.title,
+                it.posterPath,
+                it.voteAverage
             )
-        } catch (e: Exception) {
-            Timber.e(e)
-            MediatorResult.Error(e)
-        }
+        })
+    }
+
+    override suspend fun isEndOfPaginationReached(paginatedData: MoviesResponse): Boolean {
+        return paginatedData.results.isEmpty()
     }
 }
