@@ -96,14 +96,14 @@ fun HomeScreen(navigator: Navigator) {
             }
 
             if (popup != null) {
-                ErrorDialog(popup!!, viewModel)
+                Popup(popup!!, viewModel)
             }
         }
     }
 }
 
 @Composable
-private fun ErrorDialog(popup: PopupConfig, viewModel: HomeViewModel) {
+private fun Popup(popup: PopupConfig, viewModel: HomeViewModel) {
     AlertDialog(
         title = {
             if (popup.title != null) {
