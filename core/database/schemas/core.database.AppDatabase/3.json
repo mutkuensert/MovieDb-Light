@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 2,
-    "identityHash": "254f9f530333f293fa038fdf80a5c09f",
+    "version": 3,
+    "identityHash": "91f111f34c43f36812222d96358a4fc0",
     "entities": [
       {
         "tableName": "PopularMovieEntity",
@@ -364,7 +364,7 @@
       },
       {
         "tableName": "RatedMovieEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `page` INTEGER NOT NULL, `title` TEXT NOT NULL, `posterPath` TEXT, `voteAverage` REAL, `rate` REAL, `primaryKey` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `page` INTEGER NOT NULL, `title` TEXT NOT NULL, `posterPath` TEXT, `voteAverage` REAL, `primaryKey` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -392,11 +392,6 @@
           {
             "fieldPath": "voteAverage",
             "columnName": "voteAverage",
-            "affinity": "REAL"
-          },
-          {
-            "fieldPath": "rate",
-            "columnName": "rate",
             "affinity": "REAL"
           },
           {
@@ -434,7 +429,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '254f9f530333f293fa038fdf80a5c09f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '91f111f34c43f36812222d96358a4fc0')"
     ]
   }
 }

@@ -1,7 +1,6 @@
 package feature.movie.data
 
 import androidx.paging.ExperimentalPagingApi
-import androidx.paging.InvalidatingPagingSourceFactory
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -15,10 +14,9 @@ import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.similar.SimilarMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
-import core.domain.AuthStateListener
 import core.domain.ErrorMessage
-import core.domain.common.AccountStates
-import core.domain.common.Provider
+import core.domain.model.AccountStates
+import core.domain.model.Provider
 import feature.movie.data.remote.MovieService
 import feature.movie.data.remote.response.PostMovieRatingRequest
 import feature.movie.domain.Movie
@@ -40,22 +38,7 @@ class MovieRepositoryImpl(
     private val topRatedMovieDao: TopRatedMovieDao,
     private val similarMovieDao: SimilarMovieDao,
     private val sessionManager: SessionManager,
-) : MovieRepository, AuthStateListener {
-    private val popularMoviesPagingSourceFactory = InvalidatingPagingSourceFactory {
-        popularMovieDao.getPagingSource()
-    }
-    private val nowPlayingMoviesPagingSourceFactory = InvalidatingPagingSourceFactory {
-        nowPlayingMovieDao.getPagingSource()
-    }
-    private val upcomingMoviesPagingSourceFactory = InvalidatingPagingSourceFactory {
-        upcomingMovieDao.getPagingSource()
-    }
-    private val topRatedMoviesPagingSourceFactory = InvalidatingPagingSourceFactory {
-        topRatedMovieDao.getPagingSource()
-    }
-    private val similarMoviesPagingSourceFactory = InvalidatingPagingSourceFactory {
-        similarMovieDao.getPagingSource()
-    }
+) : MovieRepository {
 
     override fun getPopularMovies(countryCode: String?): Flow<PagingData<Movie>> {
         return Pager(
@@ -66,7 +49,7 @@ class MovieRepositoryImpl(
                 },
                 popularMovieDao
             ),
-            pagingSourceFactory = { popularMoviesPagingSourceFactory() }
+            pagingSourceFactory = { popularMovieDao.getPagingSource() }
         ).flow.map { pagingData ->
             pagingData.map { entity ->
                 Movie(
@@ -90,7 +73,7 @@ class MovieRepositoryImpl(
                 },
                 nowPlayingMovieDao
             ),
-            pagingSourceFactory = { nowPlayingMoviesPagingSourceFactory() }
+            pagingSourceFactory = { nowPlayingMovieDao.getPagingSource() }
         ).flow.map { pagingData ->
             pagingData.map { entity ->
                 Movie(
@@ -113,7 +96,7 @@ class MovieRepositoryImpl(
                 },
                 upcomingMovieDao
             ),
-            pagingSourceFactory = { upcomingMoviesPagingSourceFactory() }
+            pagingSourceFactory = { upcomingMovieDao.getPagingSource() }
         ).flow.map { pagingData ->
             pagingData.map { entity ->
                 Movie(
@@ -136,7 +119,7 @@ class MovieRepositoryImpl(
                 },
                 topRatedMovieDao
             ),
-            pagingSourceFactory = { topRatedMoviesPagingSourceFactory() }
+            pagingSourceFactory = { topRatedMovieDao.getPagingSource() }
         ).flow.map { pagingData ->
             pagingData.map { entity ->
                 Movie(
@@ -159,7 +142,7 @@ class MovieRepositoryImpl(
                 },
                 similarMovieDao
             ),
-            pagingSourceFactory = { similarMoviesPagingSourceFactory() }
+            pagingSourceFactory = { similarMovieDao.getPagingSource() }
         ).flow.map { pagingData ->
             pagingData.map { entity ->
                 Movie(
@@ -241,13 +224,5 @@ class MovieRepositoryImpl(
 
     override suspend fun removeRating(movieId: Int): Result<Unit, ErrorMessage> {
         return movieService.deleteRating(movieId, sessionManager.requireSessionId()).mapToDomain { }
-    }
-
-    override suspend fun onUnauthorized() {
-        popularMoviesPagingSourceFactory.invalidate()
-        nowPlayingMoviesPagingSourceFactory.invalidate()
-        topRatedMoviesPagingSourceFactory.invalidate()
-        upcomingMoviesPagingSourceFactory.invalidate()
-        similarMoviesPagingSourceFactory.invalidate()
     }
 }

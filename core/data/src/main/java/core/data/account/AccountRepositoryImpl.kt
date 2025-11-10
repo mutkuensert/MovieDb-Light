@@ -8,7 +8,10 @@ import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import core.data.SessionManager
 import core.data.model.common.MovieDto
-import core.database.account.AccountDao
+import core.database.account.FavoriteMovieDao
+import core.database.account.FavoriteTvShowDao
+import core.database.account.RatedMovieDao
+import core.database.account.WatchlistMovieDao
 import core.database.account.model.FavoriteMovieIdEntity
 import core.database.account.model.WatchlistMovieIdEntity
 import core.database.user.UserDetails
@@ -24,7 +27,10 @@ class AccountRepositoryImpl(
     private val accountService: AccountService,
     private val sessionManager: SessionManager,
     private val userManager: UserManager,
-    private val accountDao: AccountDao,
+    private val favoriteMovieDao: FavoriteMovieDao,
+    private val watchlistMovieDao: WatchlistMovieDao,
+    private val ratedMovieDao: RatedMovieDao,
+    private val favoriteTvShowDao: FavoriteTvShowDao,
 ) : AccountRepository, AuthStateListener {
 
     override suspend fun fetchAccountDetails(): Result<User, ErrorMessage> {
@@ -52,7 +58,7 @@ class AccountRepositoryImpl(
 
     override suspend fun fetchFavoriteMovies() {
         withContext(Dispatchers.IO) {
-            accountDao.clearAllFavoriteMovieIds()
+            favoriteMovieDao.clearAllIds()
             val favoriteMovies = mutableListOf<MovieDto>()
 
             var endPage = 2
@@ -73,7 +79,7 @@ class AccountRepositoryImpl(
                 page++
             }
 
-            accountDao.insertFavoriteMovieIds(
+            favoriteMovieDao.insertIds(
                 *favoriteMovies
                     .map(::mapToFavoriteMovieEntity)
                     .toTypedArray()
@@ -83,7 +89,7 @@ class AccountRepositoryImpl(
 
     override suspend fun fetchWatchlistMovies() {
         withContext(Dispatchers.IO) {
-            accountDao.clearAllWatchlistMovieIds()
+            watchlistMovieDao.clearAllIds()
             val watchlistMovies = mutableListOf<MovieDto>()
 
             var endPage = 2
@@ -104,7 +110,7 @@ class AccountRepositoryImpl(
                 page++
             }
 
-            accountDao.insertWatchlistMovieIds(
+            watchlistMovieDao.insertIds(
                 *watchlistMovies
                     .map(::mapToWatchlistMovieEntity)
                     .toTypedArray()
@@ -118,9 +124,9 @@ class AccountRepositoryImpl(
     ): Result<Unit, ErrorMessage> {
         return withContext(Dispatchers.IO) {
             if (isFavorite) {
-                accountDao.insertFavoriteMovieIds(FavoriteMovieIdEntity(movieId))
+                favoriteMovieDao.insertIds(FavoriteMovieIdEntity(movieId))
             } else {
-                accountDao.deleteFavoriteMovieIds(FavoriteMovieIdEntity(movieId))
+                favoriteMovieDao.deleteIds(FavoriteMovieIdEntity(movieId))
             }
 
             return@withContext accountService.postFavoriteMovie(
@@ -134,7 +140,7 @@ class AccountRepositoryImpl(
                     Ok(Unit)
                 },
                 failure = {
-                    accountDao.deleteFavoriteMovieIds(FavoriteMovieIdEntity(movieId))
+                    favoriteMovieDao.deleteIds(FavoriteMovieIdEntity(movieId))
                     Err(it.message)
                 }
             )
@@ -147,9 +153,9 @@ class AccountRepositoryImpl(
     ): Result<Unit, ErrorMessage> {
         return withContext(Dispatchers.IO) {
             if (inWatchlist) {
-                accountDao.insertWatchlistMovieIds(WatchlistMovieIdEntity(movieId))
+                watchlistMovieDao.insertIds(WatchlistMovieIdEntity(movieId))
             } else {
-                accountDao.deleteWatchlistMovieIds(WatchlistMovieIdEntity(movieId))
+                watchlistMovieDao.deleteIds(WatchlistMovieIdEntity(movieId))
             }
 
             return@withContext accountService.postWatchlistMovie(
@@ -163,7 +169,7 @@ class AccountRepositoryImpl(
                     Ok(Unit)
                 },
                 failure = {
-                    accountDao.deleteWatchlistMovieIds(WatchlistMovieIdEntity(movieId))
+                    watchlistMovieDao.deleteIds(WatchlistMovieIdEntity(movieId))
                     Err(it.message)
                 }
             )
@@ -172,8 +178,12 @@ class AccountRepositoryImpl(
 
     override suspend fun onUnauthorized() {
         withContext(Dispatchers.IO) {
-            accountDao.clearAllFavoriteMovieIds()
-            accountDao.clearAllFavoriteTvShows()
+            favoriteMovieDao.clearAllIds()
+            favoriteMovieDao.clearAllMovies()
+            watchlistMovieDao.clearAllIds()
+            watchlistMovieDao.clearAllMovies()
+            ratedMovieDao.clearAllMovies()
+            favoriteTvShowDao.clearAll()
             userManager.removeCurrentUser()
         }
     }

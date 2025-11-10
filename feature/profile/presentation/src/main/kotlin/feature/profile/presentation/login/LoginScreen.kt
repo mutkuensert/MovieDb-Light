@@ -1,4 +1,4 @@
-package feature.profile.presentation
+package feature.profile.presentation.login
 
 import android.content.Context
 import androidx.browser.customtabs.CustomTabsIntent
@@ -27,6 +27,7 @@ import core.ui.component.OneTimeEffect
 import core.ui.component.PrimaryButton
 import kotlinx.serialization.Serializable
 import libraries.Constants.APP_DEEP_LINK
+import libraries.R
 import org.koin.androidx.compose.koinViewModel
 
 const val LoginDeeplink = "${APP_DEEP_LINK}/login"
@@ -66,13 +67,13 @@ private fun Login(
     ) {
         Image(
             modifier = Modifier.weight(1f),
-            painter = painterResource(libraries.R.drawable.tmdb_logo_blue_square),
+            painter = painterResource(R.drawable.tmdb_logo_blue_square),
             contentDescription = null
         )
 
         PrimaryButton(
             onClick = onLoginClick,
-            text = stringResource(R.string.login),
+            text = stringResource(feature.profile.presentation.R.string.login),
             textColor = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -100,7 +101,7 @@ private fun launchLoginWebPage(requestToken: String, context: Context) {
     var uri = ("https://www.themoviedb.org/authenticate/" +
             requestToken +
             "?redirect_to" +
-            "=$LoginDeeplink?$KEY_CAME_FROM_TMDB_LOGIN=true").toUri()
+            "=$LoginDeeplink?${KEY_CAME_FROM_TMDB_LOGIN}=true").toUri()
     if (uri.scheme == null) {
         uri = uri
             .buildUpon()

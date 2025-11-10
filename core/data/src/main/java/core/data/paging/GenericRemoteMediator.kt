@@ -1,4 +1,4 @@
-package feature.movie.data
+package core.data.paging
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType

@@ -6,7 +6,7 @@ import core.ui.PopupHandler
 import core.ui.StatusBarBackgroundColorHandler
 import core.ui.navigation.Navigator
 import feature.movie.presentation.list.MoviesRoute
-import feature.profile.presentation.LoginRoute
+import feature.profile.presentation.login.LoginRoute
 
 class HomeViewModel(
     private val navigator: Navigator,

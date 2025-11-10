@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import core.domain.AccountRepository
+import core.domain.SyncMovieWatchlistStatusUseCase
 import core.ui.navigation.Navigator
+import core.ui.route.MovieDetailRoute
 import feature.movie.domain.Movie
 import feature.movie.domain.MovieRepository
-import core.ui.route.MovieDetailRoute
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 
 class MoviesViewModel(
     private val repository: MovieRepository,
-    private val accountRepository: AccountRepository,
+    private val syncMovieWatchlistStatusUseCase: SyncMovieWatchlistStatusUseCase,
     private val navigator: Navigator,
 ) : ViewModel() {
     private val _uiModel = MutableStateFlow(MoviesUiModel.initial())
@@ -84,7 +84,7 @@ class MoviesViewModel(
             "Can't be null if button is visible"
         }
         viewModelScope.launch {
-            accountRepository.syncMovieWatchlistStatus(movie.id, !inWatchlist)
+            syncMovieWatchlistStatusUseCase.execute(movie.id, !inWatchlist)
         }
     }
 

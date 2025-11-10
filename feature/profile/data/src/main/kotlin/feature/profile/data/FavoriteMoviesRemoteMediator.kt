@@ -1,34 +1,33 @@
-package feature.movie.data
+package feature.profile.data
 
-import core.data.paging.GenericRemoteMediator
 import core.data.model.common.MoviesResponse
 import core.data.network.NetworkResult
-import core.database.feature.movies.toprated.TopRatedMovie
-import core.database.feature.movies.toprated.TopRatedMovieDao
-import core.database.feature.movies.toprated.TopRatedMovieEntity
+import core.data.paging.GenericRemoteMediator
+import core.database.account.FavoriteMovieDao
+import core.database.account.model.FavoriteMovieEntity
 
-class TopRatedMoviesRemoteMediator(
+class FavoriteMoviesRemoteMediator(
     private val getMovies: suspend (page: Int) -> NetworkResult<MoviesResponse>,
-    private val topRatedMovieDao: TopRatedMovieDao
-) : GenericRemoteMediator<MoviesResponse, TopRatedMovie>() {
+    private val favoriteMovieDao: FavoriteMovieDao,
+) : GenericRemoteMediator<MoviesResponse, FavoriteMovieEntity>() {
     override suspend fun onFetchPaginatedData(page: Int): NetworkResult<MoviesResponse> {
         return getMovies(page)
     }
 
     override suspend fun onClearAllCachedData() {
-        topRatedMovieDao.clearAll()
+        favoriteMovieDao.clearAllMovies()
     }
 
     override suspend fun onGetLastPageInCache(): Int? {
-        return topRatedMovieDao.getAll().lastOrNull()?.movie?.page
+        return favoriteMovieDao.getAllMovies().lastOrNull()?.page
     }
 
     override suspend fun onInsertDataIntoCache(
         paginatedData: MoviesResponse,
         page: Int
     ) {
-        topRatedMovieDao.insert(paginatedData.results.map {
-            TopRatedMovieEntity(
+        favoriteMovieDao.insertMovie(paginatedData.results.map {
+            FavoriteMovieEntity(
                 it.id,
                 page,
                 it.title,

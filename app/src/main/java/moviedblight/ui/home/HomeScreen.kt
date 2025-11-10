@@ -52,11 +52,11 @@ import core.ui.route.MovieDetailRoute
 import feature.movie.presentation.detail.MovieDetailScreen
 import feature.movie.presentation.list.MoviesRoute
 import feature.movie.presentation.list.MoviesScreen
-import feature.profile.presentation.LoginDeeplink
-import feature.profile.presentation.LoginRoute
-import feature.profile.presentation.LoginScreen
-import feature.profile.presentation.ProfileRoute
-import feature.profile.presentation.ProfileScreen
+import feature.profile.presentation.login.LoginDeeplink
+import feature.profile.presentation.login.LoginRoute
+import feature.profile.presentation.login.LoginScreen
+import feature.profile.presentation.profile.ProfileRoute
+import feature.profile.presentation.profile.ProfileScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

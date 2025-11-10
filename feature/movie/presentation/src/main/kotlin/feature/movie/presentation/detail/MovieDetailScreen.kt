@@ -1,5 +1,6 @@
 package feature.movie.presentation.detail
 
+import android.annotation.SuppressLint
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -108,6 +109,8 @@ fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MovieDetail(
     uiModel: MovieDetailUiModel,
@@ -175,7 +178,7 @@ private fun MovieDetail(
             }
         },
         containerColor = MaterialTheme.colorScheme.background
-    ) {
+    ) { _ ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -199,15 +202,8 @@ private fun MovieDetail(
                 Overview(uiModel.overview, Modifier.padding(top = 8.dp))
 
                 if (uiModel.trailerUrl != null) {
-                    val context = LocalContext.current
-                    PrimaryButton(
-                        {
-                            val intent = CustomTabsIntent.Builder()
-                                .setShareState(CustomTabsIntent.SHARE_STATE_ON)
-                                .build()
-                            intent.launchUrl(context, uiModel.trailerUrl.toUri())
-                        },
-                        stringResource(R.string.trailer),
+                    TrailerButton(
+                        uiModel.trailerUrl,
                         Modifier.padding(top = 8.dp)
                     )
                 }
@@ -228,6 +224,35 @@ private fun MovieDetail(
 
             SimilarMovies(similarMovies, onClickMovie, onClickWatchlist)
         }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun TrailerButton(
+    trailerUrl: String,
+    modifier: Modifier
+) {
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+            TooltipAnchorPosition.Above
+        ),
+        tooltip = {
+            PlainTooltip { Text(trailerUrl) }
+        },
+        state = rememberTooltipState()
+    ) {
+        val context = LocalContext.current
+        PrimaryButton(
+            {
+                val intent = CustomTabsIntent.Builder()
+                    .setShareState(CustomTabsIntent.SHARE_STATE_ON)
+                    .build()
+                intent.launchUrl(context, trailerUrl.toUri())
+            },
+            stringResource(R.string.trailer),
+            modifier
+        )
     }
 }
 

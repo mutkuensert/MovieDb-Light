@@ -1,5 +1,6 @@
 package feature.profile.data
 
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -7,65 +8,120 @@ import androidx.paging.map
 import core.data.SessionManager
 import core.data.account.AccountService
 import core.data.util.withDecimals
+import core.database.account.FavoriteMovieDao
+import core.database.account.RatedMovieDao
+import core.database.account.WatchlistMovieDao
+import core.domain.profile.ProfileFavoriteMoviesPagingInvalidator
+import core.domain.profile.ProfileRatedMoviesPagingInvalidator
+import core.domain.profile.ProfileWatchlistMoviesPagingInvalidator
 import feature.profile.domain.Movie
 import feature.profile.domain.ProfileRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import libraries.image.TmdbImage
 
+@OptIn(ExperimentalPagingApi::class)
 class ProfileRepositoryImpl(
     private val accountService: AccountService,
     private val sessionManager: SessionManager,
-) : ProfileRepository {
+    private val favoriteMovieDao: FavoriteMovieDao,
+    private val watchlistMovieDao: WatchlistMovieDao,
+    private val ratedMovieDao: RatedMovieDao,
+) : ProfileRepository, ProfileFavoriteMoviesPagingInvalidator,
+    ProfileWatchlistMoviesPagingInvalidator,
+    ProfileRatedMoviesPagingInvalidator {
+    private val refreshFavoriteMoviesTrigger = MutableStateFlow(0)
+    private val refreshWatchlistMoviesTrigger = MutableStateFlow(0)
+    private val refreshRatedMoviesTrigger = MutableStateFlow(0)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getFavoriteMovies(): Flow<PagingData<Movie>> {
-        return Pager(PagingConfig(pageSize = 20)) {
-            GenericMoviesPagingSource {
-                accountService.getFavoriteMovies(it, sessionManager.requireSessionId())
-            }
-        }.flow.map { pagingData ->
-            pagingData.map {
-                Movie(
-                    it.id,
-                    it.title,
-                    it.posterPath?.let { path -> TmdbImage.Poster(path).w780Url },
-                    it.voteAverage?.withDecimals(1)
-                )
+        return refreshFavoriteMoviesTrigger.flatMapLatest {
+            Pager(
+                config = PagingConfig(pageSize = 20),
+                remoteMediator = FavoriteMoviesRemoteMediator(
+                    getMovies = { page ->
+                        accountService.getFavoriteMovies(page, sessionManager.requireSessionId())
+                    },
+                    favoriteMovieDao
+                ),
+                pagingSourceFactory = { favoriteMovieDao.getPagingSource() }
+            ).flow.map { pagingData ->
+                pagingData.map { entity ->
+                    Movie(
+                        id = entity.id,
+                        title = entity.title,
+                        imageUrl = entity.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                        voteAverage = entity.voteAverage?.withDecimals(1),
+                    )
+                }
             }
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getWatchlistMovies(): Flow<PagingData<Movie>> {
-        return Pager(PagingConfig(pageSize = 20)) {
-            GenericMoviesPagingSource {
-                accountService.getWatchlistMovies(it, sessionManager.requireSessionId())
-            }
-        }.flow.map { pagingData ->
-            pagingData.map {
-                Movie(
-                    it.id,
-                    it.title,
-                    it.posterPath?.let { path -> TmdbImage.Poster(path).w780Url },
-                    it.voteAverage?.withDecimals(1)
-                )
+        return refreshWatchlistMoviesTrigger.flatMapLatest {
+            Pager(
+                config = PagingConfig(pageSize = 20),
+                remoteMediator = WatchlistMoviesRemoteMediator(
+                    getMovies = { page ->
+                        accountService.getWatchlistMovies(page, sessionManager.requireSessionId())
+                    },
+                    watchlistMovieDao
+                ),
+                pagingSourceFactory = { watchlistMovieDao.getPagingSource() }
+            ).flow.map { pagingData ->
+                pagingData.map { entity ->
+                    Movie(
+                        id = entity.id,
+                        title = entity.title,
+                        imageUrl = entity.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                        voteAverage = entity.voteAverage?.withDecimals(1),
+                    )
+                }
             }
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getRatedMovies(): Flow<PagingData<Movie>> {
-        return Pager(PagingConfig(pageSize = 20)) {
-            GenericMoviesPagingSource {
-                accountService.getRatedMovies(it, sessionManager.requireSessionId())
-            }
-        }.flow.map { pagingData ->
-            pagingData.map {
-                Movie(
-                    it.id,
-                    it.title,
-                    it.posterPath?.let { path -> TmdbImage.Poster(path).w780Url },
-                    it.voteAverage?.withDecimals(1)
-                )
+        return refreshRatedMoviesTrigger.flatMapLatest {
+            Pager(
+                config = PagingConfig(pageSize = 20),
+                remoteMediator = RatedMoviesRemoteMediator(
+                    getMovies = { page ->
+                        accountService.getRatedMovies(page, sessionManager.requireSessionId())
+                    },
+                    ratedMovieDao
+                ),
+                pagingSourceFactory = { ratedMovieDao.getPagingSource() }
+            ).flow.map { pagingData ->
+                pagingData.map { entity ->
+                    Movie(
+                        id = entity.id,
+                        title = entity.title,
+                        imageUrl = entity.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                        voteAverage = entity.voteAverage?.withDecimals(1),
+                    )
+                }
             }
         }
+    }
+
+    override fun invalidateRatedMovies() {
+        refreshRatedMoviesTrigger.update { it + 1 }
+    }
+
+    override fun invalidateWatchlistMovies() {
+        refreshWatchlistMoviesTrigger.update { it + 1 }
+    }
+
+    override fun invalidateFavoriteMovies() {
+        refreshFavoriteMoviesTrigger.update { it + 1 }
     }
 }

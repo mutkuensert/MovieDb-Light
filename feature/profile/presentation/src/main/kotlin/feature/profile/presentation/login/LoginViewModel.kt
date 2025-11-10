@@ -1,4 +1,4 @@
-package feature.profile.presentation
+package feature.profile.presentation.login
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -10,6 +10,7 @@ import core.domain.AuthenticationRepository
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import feature.profile.domain.StartSessionUseCase
+import feature.profile.presentation.profile.ProfileRoute
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

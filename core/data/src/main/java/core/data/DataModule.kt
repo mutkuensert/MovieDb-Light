@@ -43,12 +43,15 @@ val dataModule = module {
     single<AuthenticationRepository> {
         AuthenticationRepositoryImpl(get(), get(), get())
     }
-    single(createdAtStart = true) {
+    single {
         AccountRepositoryImpl(
             get(),
             get(),
             get(),
             get(),
+            get(),
+            get(),
+            get()
         )
     }.binds(arrayOf(AccountRepository::class, AuthStateListener::class))
     single<AuthState> { AuthStateImpl(get()) }

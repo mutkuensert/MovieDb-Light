@@ -7,14 +7,17 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
-import core.domain.AccountRepository
 import core.domain.AuthState
+import core.domain.SyncMovieFavoriteStatusUseCase
+import core.domain.SyncMovieWatchlistStatusUseCase
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
 import feature.movie.domain.MovieRepository
 import feature.movie.presentation.R
+import feature.movie.presentation.RateMovieUseCase
+import feature.movie.presentation.RemoveRatingUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
@@ -25,9 +28,12 @@ import kotlin.math.roundToInt
 
 class MovieDetailViewModel(
     private val movieRepository: MovieRepository,
+    private val rateMovieUseCase: RateMovieUseCase,
+    private val removeRatingUseCase: RemoveRatingUseCase,
+    private val syncMovieFavoriteStatusUseCase: SyncMovieFavoriteStatusUseCase,
+    private val syncMovieWatchlistStatusUseCase: SyncMovieWatchlistStatusUseCase,
     private val loadingAnimator: LoadingAnimator,
     private val popupHandler: PopupHandler,
-    private val accountRepository: AccountRepository,
     private val navigator: Navigator,
     private val authState: AuthState,
     private val strResource: StrResource,
@@ -126,7 +132,7 @@ class MovieDetailViewModel(
 
     fun handleWatchlistClick(movieId: Int, inWatchlist: Boolean) {
         viewModelScope.launch {
-            accountRepository.syncMovieWatchlistStatus(movieId, inWatchlist).onSuccess {
+            syncMovieWatchlistStatusUseCase.execute(movieId, inWatchlist).onSuccess {
                 _uiModel.update {
                     it.copy(inWatchlist = !uiModel.value.inWatchlist!!)
                 }
@@ -138,7 +144,7 @@ class MovieDetailViewModel(
 
     fun handleFavoriteClick() {
         viewModelScope.launch {
-            accountRepository.syncMovieFavoriteStatus(movieId, !uiModel.value.favorite!!)
+            syncMovieFavoriteStatusUseCase.execute(movieId, !uiModel.value.favorite!!)
                 .onSuccess {
                     _uiModel.update {
                         it.copy(favorite = !uiModel.value.favorite!!)
@@ -151,7 +157,7 @@ class MovieDetailViewModel(
 
     fun handleRateClick(value: Int) {
         viewModelScope.launch {
-            movieRepository.rateMovie(movieId, value).onSuccess {
+            rateMovieUseCase.execute(movieId, value).onSuccess {
                 _uiModel.update {
                     it.copy(userRate = value.toString())
                 }
@@ -163,7 +169,7 @@ class MovieDetailViewModel(
 
     fun handleRemoveRatingClick() {
         viewModelScope.launch {
-            movieRepository.removeRating(movieId).onSuccess {
+            removeRatingUseCase.execute(movieId).onSuccess {
                 _uiModel.update {
                     it.copy(userRate = null)
                 }

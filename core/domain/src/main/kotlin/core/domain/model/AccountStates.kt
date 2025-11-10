@@ -1,4 +1,4 @@
-package core.domain.common
+package core.domain.model
 
 data class AccountStates(
     val id: Int,

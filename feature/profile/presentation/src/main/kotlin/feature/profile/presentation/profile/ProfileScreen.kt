@@ -1,4 +1,4 @@
-package feature.profile.presentation
+package feature.profile.presentation.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -45,6 +45,7 @@ import core.ui.MoviedbLightTheme
 import core.ui.StatusBarColorHandler
 import core.ui.component.InteractivePoster
 import core.ui.component.PosterSize
+import feature.profile.presentation.R
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel

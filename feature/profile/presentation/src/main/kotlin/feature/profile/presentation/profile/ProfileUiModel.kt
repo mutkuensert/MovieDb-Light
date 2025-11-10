@@ -1,4 +1,4 @@
-package feature.profile.presentation
+package feature.profile.presentation.profile
 
 data class ProfileUiModel(val profileImageUrl: String?, val name: String) {
     companion object {

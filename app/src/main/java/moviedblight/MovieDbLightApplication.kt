@@ -4,10 +4,11 @@ import android.app.Application
 import com.mutkuensert.moviedblight.BuildConfig
 import core.data.dataModule
 import core.database.databaseModule
+import core.domain.domainModule
+import core.ui.uiModule
 import injection.movieModule
 import injection.profileModule
 import libraries.librariesModule
-import core.ui.uiModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
@@ -24,7 +25,7 @@ class MovieDbLightApplication : Application() {
                 appModule,
                 databaseModule,
                 dataModule,
-                //domainModule,
+                domainModule,
                 uiModule,
                 movieModule,
                 profileModule,

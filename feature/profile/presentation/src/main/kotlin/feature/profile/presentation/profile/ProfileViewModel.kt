@@ -1,4 +1,4 @@
-package feature.profile.presentation
+package feature.profile.presentation.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +12,7 @@ import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
 import feature.profile.domain.LogoutUseCase
 import feature.profile.domain.ProfileRepository
+import feature.profile.presentation.login.LoginRoute
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
