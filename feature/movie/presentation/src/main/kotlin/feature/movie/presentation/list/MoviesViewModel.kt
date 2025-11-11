@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import core.domain.SyncMovieWatchlistStatusUseCase
+import core.domain.movie.SyncMovieWatchlistStatusUseCase
 import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
 import feature.movie.domain.Movie

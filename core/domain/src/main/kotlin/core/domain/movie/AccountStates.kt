@@ -1,4 +1,4 @@
-package core.domain.model
+package core.domain.movie
 
 data class AccountStates(
     val id: Int,

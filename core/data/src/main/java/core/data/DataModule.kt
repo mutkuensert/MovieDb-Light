@@ -11,7 +11,7 @@ import core.data.network.ResultCallAdapterFactory
 import core.data.network.interceptor.AccountIdInterceptor
 import core.data.network.interceptor.ApiKeyInterceptor
 import core.database.user.UserManager
-import core.domain.AccountRepository
+import core.domain.account.AccountRepository
 import core.domain.AuthState
 import core.domain.AuthStateListener
 import core.domain.AuthenticationRepository
@@ -45,6 +45,7 @@ val dataModule = module {
     }
     single {
         AccountRepositoryImpl(
+            get(),
             get(),
             get(),
             get(),

@@ -25,6 +25,7 @@ paging = "3.3.6"
 palette = "1.0.0"
 retrofit = "3.0.0"
 timber = "5.0.1"
+tink = "1.19.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
@@ -74,6 +75,7 @@ palette = { module = "androidx.palette:palette", version.ref = "palette" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-kotlinx-serialization-converter = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+tink = { module = "com.google.crypto.tink:tink-android", version.ref = "tink" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

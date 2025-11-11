@@ -12,10 +12,10 @@ class UserManager(
     context: Context,
     private val json: Json,
 ) {
-    private val encryptedSharedPreferences = EncryptedPreferences.create(PREFS_USER, context)
+    private val encryptedSharedPreferences = EncryptedPreferences(context, PREFS_USER)
 
     fun getUser(): UserDetails? {
-        val userDetailsJson = encryptedSharedPreferences.getString(KEY_USER_DETAILS, null)
+        val userDetailsJson = encryptedSharedPreferences.getString(KEY_USER_DETAILS)
             ?: return null
         return json.decodeFromString<UserDetails>(userDetailsJson)
     }
@@ -28,18 +28,17 @@ class UserManager(
         profilePicturePath: String?,
         includeAdult: Boolean,
     ): Boolean {
-        return encryptedSharedPreferences.edit()
+        return encryptedSharedPreferences
             .putString(
                 KEY_USER_DETAILS,
                 json.encodeToString(
                     UserDetails(id, name, userName, profilePicturePath, includeAdult)
                 )
             )
-            .commit()
     }
 
     fun removeCurrentUser(): Boolean {
-        return encryptedSharedPreferences.edit().remove(KEY_USER_DETAILS).commit()
+        return encryptedSharedPreferences.remove(KEY_USER_DETAILS)
     }
 }
 

@@ -16,6 +16,9 @@ dependencies {
     implementation(projects.feature.profile.data)
     implementation(projects.feature.profile.domain)
     implementation(projects.feature.profile.presentation)
+    implementation(projects.feature.settings.data)
+    implementation(projects.feature.settings.domain)
+    implementation(projects.feature.settings.presentation)
     implementation(libs.retrofit)
     unitTest()
 }

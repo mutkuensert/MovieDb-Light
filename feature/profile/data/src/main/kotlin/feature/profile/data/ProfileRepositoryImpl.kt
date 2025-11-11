@@ -7,10 +7,13 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import core.data.SessionManager
 import core.data.account.AccountService
+import core.data.account.model.toDto
 import core.data.util.withDecimals
+import core.database.LanguagePreference
 import core.database.account.FavoriteMovieDao
 import core.database.account.RatedMovieDao
 import core.database.account.WatchlistMovieDao
+import core.domain.account.SortBy
 import core.domain.profile.ProfileFavoriteMoviesPagingInvalidator
 import core.domain.profile.ProfileRatedMoviesPagingInvalidator
 import core.domain.profile.ProfileWatchlistMoviesPagingInvalidator
@@ -31,6 +34,7 @@ class ProfileRepositoryImpl(
     private val favoriteMovieDao: FavoriteMovieDao,
     private val watchlistMovieDao: WatchlistMovieDao,
     private val ratedMovieDao: RatedMovieDao,
+    private val languagePreference: LanguagePreference,
 ) : ProfileRepository, ProfileFavoriteMoviesPagingInvalidator,
     ProfileWatchlistMoviesPagingInvalidator,
     ProfileRatedMoviesPagingInvalidator {
@@ -39,13 +43,18 @@ class ProfileRepositoryImpl(
     private val refreshRatedMoviesTrigger = MutableStateFlow(0)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getFavoriteMovies(): Flow<PagingData<Movie>> {
+    override fun getFavoriteMovies(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
         return refreshFavoriteMoviesTrigger.flatMapLatest {
             Pager(
                 config = PagingConfig(pageSize = 20),
                 remoteMediator = FavoriteMoviesRemoteMediator(
                     getMovies = { page ->
-                        accountService.getFavoriteMovies(page, sessionManager.requireSessionId())
+                        accountService.getFavoriteMovies(
+                            page,
+                            sessionManager.requireSessionId(),
+                            languagePreference.getLanguageTag(),
+                            sortBy.toDto()
+                        )
                     },
                     favoriteMovieDao
                 ),
@@ -64,13 +73,18 @@ class ProfileRepositoryImpl(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getWatchlistMovies(): Flow<PagingData<Movie>> {
+    override fun getWatchlistMovies(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
         return refreshWatchlistMoviesTrigger.flatMapLatest {
             Pager(
                 config = PagingConfig(pageSize = 20),
                 remoteMediator = WatchlistMoviesRemoteMediator(
                     getMovies = { page ->
-                        accountService.getWatchlistMovies(page, sessionManager.requireSessionId())
+                        accountService.getWatchlistMovies(
+                            page,
+                            sessionManager.requireSessionId(),
+                            languagePreference.getLanguageTag(),
+                            sortBy.toDto()
+                        )
                     },
                     watchlistMovieDao
                 ),
@@ -89,13 +103,18 @@ class ProfileRepositoryImpl(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getRatedMovies(): Flow<PagingData<Movie>> {
+    override fun getRatedMovies(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
         return refreshRatedMoviesTrigger.flatMapLatest {
             Pager(
                 config = PagingConfig(pageSize = 20),
                 remoteMediator = RatedMoviesRemoteMediator(
                     getMovies = { page ->
-                        accountService.getRatedMovies(page, sessionManager.requireSessionId())
+                        accountService.getRatedMovies(
+                            page,
+                            sessionManager.requireSessionId(),
+                            languagePreference.getLanguageTag(),
+                            sortBy.toDto()
+                        )
                     },
                     ratedMovieDao
                 ),

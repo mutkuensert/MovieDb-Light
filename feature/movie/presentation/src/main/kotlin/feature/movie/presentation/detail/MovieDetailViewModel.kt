@@ -8,8 +8,8 @@ import androidx.paging.map
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import core.domain.AuthState
-import core.domain.SyncMovieFavoriteStatusUseCase
-import core.domain.SyncMovieWatchlistStatusUseCase
+import core.domain.movie.SyncMovieFavoriteStatusUseCase
+import core.domain.movie.SyncMovieWatchlistStatusUseCase
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator

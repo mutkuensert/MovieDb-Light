@@ -9,14 +9,15 @@ import com.github.michaelbull.result.Result
 import core.data.SessionManager
 import core.data.network.mapToDomain
 import core.data.util.withDecimals
+import core.database.LanguagePreference
 import core.database.feature.movies.nowplaying.NowPlayingMovieDao
 import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.similar.SimilarMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.domain.ErrorMessage
-import core.domain.model.AccountStates
-import core.domain.model.Provider
+import core.domain.movie.AccountStates
+import core.domain.common.model.Provider
 import feature.movie.data.remote.MovieService
 import feature.movie.data.remote.response.PostMovieRatingRequest
 import feature.movie.domain.Movie
@@ -25,7 +26,7 @@ import feature.movie.domain.MovieRepository
 import feature.movie.domain.Person
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import libraries.CountryManager
+import libraries.LocalizationHelper
 import libraries.getYoutubeUrlByKey
 import libraries.image.TmdbImage
 
@@ -38,6 +39,7 @@ class MovieRepositoryImpl(
     private val topRatedMovieDao: TopRatedMovieDao,
     private val similarMovieDao: SimilarMovieDao,
     private val sessionManager: SessionManager,
+    private val languagePreference: LanguagePreference,
 ) : MovieRepository {
 
     override fun getPopularMovies(countryCode: String?): Flow<PagingData<Movie>> {
@@ -45,7 +47,11 @@ class MovieRepositoryImpl(
             config = PagingConfig(pageSize = 20),
             remoteMediator = PopularMoviesRemoteMediator(
                 getMovies = { page ->
-                    movieService.getPopularMovies(page, countryCode)
+                    movieService.getPopularMovies(
+                        page,
+                        countryCode,
+                        languagePreference.getLanguageTag()
+                    )
                 },
                 popularMovieDao
             ),
@@ -69,7 +75,11 @@ class MovieRepositoryImpl(
             config = PagingConfig(pageSize = 20),
             remoteMediator = NowPlayingMoviesRemoteMediator(
                 getMovies = { page ->
-                    movieService.getMoviesNowPlaying(page, countryCode)
+                    movieService.getMoviesNowPlaying(
+                        page,
+                        countryCode,
+                        languagePreference.getLanguageTag()
+                    )
                 },
                 nowPlayingMovieDao
             ),
@@ -92,7 +102,11 @@ class MovieRepositoryImpl(
             config = PagingConfig(pageSize = 20),
             remoteMediator = UpcomingMoviesRemoteMediator(
                 getMovies = { page ->
-                    movieService.getUpcomingMovies(page, countryCode)
+                    movieService.getUpcomingMovies(
+                        page,
+                        countryCode,
+                        languagePreference.getLanguageTag()
+                    )
                 },
                 upcomingMovieDao
             ),
@@ -115,7 +129,11 @@ class MovieRepositoryImpl(
             config = PagingConfig(pageSize = 20),
             remoteMediator = TopRatedMoviesRemoteMediator(
                 getMovies = { page ->
-                    movieService.getTopRatedMovies(page, countryCode)
+                    movieService.getTopRatedMovies(
+                        page,
+                        countryCode,
+                        languagePreference.getLanguageTag()
+                    )
                 },
                 topRatedMovieDao
             ),
@@ -138,7 +156,10 @@ class MovieRepositoryImpl(
             config = PagingConfig(pageSize = 20),
             remoteMediator = SimilarMoviesRemoteMediator(
                 getMovies = { page ->
-                    movieService.getSimilarMovies(movieId, page)
+                    movieService.getSimilarMovies(
+                        movieId, page,
+                        languagePreference.getLanguageTag()
+                    )
                 },
                 similarMovieDao
             ),
@@ -184,7 +205,7 @@ class MovieRepositoryImpl(
 
     override suspend fun getProviders(movieId: Int): Result<List<Provider>, ErrorMessage> {
         return movieService.getProviders(movieId).mapToDomain { response ->
-            val flatrate = response.results[CountryManager.current]?.flatrate
+            val flatrate = response.results[LocalizationHelper.systemCountry]?.flatrate
                 ?: response.results["US"]?.flatrate
 
             flatrate?.map {

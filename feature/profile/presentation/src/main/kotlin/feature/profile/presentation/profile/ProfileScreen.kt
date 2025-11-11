@@ -1,6 +1,7 @@
 package feature.profile.presentation.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,13 +18,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -90,32 +99,119 @@ private fun Profile(
     ) {
         TopBar(uiModel.profileImageUrl, uiModel.name, onLogoutClick)
 
-        Text(
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-            text = stringResource(R.string.favorite_movies),
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleMedium
+        FeedHeader(
+            Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 4.dp),
+            stringResource(R.string.favorite_movies),
+            isAscending = true,
+            {},
+            {},
         )
 
         Movies(favoriteMovies, onClickMovie)
 
-        Text(
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-            text = stringResource(R.string.watchlist_movies),
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleMedium
+        FeedHeader(
+            Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 4.dp),
+            stringResource(R.string.watchlist_movies),
+            isAscending = true,
+            {},
+            {},
         )
 
         Movies(watchlistMovies, onClickMovie)
 
-        Text(
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-            text = stringResource(R.string.rated_movies),
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleMedium
+        FeedHeader(
+            Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 4.dp),
+            stringResource(R.string.rated_movies),
+            isAscending = true,
+            {},
+            {},
         )
 
         Movies(ratedMovies, onClickMovie)
+    }
+}
+
+@Composable
+private fun FeedHeader(
+    modifier: Modifier = Modifier,
+    text: String,
+    isAscending: Boolean,
+    onClickSortAscending: () -> Unit,
+    onClickSortDescending: () -> Unit,
+) {
+    Column(modifier) {
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = text,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            var expanded by remember { mutableStateOf(false) }
+            Box {
+                IconButton({ expanded = true }) {
+                    Icon(
+                        imageVector = Icons.Filled.FilterList,
+                        contentDescription = stringResource(R.string.logout_button_icon),
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    containerColor = MaterialTheme.colorScheme.tertiary
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                if (isAscending) {
+                                    Icon(
+                                        Icons.Filled.CheckCircle,
+                                        stringResource(R.string.sort_by_ascending_selected_icon),
+                                        tint = MaterialTheme.colorScheme.onBackground
+                                    )
+                                }
+                                Text("ASCENDING")
+                            }
+                        },
+                        onClick = {
+                            expanded = false
+                            onClickSortAscending()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                if (isAscending) {
+                                    Icon(
+                                        Icons.Filled.CheckCircle,
+                                        stringResource(R.string.sort_by_descending_selected_icon),
+                                        tint = MaterialTheme.colorScheme.onBackground
+                                    )
+                                }
+                                Text("DESCENDING")
+                            }
+                        },
+                        onClick = {
+                            expanded = false
+                            onClickSortDescending()
+                        }
+                    )
+                }
+            }
+        }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
     }
 }
 

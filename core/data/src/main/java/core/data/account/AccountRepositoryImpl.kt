@@ -7,7 +7,12 @@ import com.github.michaelbull.result.mapBoth
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import core.data.SessionManager
+import core.data.account.model.AccountDetailsResponse
+import core.data.account.model.FavoriteMovieRequest
+import core.data.account.model.WatchlistMovieRequest
+import core.data.account.model.toDto
 import core.data.model.common.MovieDto
+import core.database.LanguagePreference
 import core.database.account.FavoriteMovieDao
 import core.database.account.FavoriteTvShowDao
 import core.database.account.RatedMovieDao
@@ -16,10 +21,11 @@ import core.database.account.model.FavoriteMovieIdEntity
 import core.database.account.model.WatchlistMovieIdEntity
 import core.database.user.UserDetails
 import core.database.user.UserManager
-import core.domain.AccountRepository
 import core.domain.AuthStateListener
 import core.domain.ErrorMessage
 import core.domain.User
+import core.domain.account.AccountRepository
+import core.domain.account.SortBy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -31,6 +37,7 @@ class AccountRepositoryImpl(
     private val watchlistMovieDao: WatchlistMovieDao,
     private val ratedMovieDao: RatedMovieDao,
     private val favoriteTvShowDao: FavoriteTvShowDao,
+    private val languagePreference: LanguagePreference,
 ) : AccountRepository, AuthStateListener {
 
     override suspend fun fetchAccountDetails(): Result<User, ErrorMessage> {
@@ -56,7 +63,7 @@ class AccountRepositoryImpl(
             })
     }
 
-    override suspend fun fetchFavoriteMovies() {
+    override suspend fun fetchFavoriteMovies(sortBy: SortBy.CreatedAt) {
         withContext(Dispatchers.IO) {
             favoriteMovieDao.clearAllIds()
             val favoriteMovies = mutableListOf<MovieDto>()
@@ -65,8 +72,10 @@ class AccountRepositoryImpl(
             var page = 1
             while (page in 0..endPage) {
                 accountService.getFavoriteMovies(
-                    page = page,
-                    sessionId = sessionManager.getSessionId()!!
+                    page,
+                    sessionManager.requireSessionId(),
+                    languagePreference.getLanguageTag(),
+                    sortBy.toDto()
                 ).onSuccess { response ->
                     endPage = response.totalPages
 
@@ -81,13 +90,13 @@ class AccountRepositoryImpl(
 
             favoriteMovieDao.insertIds(
                 *favoriteMovies
-                    .map(::mapToFavoriteMovieEntity)
+                    .map { it.toFavoriteMovieIdEntity() }
                     .toTypedArray()
             )
         }
     }
 
-    override suspend fun fetchWatchlistMovies() {
+    override suspend fun fetchWatchlistMovies(sortBy: SortBy.CreatedAt) {
         withContext(Dispatchers.IO) {
             watchlistMovieDao.clearAllIds()
             val watchlistMovies = mutableListOf<MovieDto>()
@@ -96,8 +105,11 @@ class AccountRepositoryImpl(
             var page = 1
             while (page in 0..endPage) {
                 accountService.getWatchlistMovies(
-                    page = page,
-                    sessionId = sessionManager.requireSessionId()
+                    page,
+                    sessionManager.requireSessionId(),
+                    languagePreference.getLanguageTag(),
+                    sortBy.toDto()
+
                 ).onSuccess { response ->
                     endPage = response.totalPages
 
@@ -112,7 +124,7 @@ class AccountRepositoryImpl(
 
             watchlistMovieDao.insertIds(
                 *watchlistMovies
-                    .map(::mapToWatchlistMovieEntity)
+                    .map { it.toWatchlistMovieIdEntity() }
                     .toTypedArray()
             )
         }
@@ -189,16 +201,12 @@ class AccountRepositoryImpl(
     }
 }
 
-private fun mapToFavoriteMovieEntity(
-    dto: MovieDto
-): FavoriteMovieIdEntity {
-    return FavoriteMovieIdEntity(id = dto.id)
+private fun MovieDto.toFavoriteMovieIdEntity(): FavoriteMovieIdEntity {
+    return FavoriteMovieIdEntity(id)
 }
 
-private fun mapToWatchlistMovieEntity(
-    dto: MovieDto
-): WatchlistMovieIdEntity {
-    return WatchlistMovieIdEntity(id = dto.id)
+private fun MovieDto.toWatchlistMovieIdEntity(): WatchlistMovieIdEntity {
+    return WatchlistMovieIdEntity(id)
 }
 
 private fun UserDetails.toUser(): User {

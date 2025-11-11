@@ -1,7 +1,6 @@
 package core.data
 
 import android.content.Context
-import androidx.core.content.edit
 import core.database.user.EncryptedPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,41 +10,41 @@ private const val KEY_SESSION_ID: String = "sessionId"
 private const val KEY_REQUEST_TOKEN: String = "requestToken"
 
 class SessionManager(context: Context) {
-    private val encryptedSharedPreferences = EncryptedPreferences.create(PREFS_SESSION, context)
+    private val encryptedSharedPreferences = EncryptedPreferences(context, PREFS_SESSION)
     private val _loggedIn = MutableStateFlow<Boolean>(
         encryptedSharedPreferences.contains(KEY_SESSION_ID)
     )
     val loggedIn = _loggedIn.asStateFlow()
 
     fun setSessionId(id: String) {
-        val hasSessionId = encryptedSharedPreferences.edit().putString(KEY_SESSION_ID, id).commit()
+        val hasSessionId = encryptedSharedPreferences.putString(KEY_SESSION_ID, id)
         _loggedIn.value = hasSessionId
     }
 
     fun removeSessionId() {
-        val hasNoSessionId = encryptedSharedPreferences.edit().remove(KEY_SESSION_ID).commit()
+        val hasNoSessionId = encryptedSharedPreferences.remove(KEY_SESSION_ID)
         _loggedIn.value = !hasNoSessionId
     }
 
     fun getSessionId(): String? {
-        return encryptedSharedPreferences.getString(KEY_SESSION_ID, null)
+        return encryptedSharedPreferences.getString(KEY_SESSION_ID)
     }
 
     fun requireSessionId(): String {
-        return requireNotNull(encryptedSharedPreferences.getString(KEY_SESSION_ID, null)) {
+        return requireNotNull(encryptedSharedPreferences.getString(KEY_SESSION_ID)) {
             "Session id can't be null here."
         }
     }
 
     fun setRequestToken(token: String) {
-        encryptedSharedPreferences.edit(commit = true) { putString(KEY_REQUEST_TOKEN, token) }
+        encryptedSharedPreferences.putString(KEY_REQUEST_TOKEN, token)
     }
 
     fun getRequestToken(): String? {
-        return encryptedSharedPreferences.getString(KEY_REQUEST_TOKEN, null)
+        return encryptedSharedPreferences.getString(KEY_REQUEST_TOKEN)
     }
 
     fun removeRequestToken() {
-        encryptedSharedPreferences.edit(commit = true) { remove(KEY_REQUEST_TOKEN) }
+        encryptedSharedPreferences.remove(KEY_REQUEST_TOKEN)
     }
 }

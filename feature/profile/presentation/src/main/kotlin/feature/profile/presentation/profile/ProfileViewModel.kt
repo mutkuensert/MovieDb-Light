@@ -6,7 +6,8 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
-import core.domain.AccountRepository
+import core.domain.account.AccountRepository
+import core.domain.account.SortBy
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
@@ -36,11 +37,12 @@ class ProfileViewModel(
         }
     }.cachedIn(viewModelScope)
 
-    val watchlistMovies = profileRepository.getWatchlistMovies().map { pagingData ->
-        pagingData.map {
-            MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage?.toString())
-        }
-    }.cachedIn(viewModelScope)
+    val watchlistMovies = profileRepository.getWatchlistMovies(SortBy.CreatedAt.ASCENDING)
+        .map { pagingData ->
+            pagingData.map {
+                MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage?.toString())
+            }
+        }.cachedIn(viewModelScope)
 
     val ratedMovies = profileRepository.getRatedMovies().map { pagingData ->
         pagingData.map {

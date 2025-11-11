@@ -1,11 +1,11 @@
-package core.data.account
+package core.data.account.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class FavoriteMovieRequest(
-    val favorite: Boolean,
+data class WatchlistMovieRequest(
+    val watchlist: Boolean,
     @SerialName("media_id") val mediaId: Int,
 ) {
     @Suppress("UNUSED")

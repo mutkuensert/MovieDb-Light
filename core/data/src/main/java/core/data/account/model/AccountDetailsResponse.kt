@@ -1,4 +1,4 @@
-package core.data.account
+package core.data.account.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

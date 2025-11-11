@@ -38,7 +38,7 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import libraries.CountryManager
+import libraries.LocalizationHelper
 import core.ui.MoviedbLightTheme
 import core.ui.StatusBarColorHandler
 import core.ui.component.InteractivePoster
@@ -198,7 +198,7 @@ fun CountryDialog(
                     .background(MaterialTheme.colorScheme.background),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val currentCountry by remember { derivedStateOf { CountryManager.current } }
+                val currentCountry by remember { derivedStateOf { LocalizationHelper.systemCountry } }
                 TextButton({ onClickCountry.invoke(currentCountry) }) {
                     Text(
                         currentCountry,
@@ -206,7 +206,7 @@ fun CountryDialog(
                     )
                 }
 
-                CountryManager.all.forEach { country ->
+                LocalizationHelper.allCountries.forEach { country ->
                     TextButton({ onClickCountry.invoke(country) }) {
                         Text(
                             country,

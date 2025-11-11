@@ -3,8 +3,8 @@ package feature.movie.domain
 import androidx.paging.PagingData
 import com.github.michaelbull.result.Result
 import core.domain.ErrorMessage
-import core.domain.model.AccountStates
-import core.domain.model.Provider
+import core.domain.movie.AccountStates
+import core.domain.common.model.Provider
 import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
