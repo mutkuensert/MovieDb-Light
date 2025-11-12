@@ -7,4 +7,7 @@
     <string name="rated_movies">Puan verilen filmler</string>
     <string name="sort_by_ascending_selected_icon">Artan şekilde sıralandığını ifade eden ikon</string>
     <string name="sort_by_descending_selected_icon">Azalan şekilde sıralandığını ifade eden ikon</string>
+    <string name="descending">Azalan</string>
+    <string name="ascending">Artan</string>
+    <string name="sort_by_added_time">Ekleme zamanına göre sırala</string>
 </resources>

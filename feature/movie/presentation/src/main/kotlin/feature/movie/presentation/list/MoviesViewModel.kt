@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -92,3 +93,5 @@ class MoviesViewModel(
         navigator.navigateToRoute(MovieDetailRoute(movieId))
     }
 }
+
+private fun emptyPagingDataFlow(): Flow<PagingData<MovieUiModel>> = flowOf(PagingData.empty())

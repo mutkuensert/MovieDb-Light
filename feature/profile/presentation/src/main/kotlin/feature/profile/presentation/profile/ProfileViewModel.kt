@@ -7,20 +7,23 @@ import androidx.paging.map
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import core.domain.account.AccountRepository
-import core.domain.account.SortBy
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
 import feature.profile.domain.LogoutUseCase
 import feature.profile.domain.ProfileRepository
 import feature.profile.presentation.login.LoginRoute
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import libraries.image.TmdbImage
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ProfileViewModel(
     private val popupHandler: PopupHandler,
     private val logoutUseCase: LogoutUseCase,
@@ -31,23 +34,37 @@ class ProfileViewModel(
     private val _uiModel = MutableStateFlow(ProfileUiModel.empty())
     val uiModel = _uiModel.asStateFlow()
 
-    val favoriteMovies = profileRepository.getFavoriteMovies().map { pagingData ->
-        pagingData.map {
-            MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage?.toString())
-        }
+    val favoriteMovies = uiModel.distinctUntilChanged { old, new ->
+        old.favoriteMoviesSortBy == new.favoriteMoviesSortBy
+    }.flatMapLatest { uiModel ->
+        profileRepository.getFavoriteMovies(uiModel.favoriteMoviesSortBy.toDomain())
+            .map { pagingData ->
+                pagingData.map {
+                    MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage?.toString())
+                }
+            }
     }.cachedIn(viewModelScope)
 
-    val watchlistMovies = profileRepository.getWatchlistMovies(SortBy.CreatedAt.ASCENDING)
-        .map { pagingData ->
-            pagingData.map {
-                MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage?.toString())
+    val watchlistMovies = uiModel.distinctUntilChanged { old, new ->
+        old.watchlistMoviesSortBy == new.watchlistMoviesSortBy
+    }.flatMapLatest { uiModel ->
+        profileRepository.getWatchlistMovies(uiModel.watchlistMoviesSortBy.toDomain())
+            .map { pagingData ->
+                pagingData.map {
+                    MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage?.toString())
+                }
             }
-        }.cachedIn(viewModelScope)
+    }.cachedIn(viewModelScope)
 
-    val ratedMovies = profileRepository.getRatedMovies().map { pagingData ->
-        pagingData.map {
-            MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage?.toString())
-        }
+    val ratedMovies = uiModel.distinctUntilChanged { old, new ->
+        old.ratedMoviesSortBy == new.ratedMoviesSortBy
+    }.flatMapLatest { uiModel ->
+        profileRepository.getRatedMovies(uiModel.ratedMoviesSortBy.toDomain())
+            .map { pagingData ->
+                pagingData.map {
+                    MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage?.toString())
+                }
+            }
     }.cachedIn(viewModelScope)
 
     fun initScreen() {
@@ -67,7 +84,6 @@ class ProfileViewModel(
         }
     }
 
-
     fun logout() {
         viewModelScope.launch {
             logoutUseCase.execute().onSuccess {
@@ -81,5 +97,23 @@ class ProfileViewModel(
 
     fun handleMovieClick(movieId: Int) {
         navigator.navigateToRoute(MovieDetailRoute(movieId))
+    }
+
+    fun handleSortFavoriteMoviesClick(by: SortByUiModel) {
+        _uiModel.update {
+            it.copy(favoriteMoviesSortBy = by)
+        }
+    }
+
+    fun handleSortWatchlistMoviesClick(by: SortByUiModel) {
+        _uiModel.update {
+            it.copy(watchlistMoviesSortBy = by)
+        }
+    }
+
+    fun handleSortRatedMoviesClick(by: SortByUiModel) {
+        _uiModel.update {
+            it.copy(ratedMoviesSortBy = by)
+        }
     }
 }

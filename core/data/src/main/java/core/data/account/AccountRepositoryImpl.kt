@@ -75,7 +75,7 @@ class AccountRepositoryImpl(
                     page,
                     sessionManager.requireSessionId(),
                     languagePreference.getLanguageTag(),
-                    sortBy.toDto()
+                    sortBy.toDto().value
                 ).onSuccess { response ->
                     endPage = response.totalPages
 
@@ -108,7 +108,7 @@ class AccountRepositoryImpl(
                     page,
                     sessionManager.requireSessionId(),
                     languagePreference.getLanguageTag(),
-                    sortBy.toDto()
+                    sortBy.toDto().value
 
                 ).onSuccess { response ->
                     endPage = response.totalPages

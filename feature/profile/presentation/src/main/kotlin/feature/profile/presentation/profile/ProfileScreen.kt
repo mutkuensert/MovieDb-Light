@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -29,9 +31,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,7 +79,10 @@ fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
         watchlistMovies,
         ratedMovies,
         viewModel::handleMovieClick,
-        viewModel::logout
+        viewModel::logout,
+        viewModel::handleSortFavoriteMoviesClick,
+        viewModel::handleSortWatchlistMoviesClick,
+        viewModel::handleSortRatedMoviesClick,
     )
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.initScreen() }
@@ -89,7 +96,10 @@ private fun Profile(
     watchlistMovies: LazyPagingItems<MovieUiModel>,
     ratedMovies: LazyPagingItems<MovieUiModel>,
     onClickMovie: (movieId: Int) -> Unit,
-    onLogoutClick: () -> Unit
+    onLogoutClick: () -> Unit,
+    onClickSortFavoriteMoviesBy: (sortBy: SortByUiModel) -> Unit,
+    onClickSortWatchlistMoviesBy: (sortBy: SortByUiModel) -> Unit,
+    onClickSortRatedMoviesBy: (sortBy: SortByUiModel) -> Unit,
 ) {
     Column(
         Modifier
@@ -104,36 +114,66 @@ private fun Profile(
                 .padding(horizontal = 16.dp)
                 .padding(top = 4.dp),
             stringResource(R.string.favorite_movies),
-            isAscending = true,
-            {},
-            {},
+            uiModel.favoriteMoviesSortBy,
+            onClickSortFavoriteMoviesBy,
         )
 
-        Movies(favoriteMovies, onClickMovie)
+        val favoriteMoviesListState = rememberLazyListState()
+        Movies(favoriteMovies, favoriteMoviesListState, onClickMovie)
+        ScrollFeedToStartWhenSortedAgain(
+            favoriteMovies,
+            uiModel.favoriteMoviesSortBy,
+            favoriteMoviesListState
+        )
 
         FeedHeader(
             Modifier
                 .padding(horizontal = 16.dp)
                 .padding(top = 4.dp),
             stringResource(R.string.watchlist_movies),
-            isAscending = true,
-            {},
-            {},
+            uiModel.watchlistMoviesSortBy,
+            onClickSortWatchlistMoviesBy,
         )
 
-        Movies(watchlistMovies, onClickMovie)
+        val watchlistMoviesListState = rememberLazyListState()
+        Movies(watchlistMovies, watchlistMoviesListState, onClickMovie)
+        ScrollFeedToStartWhenSortedAgain(
+            watchlistMovies,
+            uiModel.watchlistMoviesSortBy,
+            watchlistMoviesListState
+        )
 
         FeedHeader(
             Modifier
                 .padding(horizontal = 16.dp)
                 .padding(top = 4.dp),
             stringResource(R.string.rated_movies),
-            isAscending = true,
-            {},
-            {},
+            uiModel.ratedMoviesSortBy,
+            onClickSortRatedMoviesBy,
         )
 
-        Movies(ratedMovies, onClickMovie)
+        val ratedMoviesListState = rememberLazyListState()
+        Movies(ratedMovies, ratedMoviesListState, onClickMovie)
+        ScrollFeedToStartWhenSortedAgain(
+            ratedMovies,
+            uiModel.ratedMoviesSortBy,
+            ratedMoviesListState
+        )
+    }
+}
+
+@Composable
+private fun ScrollFeedToStartWhenSortedAgain(
+    movies: LazyPagingItems<MovieUiModel>,
+    sortBy: SortByUiModel,
+    listState: LazyListState
+) {
+    var previousSortBy: SortByUiModel? by rememberSaveable { mutableStateOf(null) }
+    LaunchedEffect(movies.itemSnapshotList) {
+        if (previousSortBy != sortBy) {
+            listState.requestScrollToItem(0)
+            previousSortBy = sortBy
+        }
     }
 }
 
@@ -141,9 +181,8 @@ private fun Profile(
 private fun FeedHeader(
     modifier: Modifier = Modifier,
     text: String,
-    isAscending: Boolean,
-    onClickSortAscending: () -> Unit,
-    onClickSortDescending: () -> Unit,
+    sortBy: SortByUiModel,
+    onClickSortBy: (sortBy: SortByUiModel) -> Unit
 ) {
     Column(modifier) {
         Row(
@@ -170,44 +209,60 @@ private fun FeedHeader(
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
-                    containerColor = MaterialTheme.colorScheme.tertiary
+                    containerColor = MaterialTheme.colorScheme.surface
                 ) {
-                    DropdownMenuItem(
-                        text = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                if (isAscending) {
+                    Column(Modifier.padding(horizontal = 4.dp)) {
+                        Text(stringResource(R.string.sort_by_added_time))
+
+                        DropdownMenuItem(
+                            text = {
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(stringResource(R.string.ascending))
                                     Icon(
                                         Icons.Filled.CheckCircle,
                                         stringResource(R.string.sort_by_ascending_selected_icon),
-                                        tint = MaterialTheme.colorScheme.onBackground
+                                        tint = if (sortBy == SortByUiModel.ASCENDING) {
+                                            Color(0xFF30F100)
+                                        } else {
+                                            Color.White
+                                        }
                                     )
                                 }
-                                Text("ASCENDING")
+                            },
+                            onClick = {
+                                expanded = false
+                                onClickSortBy(SortByUiModel.ASCENDING)
                             }
-                        },
-                        onClick = {
-                            expanded = false
-                            onClickSortAscending()
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                if (isAscending) {
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(stringResource(R.string.descending))
                                     Icon(
                                         Icons.Filled.CheckCircle,
                                         stringResource(R.string.sort_by_descending_selected_icon),
-                                        tint = MaterialTheme.colorScheme.onBackground
+                                        tint = if (sortBy == SortByUiModel.DESCENDING) {
+                                            Color(0xFF30F100)
+                                        } else {
+                                            Color.White
+                                        }
                                     )
                                 }
-                                Text("DESCENDING")
+                            },
+                            onClick = {
+                                expanded = false
+                                onClickSortBy(SortByUiModel.DESCENDING)
                             }
-                        },
-                        onClick = {
-                            expanded = false
-                            onClickSortDescending()
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -263,11 +318,13 @@ private fun TopBar(
 @Composable
 private fun Movies(
     movies: LazyPagingItems<MovieUiModel>,
+    lazyListState: LazyListState,
     onClickMovie: (movieId: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
         modifier = modifier.fillMaxWidth(),
+        state = lazyListState,
         verticalAlignment = Alignment.CenterVertically
     ) {
         item {
@@ -308,13 +365,17 @@ private fun ProfilePreview() {
         Profile(
             ProfileUiModel(
                 null,
-                "Your name"
+                "Your name",
+                SortByUiModel.ASCENDING,
+                SortByUiModel.ASCENDING,
+                SortByUiModel.ASCENDING,
             ),
             emptyLazyPagingItems,
             emptyLazyPagingItems,
             emptyLazyPagingItems,
             {},
-            {}
-        )
+            {}, {},
+            {},
+            {})
     }
 }

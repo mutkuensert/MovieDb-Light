@@ -53,7 +53,7 @@ class ProfileRepositoryImpl(
                             page,
                             sessionManager.requireSessionId(),
                             languagePreference.getLanguageTag(),
-                            sortBy.toDto()
+                            sortBy.toDto().value
                         )
                     },
                     favoriteMovieDao
@@ -83,7 +83,7 @@ class ProfileRepositoryImpl(
                             page,
                             sessionManager.requireSessionId(),
                             languagePreference.getLanguageTag(),
-                            sortBy.toDto()
+                            sortBy.toDto().value
                         )
                     },
                     watchlistMovieDao
@@ -113,7 +113,7 @@ class ProfileRepositoryImpl(
                             page,
                             sessionManager.requireSessionId(),
                             languagePreference.getLanguageTag(),
-                            sortBy.toDto()
+                            sortBy.toDto().value
                         )
                     },
                     ratedMovieDao

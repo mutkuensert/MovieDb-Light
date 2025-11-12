@@ -5,7 +5,7 @@ import core.data.account.model.FavoriteMovieRequest
 import core.data.account.model.FavoriteTvShowDto
 import core.data.account.model.FavoriteTvShowsResponse
 import core.data.account.model.PostFavoriteTvShowResponse
-import core.data.account.model.SortByDto
+import core.data.account.model.SortBySto
 import core.data.account.model.WatchlistMovieRequest
 import core.data.model.common.GenericStatusResponse
 import core.data.model.common.MoviesResponse
@@ -27,7 +27,7 @@ interface AccountService {
         @Query("page") page: Int = 1,
         @Query("session_id") sessionId: String,
         @Query("language") language: String = "en-US",
-        @Query("sort_by") sortBy: SortByDto.CreatedAt = SortByDto.CreatedAt.ASCENDING
+        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value
     ): NetworkResult<MoviesResponse>
 
     @POST("account/account_id/favorite")
@@ -41,7 +41,7 @@ interface AccountService {
         @Query("page") page: Int = 1,
         @Query("session_id") sessionId: String,
         @Query("language") language: String = "en-US",
-        @Query("sort_by") sortBy: SortByDto.CreatedAt = SortByDto.CreatedAt.ASCENDING
+        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value
     ): NetworkResult<MoviesResponse>
 
     @POST("account/account_id/watchlist")
@@ -55,7 +55,7 @@ interface AccountService {
         @Query("page") page: Int = 1,
         @Query("session_id") sessionId: String,
         @Query("language") language: String = "en-US",
-        @Query("sort_by") sortBy: SortByDto.CreatedAt = SortByDto.CreatedAt.ASCENDING
+        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value
     ): NetworkResult<FavoriteTvShowsResponse>
 
     @POST("account/account_id/favorite")
@@ -69,6 +69,6 @@ interface AccountService {
         @Query("page") page: Int = 1,
         @Query("session_id") sessionId: String,
         @Query("language") language: String = "en-US",
-        @Query("sort_by") sortBy: SortByDto.CreatedAt = SortByDto.CreatedAt.ASCENDING
+        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value
     ): NetworkResult<MoviesResponse>
 }

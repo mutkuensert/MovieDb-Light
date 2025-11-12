@@ -7,4 +7,7 @@
     <string name="rated_movies">Rated movies</string>
     <string name="sort_by_ascending_selected_icon">Sort by ascending selected icon</string>
     <string name="sort_by_descending_selected_icon">Sort by descending selected icon</string>
+    <string name="descending">Descending</string>
+    <string name="ascending">Ascending</string>
+    <string name="sort_by_added_time">Sort by added time</string>
 </resources>
