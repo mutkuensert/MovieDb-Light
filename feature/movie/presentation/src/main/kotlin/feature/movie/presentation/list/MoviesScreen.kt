@@ -1,6 +1,7 @@
 package feature.movie.presentation.list
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +18,6 @@ import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,8 +27,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,7 +38,6 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import libraries.LocalizationHelper
 import core.ui.MoviedbLightTheme
 import core.ui.StatusBarColorHandler
 import core.ui.component.InteractivePoster
@@ -46,6 +45,7 @@ import core.ui.component.PosterSize
 import feature.movie.presentation.R
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.serialization.Serializable
+import libraries.LocalizationHelper
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
@@ -151,18 +151,22 @@ private fun CountryButton(
     onClick: () -> Unit,
     selectedCountry: String?
 ) {
-    IconButton(onClick) {
+    Row(
+        Modifier
+            .clip(MaterialTheme.shapes.extraSmall)
+            .clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Icon(
             imageVector = Icons.Filled.Flag,
             contentDescription = stringResource(R.string.flag_icon),
             tint = MaterialTheme.colorScheme.primary
         )
-
         if (!selectedCountry.isNullOrEmpty()) {
             Text(
                 modifier = Modifier.padding(start = 4.dp, end = 2.dp),
                 text = selectedCountry,
-                style = TextStyle(fontWeight = FontWeight.Bold)
+                fontWeight = FontWeight.Bold
             )
         }
     }
@@ -289,17 +293,19 @@ private fun MoviesScreenPreview() {
     MoviedbLightTheme {
         val emptyPagingData =
             flowOf(PagingData.from<MovieUiModel>(emptyList())).collectAsLazyPagingItems()
-        Movies(
-            MoviesUiModel.initial(),
-            emptyPagingData,
-            emptyPagingData,
-            emptyPagingData,
-            emptyPagingData,
-            {},
-            {},
-            {},
-            {},
-            {}
-        )
+        MoviedbLightTheme {
+            Movies(
+                MoviesUiModel.initial().copy(selectedCountry = "TR"),
+                emptyPagingData,
+                emptyPagingData,
+                emptyPagingData,
+                emptyPagingData,
+                {},
+                {},
+                {},
+                {},
+                {}
+            )
+        }
     }
 }

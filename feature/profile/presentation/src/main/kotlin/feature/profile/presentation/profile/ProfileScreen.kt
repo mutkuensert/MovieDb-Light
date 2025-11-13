@@ -59,6 +59,7 @@ import core.ui.StatusBarColorHandler
 import core.ui.component.InteractivePoster
 import core.ui.component.PosterSize
 import feature.profile.presentation.R
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -118,13 +119,7 @@ private fun Profile(
             onClickSortFavoriteMoviesBy,
         )
 
-        val favoriteMoviesListState = rememberLazyListState()
-        Movies(favoriteMovies, favoriteMoviesListState, onClickMovie)
-        ScrollFeedToStartWhenSortedAgain(
-            favoriteMovies,
-            uiModel.favoriteMoviesSortBy,
-            favoriteMoviesListState
-        )
+        Movies(favoriteMovies, uiModel.favoriteMoviesSortBy, onClickMovie)
 
         FeedHeader(
             Modifier
@@ -135,13 +130,7 @@ private fun Profile(
             onClickSortWatchlistMoviesBy,
         )
 
-        val watchlistMoviesListState = rememberLazyListState()
-        Movies(watchlistMovies, watchlistMoviesListState, onClickMovie)
-        ScrollFeedToStartWhenSortedAgain(
-            watchlistMovies,
-            uiModel.watchlistMoviesSortBy,
-            watchlistMoviesListState
-        )
+        Movies(watchlistMovies, uiModel.watchlistMoviesSortBy, onClickMovie)
 
         FeedHeader(
             Modifier
@@ -152,16 +141,11 @@ private fun Profile(
             onClickSortRatedMoviesBy,
         )
 
-        val ratedMoviesListState = rememberLazyListState()
-        Movies(ratedMovies, ratedMoviesListState, onClickMovie)
-        ScrollFeedToStartWhenSortedAgain(
-            ratedMovies,
-            uiModel.ratedMoviesSortBy,
-            ratedMoviesListState
-        )
+        Movies(ratedMovies, uiModel.ratedMoviesSortBy, onClickMovie)
     }
 }
 
+//https://issuetracker.google.com/issues/209652366?hl=ru
 @Composable
 private fun ScrollFeedToStartWhenSortedAgain(
     movies: LazyPagingItems<MovieUiModel>,
@@ -171,6 +155,7 @@ private fun ScrollFeedToStartWhenSortedAgain(
     var previousSortBy: SortByUiModel? by rememberSaveable { mutableStateOf(null) }
     LaunchedEffect(movies.itemSnapshotList) {
         if (previousSortBy != sortBy) {
+            delay(500) //To fix race condition between internal scroll based on item key and this scroll
             listState.requestScrollToItem(0)
             previousSortBy = sortBy
         }
@@ -318,10 +303,11 @@ private fun TopBar(
 @Composable
 private fun Movies(
     movies: LazyPagingItems<MovieUiModel>,
-    lazyListState: LazyListState,
+    sortBy: SortByUiModel,
     onClickMovie: (movieId: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val lazyListState = rememberLazyListState()
     LazyRow(
         modifier = modifier.fillMaxWidth(),
         state = lazyListState,
@@ -355,6 +341,12 @@ private fun Movies(
             }
         }
     }
+
+    ScrollFeedToStartWhenSortedAgain(
+        movies,
+        sortBy,
+        lazyListState
+    )
 }
 
 @Preview
