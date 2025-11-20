@@ -1,6 +1,6 @@
 package feature.settings.domain
 
 interface SettingsRepository {
-    fun setLanguagePreference(languageTag: String)
-    fun getLanguagePreference(): String
+    fun setContentLanguage(language: String)
+    fun getContentLanguage(): String
 }

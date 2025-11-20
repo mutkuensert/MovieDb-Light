@@ -1,11 +1,11 @@
 package feature.settings.presentation
 
 data class SettingsUiModel(
-    val languagePreference: String,
+    val language: String,
 ) {
     companion object {
         fun initial(): SettingsUiModel {
-            return SettingsUiModel(languagePreference = "")
+            return SettingsUiModel(language = "")
         }
     }
 }

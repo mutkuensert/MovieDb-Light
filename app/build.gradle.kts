@@ -63,6 +63,7 @@ dependencies {
     implementation(project(":feature-injection"))
     implementation(projects.feature.movie.presentation)
     implementation(projects.feature.profile.presentation)
+    implementation(projects.feature.settings.presentation)
     implementation(projects.libraries)
     base()
     baseAndroid()

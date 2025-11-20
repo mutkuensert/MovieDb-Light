@@ -10,6 +10,7 @@ import core.domain.account.AccountRepository
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
+import core.ui.route.SettingsRoute
 import feature.profile.domain.LogoutUseCase
 import feature.profile.domain.ProfileRepository
 import feature.profile.presentation.login.LoginRoute
@@ -115,5 +116,9 @@ class ProfileViewModel(
         _uiModel.update {
             it.copy(ratedMoviesSortBy = by)
         }
+    }
+
+    fun handleProfilePictureClick() {
+        navigator.navigateToRoute(SettingsRoute)
     }
 }

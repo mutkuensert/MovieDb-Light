@@ -5,9 +5,17 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,7 +54,12 @@ fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
         }
     }
     if (!loggedIn) {
-        Login(shouldOpenLoginWebPage, viewModel::login, viewModel.requestToken)
+        Login(
+            shouldOpenLoginWebPage,
+            viewModel::handleSettingsClick,
+            viewModel::login,
+            viewModel.requestToken
+        )
     }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.initScreen() }
@@ -56,7 +69,8 @@ fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
 @Composable
 private fun Login(
     shouldOpenLoginWebPage: Boolean,
-    onLoginClick: () -> Unit,
+    onClickSettings: () -> Unit,
+    onClickLogin: () -> Unit,
     requestToken: String?
 ) {
     Column(
@@ -65,6 +79,8 @@ private fun Login(
             .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        TopBar(onClickSettings)
+
         Image(
             modifier = Modifier.weight(1f),
             painter = painterResource(R.drawable.tmdb_logo_blue_square),
@@ -72,7 +88,7 @@ private fun Login(
         )
 
         PrimaryButton(
-            onClick = onLoginClick,
+            onClick = onClickLogin,
             text = stringResource(feature.profile.presentation.R.string.login),
             textColor = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier
@@ -88,6 +104,26 @@ private fun Login(
             launchLoginWebPage(
                 requireNotNull(requestToken) { "Cannot be null if should open" },
                 context
+            )
+        }
+    }
+}
+
+@Composable
+private fun TopBar(onClickSettings: () -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxWidth()
+            .height(60.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Spacer(Modifier.weight(1f))
+        IconButton(onClick = onClickSettings, Modifier.padding(end = 16.dp)) {
+            Icon(
+                imageVector = Icons.Filled.Settings,
+                contentDescription = stringResource(feature.profile.presentation.R.string.settings_button_icon),
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
     }

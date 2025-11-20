@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="content_language">Content Language</string>
+    <string name="select_content_language">Select content language</string>
+</resources>

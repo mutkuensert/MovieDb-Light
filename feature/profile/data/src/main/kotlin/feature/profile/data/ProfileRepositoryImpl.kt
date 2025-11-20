@@ -13,6 +13,7 @@ import core.database.LanguagePreference
 import core.database.account.FavoriteMovieDao
 import core.database.account.RatedMovieDao
 import core.database.account.WatchlistMovieDao
+import core.domain.AppContentLanguageChangeListener
 import core.domain.account.SortBy
 import core.domain.profile.ProfileFavoriteMoviesPagingInvalidator
 import core.domain.profile.ProfileRatedMoviesPagingInvalidator
@@ -27,7 +28,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import libraries.image.TmdbImage
 
-@OptIn(ExperimentalPagingApi::class)
+@OptIn(
+    ExperimentalPagingApi::class,
+    ExperimentalCoroutinesApi::class
+)
 class ProfileRepositoryImpl(
     private val accountService: AccountService,
     private val sessionManager: SessionManager,
@@ -37,12 +41,11 @@ class ProfileRepositoryImpl(
     private val languagePreference: LanguagePreference,
 ) : ProfileRepository, ProfileFavoriteMoviesPagingInvalidator,
     ProfileWatchlistMoviesPagingInvalidator,
-    ProfileRatedMoviesPagingInvalidator {
+    ProfileRatedMoviesPagingInvalidator, AppContentLanguageChangeListener {
     private val refreshFavoriteMoviesTrigger = MutableStateFlow(0)
     private val refreshWatchlistMoviesTrigger = MutableStateFlow(0)
     private val refreshRatedMoviesTrigger = MutableStateFlow(0)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getFavoriteMovies(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
         return refreshFavoriteMoviesTrigger.flatMapLatest {
             Pager(
@@ -72,7 +75,7 @@ class ProfileRepositoryImpl(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+
     override fun getWatchlistMovies(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
         return refreshWatchlistMoviesTrigger.flatMapLatest {
             Pager(
@@ -102,7 +105,6 @@ class ProfileRepositoryImpl(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getRatedMovies(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
         return refreshRatedMoviesTrigger.flatMapLatest {
             Pager(
@@ -141,6 +143,12 @@ class ProfileRepositoryImpl(
     }
 
     override fun invalidateFavoriteMovies() {
+        refreshFavoriteMoviesTrigger.update { it + 1 }
+    }
+
+    override fun onAppContentLanguageChanged() {
+        refreshRatedMoviesTrigger.update { it + 1 }
+        refreshWatchlistMoviesTrigger.update { it + 1 }
         refreshFavoriteMoviesTrigger.update { it + 1 }
     }
 }

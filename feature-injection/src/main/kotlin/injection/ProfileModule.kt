@@ -1,5 +1,6 @@
 package injection
 
+import core.domain.AppContentLanguageChangeListener
 import core.domain.profile.ProfileFavoriteMoviesPagingInvalidator
 import core.domain.profile.ProfileRatedMoviesPagingInvalidator
 import core.domain.profile.ProfileWatchlistMoviesPagingInvalidator
@@ -28,8 +29,11 @@ val profileModule = module {
         )
     }.binds(
         arrayOf(
-            ProfileRepository::class, ProfileFavoriteMoviesPagingInvalidator::class,
-            ProfileWatchlistMoviesPagingInvalidator::class, ProfileRatedMoviesPagingInvalidator::class
+            ProfileRepository::class,
+            ProfileFavoriteMoviesPagingInvalidator::class,
+            ProfileWatchlistMoviesPagingInvalidator::class,
+            ProfileRatedMoviesPagingInvalidator::class,
+            AppContentLanguageChangeListener::class
         )
     )
 

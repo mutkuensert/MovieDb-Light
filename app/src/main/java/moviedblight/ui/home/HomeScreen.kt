@@ -47,8 +47,9 @@ import androidx.navigation.navigation
 import core.ui.PopupConfig
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
-import feature.movie.presentation.R
 import core.ui.route.MovieDetailRoute
+import core.ui.route.SettingsRoute
+import feature.movie.presentation.R
 import feature.movie.presentation.detail.MovieDetailScreen
 import feature.movie.presentation.list.MoviesRoute
 import feature.movie.presentation.list.MoviesScreen
@@ -57,6 +58,7 @@ import feature.profile.presentation.login.LoginRoute
 import feature.profile.presentation.login.LoginScreen
 import feature.profile.presentation.profile.ProfileRoute
 import feature.profile.presentation.profile.ProfileScreen
+import feature.settings.presentation.SettingsScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -187,6 +189,10 @@ fun MainNavigation(
 
                 composable<ProfileRoute> {
                     ProfileScreen()
+                }
+
+                composable<SettingsRoute> {
+                    SettingsScreen()
                 }
             }
         }

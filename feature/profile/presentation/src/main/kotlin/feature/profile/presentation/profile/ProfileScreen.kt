@@ -1,6 +1,7 @@
 package feature.profile.presentation.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -84,6 +85,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
         viewModel::handleSortFavoriteMoviesClick,
         viewModel::handleSortWatchlistMoviesClick,
         viewModel::handleSortRatedMoviesClick,
+        viewModel::handleProfilePictureClick,
     )
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.initScreen() }
@@ -101,6 +103,7 @@ private fun Profile(
     onClickSortFavoriteMoviesBy: (sortBy: SortByUiModel) -> Unit,
     onClickSortWatchlistMoviesBy: (sortBy: SortByUiModel) -> Unit,
     onClickSortRatedMoviesBy: (sortBy: SortByUiModel) -> Unit,
+    onClickProfilePicture: () -> Unit,
 ) {
     Column(
         Modifier
@@ -108,7 +111,7 @@ private fun Profile(
             .verticalScroll(rememberScrollState())
             .background(MaterialTheme.colorScheme.background)
     ) {
-        TopBar(uiModel.profileImageUrl, uiModel.name, onLogoutClick)
+        TopBar(uiModel.profileImageUrl, uiModel.name, onClickProfilePicture, onLogoutClick)
 
         FeedHeader(
             Modifier
@@ -259,6 +262,7 @@ private fun FeedHeader(
 private fun TopBar(
     imageUrl: String?,
     text: String,
+    onClickProfilePicture: () -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -275,6 +279,7 @@ private fun TopBar(
                 .clip(CircleShape)
                 .size(40.dp)
                 .background(Color.White)
+                .clickable { onClickProfilePicture() }
         ) {
             if (imageUrl != null) {
                 AsyncImage(
@@ -290,7 +295,7 @@ private fun TopBar(
 
         Spacer(Modifier.weight(1f))
 
-        IconButton(onClick = onLogoutClick) {
+        IconButton(onClick = onLogoutClick, Modifier.padding(end = 16.dp)) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.Logout,
                 contentDescription = stringResource(R.string.logout_button_icon),
@@ -367,6 +372,7 @@ private fun ProfilePreview() {
             emptyLazyPagingItems,
             {},
             {}, {},
+            {},
             {},
             {})
     }
