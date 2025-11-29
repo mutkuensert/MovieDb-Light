@@ -86,7 +86,6 @@ Core modules contain functionality shared across multiple features:
 - **core:data**: Network, database access, and common data utilities
 - **core:database**: Database setup, DAOs, and entities
 - **core:domain**: Common domain
-- **core:feature-injection**: Dependency injection setup module for feature modules
 - **core:ui**: Common UI components, themes, and navigation utilities
 
 ### Feature Modules
@@ -97,10 +96,17 @@ Each feature is isolated in its own module group with three sub-modules:
 - **feature:[feature-name]:domain**: Contains business logic, repository interfaces use cases
 - **feature:[feature-name]:presentation**: UI components, ViewModels, and UI states
 
+### Feature Injection Module
+
+Dependency injection setup module for feature modules
+
+### Libraries Module
+
+A simple module that (I look for a better name) contains common utility classes and doesn't use additional dependencies
+
 ### Module Dependency
 
-Dependency injection is used for architecture. That means presentation and data modules depend
-on domain modules. core.data module also depends on database.
+Presentation and data modules depend on domain modules. core.data module also depends on database.
 
 ## Custom Gradle Tasks
 
