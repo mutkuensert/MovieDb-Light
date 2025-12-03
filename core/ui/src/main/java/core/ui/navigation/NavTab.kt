@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 
 sealed interface NavTab {
 
-
     @Serializable
     object MovieTab : NavTab
 

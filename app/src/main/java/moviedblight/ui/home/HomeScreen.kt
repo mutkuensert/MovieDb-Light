@@ -47,14 +47,14 @@ import androidx.navigation.navigation
 import core.ui.PopupConfig
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
+import core.ui.route.LoginRoute
 import core.ui.route.MovieDetailRoute
+import core.ui.route.MoviesRoute
 import core.ui.route.SettingsRoute
 import feature.movie.presentation.R
 import feature.movie.presentation.detail.MovieDetailScreen
-import feature.movie.presentation.list.MoviesRoute
 import feature.movie.presentation.list.MoviesScreen
 import feature.profile.presentation.login.LoginDeeplink
-import feature.profile.presentation.login.LoginRoute
 import feature.profile.presentation.login.LoginScreen
 import feature.profile.presentation.profile.ProfileRoute
 import feature.profile.presentation.profile.ProfileScreen
@@ -193,6 +193,10 @@ fun MainNavigation(
 
                 composable<SettingsRoute> {
                     SettingsScreen()
+                }
+
+                composable<MovieDetailRoute> {
+                    MovieDetailScreen()
                 }
             }
         }

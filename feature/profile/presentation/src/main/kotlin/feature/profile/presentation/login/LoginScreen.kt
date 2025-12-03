@@ -33,15 +33,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import core.ui.StatusBarColorHandler
 import core.ui.component.OneTimeEffect
 import core.ui.component.PrimaryButton
-import kotlinx.serialization.Serializable
 import libraries.Constants.APP_DEEP_LINK
 import libraries.R
 import org.koin.androidx.compose.koinViewModel
 
 const val LoginDeeplink = "${APP_DEEP_LINK}/login"
-
-@Serializable
-data class LoginRoute(val cameFromTmdbLogin: Boolean = false)
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {

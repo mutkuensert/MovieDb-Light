@@ -13,7 +13,7 @@ import core.ui.route.MovieDetailRoute
 import core.ui.route.SettingsRoute
 import feature.profile.domain.LogoutUseCase
 import feature.profile.domain.ProfileRepository
-import feature.profile.presentation.login.LoginRoute
+import core.ui.route.LoginRoute
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
