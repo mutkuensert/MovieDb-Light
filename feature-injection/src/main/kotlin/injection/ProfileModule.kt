@@ -1,9 +1,9 @@
 package injection
 
 import core.domain.AppContentLanguageChangeListener
-import core.domain.profile.ProfileFavoriteMoviesPagingInvalidator
-import core.domain.profile.ProfileRatedMoviesPagingInvalidator
-import core.domain.profile.ProfileWatchlistMoviesPagingInvalidator
+import core.domain.profile.FavoriteMoviesRefresher
+import core.domain.profile.RatedMoviesRefresher
+import core.domain.profile.WatchlistMoviesRefresher
 import feature.profile.data.ProfileRepositoryImpl
 import feature.profile.domain.LogoutUseCase
 import feature.profile.domain.ProfileRepository
@@ -30,9 +30,9 @@ val profileModule = module {
     }.binds(
         arrayOf(
             ProfileRepository::class,
-            ProfileFavoriteMoviesPagingInvalidator::class,
-            ProfileWatchlistMoviesPagingInvalidator::class,
-            ProfileRatedMoviesPagingInvalidator::class,
+            FavoriteMoviesRefresher::class,
+            WatchlistMoviesRefresher::class,
+            RatedMoviesRefresher::class,
             AppContentLanguageChangeListener::class
         )
     )

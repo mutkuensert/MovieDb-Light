@@ -9,10 +9,10 @@ import libraries.setStatusBarContentLight
 
 @Composable
 fun StatusBarColorHandler(backgroundColor: Color) {
-    val statusBarBackgroundColorManager = LocalStatusBarBackgroundColorHandler.current
+    val statusBarBackgroundColorHandler = LocalStatusBarBackgroundColorHandler.current
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        statusBarBackgroundColorManager.setColor(backgroundColor)
+        statusBarBackgroundColorHandler.setColor(backgroundColor)
 
         if (backgroundColor.isDark) {
             context.setStatusBarContentLight()

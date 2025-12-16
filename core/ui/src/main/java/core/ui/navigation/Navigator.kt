@@ -14,8 +14,8 @@ class Navigator {
     }
 
     inline fun <reified T> navigateToTab(tab: T) {
-        val isAlreadySelected =
-            controller.currentDestination?.hierarchy?.any { it.hasRoute(tab::class) } == true
+        val isAlreadySelected = controller.currentDestination?.hierarchy
+            ?.any { it.hasRoute(tab::class) } == true
         controller.navigate(route = tab as Any) {
             val startDestination = controller.graph.findStartDestination()
             popUpTo(startDestination.id) {
