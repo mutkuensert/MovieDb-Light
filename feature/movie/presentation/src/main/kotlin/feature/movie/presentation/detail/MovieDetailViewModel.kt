@@ -7,7 +7,7 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
-import core.domain.AuthState
+import core.domain.AuthStateProvider
 import core.domain.movie.SyncMovieFavoriteStatusUseCase
 import core.domain.movie.SyncMovieWatchlistStatusUseCase
 import core.ui.LoadingAnimator
@@ -35,7 +35,7 @@ class MovieDetailViewModel(
     private val loadingAnimator: LoadingAnimator,
     private val popupHandler: PopupHandler,
     private val navigator: Navigator,
-    private val authState: AuthState,
+    private val authStateProvider: AuthStateProvider,
     private val strResource: StrResource,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -102,7 +102,7 @@ class MovieDetailViewModel(
                 popupHandler.showSimpleMessage(it)
             }
 
-            if (authState.loggedIn.value) {
+            if (authStateProvider.loggedIn.value) {
                 movieRepository.getAccountStates(movieId).onSuccess { accountStates ->
                     _uiModel.update {
                         it.copy(

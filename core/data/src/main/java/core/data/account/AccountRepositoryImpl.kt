@@ -45,9 +45,7 @@ class AccountRepositoryImpl(
         if (user != null) {
             return Ok(user)
         }
-        val sessionId = requireNotNull(sessionManager.getSessionId()) {
-            "Session id can't be null here."
-        }
+        val sessionId = sessionManager.requireSessionId()
         return accountService.getAccountDetails(sessionId)
             .mapBoth(success = { response ->
                 userManager.setCurrentUser(

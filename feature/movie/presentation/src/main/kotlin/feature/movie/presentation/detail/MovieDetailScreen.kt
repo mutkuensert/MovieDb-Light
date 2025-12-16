@@ -124,58 +124,13 @@ private fun MovieDetail(
 ) {
     Scaffold(
         floatingActionButton = {
-            var extended by remember { mutableStateOf(false) }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Column(
-                    Modifier.animateContentSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    if (extended) {
-                        if (uiModel.favorite != null) {
-                            FavoriteButton(
-                                uiModel.favorite,
-                                onClickFavorite
-                            )
-                        }
-
-                        if (uiModel.inWatchlist != null) {
-                            WatchlistButton(
-                                uiModel.inWatchlist,
-                                {
-                                    onClickWatchlist(uiModel.id, !uiModel.inWatchlist)
-                                }
-                            )
-                        }
-
-                        if (uiModel.showRateButton) {
-                            RateButton(
-                                uiModel.userRate,
-                                onRateClick,
-                                onRemoveRatingClick
-                            )
-                        }
-                    }
-                }
-
-                Spacer(Modifier.height(8.dp))
-
-                if (uiModel.showRateButton || uiModel.favorite != null || uiModel.inWatchlist != null) {
-                    FloatingActionButton(
-                        onClick = { extended = !extended },
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        contentColor = MaterialTheme.colorScheme.primary
-                    ) {
-                        Icon(
-                            if (extended) Icons.Filled.KeyboardArrowDown else Icons.Filled.Add,
-                            "Small floating action button."
-                        )
-                    }
-                }
-            }
+            ActionButtons(
+                uiModel,
+                onClickFavorite,
+                onClickWatchlist,
+                onRateClick,
+                onRemoveRatingClick
+            )
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { _ ->
@@ -199,7 +154,9 @@ private fun MovieDetail(
                     )
                 }
 
-                Overview(uiModel.overview, Modifier.padding(top = 8.dp))
+                if (uiModel.overview.isNotBlank()) {
+                    Overview(uiModel.overview, Modifier.padding(top = 8.dp))
+                }
 
                 if (uiModel.trailerUrl != null) {
                     TrailerButton(
@@ -223,6 +180,68 @@ private fun MovieDetail(
             }
 
             SimilarMovies(similarMovies, onClickMovie, onClickWatchlist)
+        }
+    }
+}
+
+@Composable
+private fun ActionButtons(
+    uiModel: MovieDetailUiModel,
+    onClickFavorite: () -> Unit,
+    onClickWatchlist: (Int, Boolean) -> Unit,
+    onRateClick: (Int) -> Unit,
+    onRemoveRatingClick: () -> Unit
+) {
+    var extended by remember { mutableStateOf(false) }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Column(
+            Modifier.animateContentSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            if (extended) {
+                if (uiModel.favorite != null) {
+                    FavoriteButton(
+                        uiModel.favorite,
+                        onClickFavorite
+                    )
+                }
+
+                if (uiModel.inWatchlist != null) {
+                    WatchlistButton(
+                        uiModel.inWatchlist,
+                        {
+                            onClickWatchlist(uiModel.id, !uiModel.inWatchlist)
+                        }
+                    )
+                }
+
+                if (uiModel.showRateButton) {
+                    RateButton(
+                        uiModel.userRate,
+                        onRateClick,
+                        onRemoveRatingClick
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        if (uiModel.showRateButton || uiModel.favorite != null || uiModel.inWatchlist != null) {
+            FloatingActionButton(
+                onClick = { extended = !extended },
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    if (extended) Icons.Filled.KeyboardArrowDown else Icons.Filled.Add,
+                    "Small floating action button."
+                )
+            }
         }
     }
 }

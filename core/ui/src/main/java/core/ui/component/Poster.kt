@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
@@ -70,7 +71,8 @@ fun Poster(
                 .then(imageSizeModifier)
                 .shadow(elevation = 3.dp, shape = MaterialTheme.shapes.medium)
                 .clip(MaterialTheme.shapes.medium),
-            contentDescription = stringResource(R.string.image)
+            contentDescription = stringResource(R.string.image),
+            contentScale = ContentScale.FillHeight
         )
 
         if (loading) {

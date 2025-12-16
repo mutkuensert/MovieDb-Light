@@ -43,10 +43,7 @@ class AuthenticationRepositoryImpl(
     }
 
     override suspend fun logout(): Result<Unit, ErrorMessage> {
-        val sessionId = requireNotNull(sessionManager.getSessionId()) {
-            "Session id can't be null if logout can be called."
-        }
-
+        val sessionId = sessionManager.requireSessionId()
         return authenticationService.deleteSession(SessionIdRequest(sessionId))
             .onSuccess {
                 if (it.success) {

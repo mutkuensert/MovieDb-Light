@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
-import core.domain.AuthState
+import core.domain.AuthStateProvider
 import core.domain.AuthenticationRepository
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
@@ -21,7 +21,7 @@ const val KEY_CAME_FROM_TMDB_LOGIN = "cameFromTmdbLogin"
 
 class LoginViewModel(
     private val authenticationRepository: AuthenticationRepository,
-    private val authState: AuthState,
+    private val authStateProvider: AuthStateProvider,
     private val savedStateHandle: SavedStateHandle,
     private val popupHandler: PopupHandler,
     private val startSessionUseCase: StartSessionUseCase,
@@ -32,7 +32,7 @@ class LoginViewModel(
     private var _shouldOpenLoginPage = MutableStateFlow(false)
     val shouldOpenLoginWebPage = _shouldOpenLoginPage.asStateFlow()
 
-    val loggedIn: StateFlow<Boolean> get() = authState.loggedIn
+    val loggedIn: StateFlow<Boolean> get() = authStateProvider.loggedIn
     var requestToken: String? = null
         private set
 
