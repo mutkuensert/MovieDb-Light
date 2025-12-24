@@ -21,6 +21,7 @@ fun Project.baseAndroid() {
     implementation(getLibrary("koin.android"))
     implementation(getLibrary("androidx.core.ktx"))
     implementation(getLibrary("androidx.lifecycle.runtime.ktx"))
+    implementation(getLibrary("androidx.lifecycle.viewmodel.ktx"))
 }
 
 fun Project.base() {

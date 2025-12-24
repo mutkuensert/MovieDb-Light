@@ -10,6 +10,7 @@ import core.domain.AuthenticationRepository
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.SettingsRoute
+import core.ui.showFailurePopup
 import feature.profile.domain.StartSessionUseCase
 import feature.profile.presentation.profile.ProfileRoute
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,9 +59,7 @@ class LoginViewModel(
             startSessionUseCase.execute().onSuccess {
                 navigator.navigateBack()
                 navigator.navigateToRoute(ProfileRoute)
-            }.onFailure { errorMessage ->
-                popupHandler.showSimpleMessage(errorMessage)
-            }
+            }.onFailure(popupHandler::showFailurePopup)
         }
     }
 
@@ -70,10 +69,7 @@ class LoginViewModel(
                 .onSuccess {
                     requestToken = it
                     _shouldOpenLoginPage.value = true
-                }
-                .onFailure { errorMessage ->
-                    popupHandler.showSimpleMessage(errorMessage)
-                }
+                }.onFailure(popupHandler::showFailurePopup)
         }
     }
 

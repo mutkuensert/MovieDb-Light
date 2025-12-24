@@ -11,6 +11,7 @@ android {
 
 dependencies {
     implementation(libs.kotlinx.serialization)
+    implementation(projects.core.domain)
     baseAndroid()
     compose()
     api(libs.palette)

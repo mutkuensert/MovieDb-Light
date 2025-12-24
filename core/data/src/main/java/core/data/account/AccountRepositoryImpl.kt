@@ -12,6 +12,7 @@ import core.data.account.model.FavoriteMovieRequest
 import core.data.account.model.WatchlistMovieRequest
 import core.data.account.model.toDto
 import core.data.model.common.MovieDto
+import core.data.network.toFailure
 import core.database.LanguagePreference
 import core.database.account.FavoriteMovieDao
 import core.database.account.FavoriteTvShowDao
@@ -21,13 +22,15 @@ import core.database.account.model.FavoriteMovieIdEntity
 import core.database.account.model.WatchlistMovieIdEntity
 import core.database.user.UserDetails
 import core.database.user.UserManager
+import core.domain.AuthFailure
 import core.domain.AuthStateListener
-import core.domain.ErrorMessage
+import core.domain.Failure
 import core.domain.User
 import core.domain.account.AccountRepository
 import core.domain.account.SortBy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import libraries.StrResource
 
 class AccountRepositoryImpl(
     private val accountService: AccountService,
@@ -38,9 +41,10 @@ class AccountRepositoryImpl(
     private val ratedMovieDao: RatedMovieDao,
     private val favoriteTvShowDao: FavoriteTvShowDao,
     private val languagePreference: LanguagePreference,
+    private val strResource: StrResource,
 ) : AccountRepository, AuthStateListener {
 
-    override suspend fun fetchAccountDetails(): Result<User, ErrorMessage> {
+    override suspend fun fetchAccountDetails(): Result<User, Failure> {
         val user = userManager.getUser()?.toUser()
         if (user != null) {
             return Ok(user)
@@ -56,8 +60,8 @@ class AccountRepositoryImpl(
                     response.includeAdult,
                 )
                 Ok(response.toUser())
-            }, failure = {
-                Err(it.message)
+            }, failure = { networkError ->
+                Err(networkError.toFailure())
             })
     }
 
@@ -131,27 +135,31 @@ class AccountRepositoryImpl(
     override suspend fun syncMovieFavoriteStatus(
         movieId: Int,
         isFavorite: Boolean,
-    ): Result<Unit, ErrorMessage> {
+    ): Result<Unit, Failure> {
         return withContext(Dispatchers.IO) {
             if (isFavorite) {
                 favoriteMovieDao.insertIds(FavoriteMovieIdEntity(movieId))
             } else {
                 favoriteMovieDao.deleteIds(FavoriteMovieIdEntity(movieId))
             }
+            val somethingIsWrongMessage =
+                strResource.get(moviedblight.core.data.R.string.something_is_wrong)
+            val sessionId = sessionManager.getSessionId()
+                ?: return@withContext Err(AuthFailure(somethingIsWrongMessage))
 
             return@withContext accountService.postFavoriteMovie(
                 FavoriteMovieRequest(
                     favorite = isFavorite,
                     mediaId = movieId
                 ),
-                sessionId = sessionManager.requireSessionId()
+                sessionId = sessionId
             ).mapBoth(
                 success = {
                     Ok(Unit)
                 },
-                failure = {
+                failure = { networkError ->
                     favoriteMovieDao.deleteIds(FavoriteMovieIdEntity(movieId))
-                    Err(it.message)
+                    Err(networkError.toFailure())
                 }
             )
         }
@@ -160,7 +168,7 @@ class AccountRepositoryImpl(
     override suspend fun syncMovieWatchlistStatus(
         movieId: Int,
         inWatchlist: Boolean,
-    ): Result<Unit, ErrorMessage> {
+    ): Result<Unit, Failure> {
         return withContext(Dispatchers.IO) {
             if (inWatchlist) {
                 watchlistMovieDao.insertIds(WatchlistMovieIdEntity(movieId))
@@ -178,9 +186,9 @@ class AccountRepositoryImpl(
                 success = {
                     Ok(Unit)
                 },
-                failure = {
+                failure = { networkError ->
                     watchlistMovieDao.deleteIds(WatchlistMovieIdEntity(movieId))
-                    Err(it.message)
+                    Err(networkError.toFailure())
                 }
             )
         }

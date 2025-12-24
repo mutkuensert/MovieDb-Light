@@ -9,11 +9,12 @@ import com.github.michaelbull.result.onSuccess
 import core.domain.account.AccountRepository
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
+import core.ui.route.LoginRoute
 import core.ui.route.MovieDetailRoute
 import core.ui.route.SettingsRoute
+import core.ui.showFailurePopup
 import feature.profile.domain.LogoutUseCase
 import feature.profile.domain.ProfileRepository
-import core.ui.route.LoginRoute
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -79,9 +80,7 @@ class ProfileViewModel(
                         name = user.userName
                     )
                 }
-            }.onFailure {
-                popupHandler.showSimpleMessage(it)
-            }
+            }.onFailure(popupHandler::showFailurePopup)
         }
     }
 
@@ -90,9 +89,7 @@ class ProfileViewModel(
             logoutUseCase.execute().onSuccess {
                 navigator.navigateBack()
                 navigator.navigateToRoute(LoginRoute())
-            }.onFailure {
-                popupHandler.showSimpleMessage(it)
-            }
+            }.onFailure(popupHandler::showFailurePopup)
         }
     }
 

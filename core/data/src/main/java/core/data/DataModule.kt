@@ -52,7 +52,8 @@ val dataModule = module {
             get(),
             get(),
             get(),
-            get()
+            get(),
+            get(),
         )
     }.binds(arrayOf(AccountRepository::class, AuthStateListener::class))
 }

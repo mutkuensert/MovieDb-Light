@@ -44,7 +44,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
-import core.ui.PopupConfig
+import core.ui.Popup
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
 import core.ui.route.LoginRoute
@@ -105,7 +105,7 @@ fun HomeScreen(navigator: Navigator) {
 }
 
 @Composable
-private fun Popup(popup: PopupConfig, viewModel: HomeViewModel) {
+private fun Popup(popup: Popup, viewModel: HomeViewModel) {
     AlertDialog(
         title = {
             if (popup.title != null) {

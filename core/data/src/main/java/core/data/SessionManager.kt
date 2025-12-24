@@ -33,6 +33,10 @@ class SessionManager(context: Context) : AuthStateProvider {
         }
     }
 
+    fun getSessionId(): String? {
+        return encryptedSharedPreferences.getString(KEY_SESSION_ID)
+    }
+
     fun setRequestToken(token: String) {
         encryptedSharedPreferences.putString(KEY_REQUEST_TOKEN, token)
     }

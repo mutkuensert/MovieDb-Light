@@ -6,10 +6,13 @@ import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.mapBoth
 import com.github.michaelbull.result.onSuccess
 import core.data.SessionManager
+import core.data.network.toFailure
 import core.domain.AuthenticationRepository
-import core.domain.ErrorMessage
+import core.domain.Failure
+import core.domain.UndefinedFailure
 import libraries.StrResource
 import moviedblight.core.data.R
+import timber.log.Timber
 
 class AuthenticationRepositoryImpl(
     private val authenticationService: AuthenticationService,
@@ -17,32 +20,34 @@ class AuthenticationRepositoryImpl(
     private val strResource: StrResource,
 ) : AuthenticationRepository {
 
-    override suspend fun getRequestToken(): Result<String, ErrorMessage> {
+    override suspend fun getRequestToken(): Result<String, Failure> {
         return authenticationService.getRequestToken()
             .mapBoth(
                 success = {
                     sessionManager.setRequestToken(it.requestToken)
                     Ok(it.requestToken)
                 }, failure = {
-                    Err("Unsuccessful request token")
+                    Timber.w("Unsuccessful request token")
+                    Err(it.toFailure())
                 })
     }
 
-    override suspend fun startSession(): Result<Unit, ErrorMessage> {
+    override suspend fun startSession(): Result<Unit, Failure> {
         val requestToken = sessionManager.getRequestToken()
-            ?: return Err(strResource.get(R.string.something_is_wrong))
+            ?: return Err(UndefinedFailure(strResource.get(R.string.something_is_wrong)))
 
         return authenticationService.startSession(NewSessionRequest(requestToken))
             .mapBoth(success = {
                 sessionManager.setSessionId(it.sessionId)
                 sessionManager.removeRequestToken()
                 Ok(Unit)
-            }, failure = {
-                Err("Unsuccessful request token validation.")
+            }, failure = { networkError ->
+                Timber.w("Unsuccessful request token validation.")
+                Err(networkError.toFailure())
             })
     }
 
-    override suspend fun logout(): Result<Unit, ErrorMessage> {
+    override suspend fun logout(): Result<Unit, Failure> {
         val sessionId = sessionManager.requireSessionId()
         return authenticationService.deleteSession(SessionIdRequest(sessionId))
             .onSuccess {
@@ -55,11 +60,11 @@ class AuthenticationRepositoryImpl(
                     if (response.success) {
                         Ok(Unit)
                     } else {
-                        Err(strResource.get(R.string.logout_attempt_has_failed))
+                        Err(UndefinedFailure(strResource.get(R.string.logout_attempt_has_failed)))
                     }
                 },
-                failure = { error ->
-                    Err(error.message)
+                failure = { networkError ->
+                    Err(networkError.toFailure())
                 })
     }
 }

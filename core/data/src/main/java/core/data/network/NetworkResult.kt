@@ -5,13 +5,16 @@ import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.annotation.UnsafeResultValueAccess
 import com.github.michaelbull.result.mapBoth
-import core.domain.ErrorMessage
+import core.domain.Failure
 
 typealias NetworkResult<T> = Result<T, NetworkError>
 
 @OptIn(UnsafeResultValueAccess::class)
-fun <T, R> NetworkResult<T>.mapToDomain(transform: (T) -> R): Result<R, ErrorMessage> {
+fun <T, R> NetworkResult<T>.mapToDomain(transform: (T) -> R): Result<R, Failure> {
     return mapBoth(
         success = { Ok(transform(value)) },
-        failure = { Err(it.message) })
+        failure = { networkError ->
+            Err(networkError.toFailure())
+        }
+    )
 }

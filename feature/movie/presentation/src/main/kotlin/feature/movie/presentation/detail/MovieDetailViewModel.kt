@@ -14,12 +14,14 @@ import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
+import core.ui.showFailurePopup
 import feature.movie.domain.MovieRepository
 import feature.movie.presentation.R
 import feature.movie.presentation.RateMovieUseCase
 import feature.movie.presentation.RemoveRatingUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -57,6 +59,20 @@ class MovieDetailViewModel(
         }
     }.cachedIn(viewModelScope)
 
+    init {
+        viewModelScope.launch {
+            authStateProvider.loggedIn.collectLatest { loggedIn ->
+                _uiModel.update {
+                    it.copy(
+                        showRateButton = loggedIn,
+                        showWatchlistButton = loggedIn,
+                        showFavoriteButton = loggedIn
+                    )
+                }
+            }
+        }
+    }
+
     fun getDetails() {
         viewModelScope.launch {
             loadingAnimator.start()
@@ -74,48 +90,37 @@ class MovieDetailViewModel(
                         cast = emptyList()
                     )
                 }
-            }.onFailure {
-                popupHandler.showSimpleMessage(it)
-            }
+            }.onFailure(popupHandler::showFailurePopup)
 
             movieRepository.getMovieCast(movieId).onSuccess { cast ->
                 _uiModel.update {
                     it.copy(cast = cast.map { person -> person.toUiModel() })
                 }
-            }.onFailure {
-                popupHandler.showSimpleMessage(it)
-            }
+            }.onFailure(popupHandler::showFailurePopup)
 
             movieRepository.getProviders(movieId).onSuccess { providers ->
                 _uiModel.update {
                     it.copy(providerLogoUrls = providers.mapNotNull { provider -> provider.logoUrl })
                 }
-            }.onFailure {
-                popupHandler.showSimpleMessage(it)
-            }
+            }.onFailure(popupHandler::showFailurePopup)
 
             movieRepository.getTrailerUrl(movieId).onSuccess { url ->
                 _uiModel.update {
                     it.copy(trailerUrl = url)
                 }
-            }.onFailure {
-                popupHandler.showSimpleMessage(it)
-            }
+            }.onFailure(popupHandler::showFailurePopup)
 
             if (authStateProvider.loggedIn.value) {
                 movieRepository.getAccountStates(movieId).onSuccess { accountStates ->
                     _uiModel.update {
                         it.copy(
-                            showRateButton = true,
                             userRate = accountStates.rate?.roundToInt()
-                                ?.toString(), //TODO("Implement a rating system supports floating number")
+                                ?.toString(), //Implement a rating system supports floating number
                             inWatchlist = accountStates.watchlist,
                             favorite = accountStates.favorite
                         )
                     }
-                }.onFailure {
-                    popupHandler.showSimpleMessage(it)
-                }
+                }.onFailure(popupHandler::showFailurePopup)
             }
 
             loadingAnimator.stop()
@@ -136,9 +141,7 @@ class MovieDetailViewModel(
                 _uiModel.update {
                     it.copy(inWatchlist = !uiModel.value.inWatchlist!!)
                 }
-            }.onFailure {
-                popupHandler.showSimpleMessage(it)
-            }
+            }.onFailure(popupHandler::showFailurePopup)
         }
     }
 
@@ -149,9 +152,7 @@ class MovieDetailViewModel(
                     _uiModel.update {
                         it.copy(favorite = !uiModel.value.favorite!!)
                     }
-                }.onFailure {
-                    popupHandler.showSimpleMessage(it)
-                }
+                }.onFailure(popupHandler::showFailurePopup)
         }
     }
 
@@ -161,9 +162,7 @@ class MovieDetailViewModel(
                 _uiModel.update {
                     it.copy(userRate = value.toString())
                 }
-            }.onFailure {
-                popupHandler.showSimpleMessage(it)
-            }
+            }.onFailure(popupHandler::showFailurePopup)
         }
     }
 
@@ -173,9 +172,7 @@ class MovieDetailViewModel(
                 _uiModel.update {
                     it.copy(userRate = null)
                 }
-            }.onFailure {
-                popupHandler.showSimpleMessage(it)
-            }
+            }.onFailure(popupHandler::showFailurePopup)
         }
     }
 }

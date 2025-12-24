@@ -203,14 +203,14 @@ private fun ActionButtons(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             if (extended) {
-                if (uiModel.favorite != null) {
+                if (uiModel.showFavoriteButton && uiModel.favorite != null) {
                     FavoriteButton(
                         uiModel.favorite,
                         onClickFavorite
                     )
                 }
 
-                if (uiModel.inWatchlist != null) {
+                if (uiModel.showWatchlistButton && uiModel.inWatchlist != null) {
                     WatchlistButton(
                         uiModel.inWatchlist,
                         {
@@ -231,7 +231,7 @@ private fun ActionButtons(
 
         Spacer(Modifier.height(8.dp))
 
-        if (uiModel.showRateButton || uiModel.favorite != null || uiModel.inWatchlist != null) {
+        if (uiModel.showRateButton || uiModel.showFavoriteButton || uiModel.showWatchlistButton) {
             FloatingActionButton(
                 onClick = { extended = !extended },
                 containerColor = MaterialTheme.colorScheme.surface,
@@ -734,6 +734,8 @@ private fun MovieDetailPreview() {
                 imageUrl = null,
                 title = "pharetra",
                 vote = "7.1",
+                showFavoriteButton = true,
+                showWatchlistButton = true,
                 showRateButton = true,
                 userRate = "4",
                 inWatchlist = true,

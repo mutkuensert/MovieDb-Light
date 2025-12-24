@@ -16,7 +16,7 @@ import core.database.feature.movies.similar.SimilarMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.domain.AppContentLanguageChangeListener
-import core.domain.ErrorMessage
+import core.domain.Failure
 import core.domain.common.model.Provider
 import core.domain.movie.AccountStates
 import feature.movie.data.remote.MovieService
@@ -197,7 +197,7 @@ class MovieRepositoryImpl(
         }
     }
 
-    override suspend fun getMovieDetails(movieId: Int): Result<MovieDetails, ErrorMessage> {
+    override suspend fun getMovieDetails(movieId: Int): Result<MovieDetails, Failure> {
         return movieService.getMovieDetails(
             movieId,
             languagePreference.getLanguageTag()
@@ -213,7 +213,7 @@ class MovieRepositoryImpl(
         }
     }
 
-    override suspend fun getMovieCast(movieId: Int): Result<List<Person>, ErrorMessage> {
+    override suspend fun getMovieCast(movieId: Int): Result<List<Person>, Failure> {
         return movieService.getMovieCredits(movieId, languagePreference.getLanguageTag())
             .mapToDomain { response ->
                 response.cast.map {
@@ -227,7 +227,7 @@ class MovieRepositoryImpl(
             }
     }
 
-    override suspend fun getProviders(movieId: Int): Result<List<Provider>, ErrorMessage> {
+    override suspend fun getProviders(movieId: Int): Result<List<Provider>, Failure> {
         return movieService.getProviders(movieId).mapToDomain { response ->
             val flatrate = response.results[LocalizationHelper.systemCountry]?.flatrate
                 ?: response.results["US"]?.flatrate
@@ -243,7 +243,7 @@ class MovieRepositoryImpl(
         }
     }
 
-    override suspend fun getTrailerUrl(movieId: Int): Result<String?, ErrorMessage> {
+    override suspend fun getTrailerUrl(movieId: Int): Result<String?, Failure> {
         return movieService.getVideos(movieId, languagePreference.getLanguageTag()).mapToDomain {
             val key = it.results.find { video ->
                 (video.official && video.type == "Trailer" || video.type == "Trailer") && video.site.lowercase() == "youtube"
@@ -252,14 +252,14 @@ class MovieRepositoryImpl(
         }
     }
 
-    override suspend fun getAccountStates(movieId: Int): Result<AccountStates, ErrorMessage> {
+    override suspend fun getAccountStates(movieId: Int): Result<AccountStates, Failure> {
         return movieService.getAccountStates(movieId, sessionManager.requireSessionId())
             .mapToDomain {
                 AccountStates(it.id, it.favorite, it.rated?.value?.withDecimals(1), it.watchlist)
             }
     }
 
-    override suspend fun rateMovie(movieId: Int, rating: Int): Result<Unit, ErrorMessage> {
+    override suspend fun rateMovie(movieId: Int, rating: Int): Result<Unit, Failure> {
         return movieService.rateMovie(
             movieId,
             PostMovieRatingRequest(rating),
@@ -267,7 +267,7 @@ class MovieRepositoryImpl(
         ).mapToDomain {}
     }
 
-    override suspend fun removeRating(movieId: Int): Result<Unit, ErrorMessage> {
+    override suspend fun removeRating(movieId: Int): Result<Unit, Failure> {
         return movieService.deleteRating(movieId, sessionManager.requireSessionId()).mapToDomain { }
     }
 
