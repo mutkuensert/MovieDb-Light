@@ -1,6 +1,6 @@
 package injection
 
-import core.domain.AppContentLanguageChangeListener
+import core.domain.RemoteContentLanguagePreferenceChangeListener
 import core.domain.profile.FavoriteMoviesRefresher
 import core.domain.profile.RatedMoviesRefresher
 import core.domain.profile.WatchlistMoviesRefresher
@@ -33,7 +33,7 @@ val profileModule = module {
             FavoriteMoviesRefresher::class,
             WatchlistMoviesRefresher::class,
             RatedMoviesRefresher::class,
-            AppContentLanguageChangeListener::class
+            RemoteContentLanguagePreferenceChangeListener::class
         )
     )
 

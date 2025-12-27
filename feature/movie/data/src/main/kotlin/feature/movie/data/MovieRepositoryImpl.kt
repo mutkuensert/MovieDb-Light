@@ -15,7 +15,7 @@ import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.similar.SimilarMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
-import core.domain.AppContentLanguageChangeListener
+import core.domain.RemoteContentLanguagePreferenceChangeListener
 import core.domain.Failure
 import core.domain.common.model.Provider
 import core.domain.movie.AccountStates
@@ -48,7 +48,7 @@ class MovieRepositoryImpl(
     private val similarMovieDao: SimilarMovieDao,
     private val sessionManager: SessionManager,
     private val languagePreference: LanguagePreference,
-) : MovieRepository, AppContentLanguageChangeListener {
+) : MovieRepository, RemoteContentLanguagePreferenceChangeListener {
 
     private val refreshTrigger = MutableStateFlow(0)
 
@@ -271,7 +271,7 @@ class MovieRepositoryImpl(
         return movieService.deleteRating(movieId, sessionManager.requireSessionId()).mapToDomain { }
     }
 
-    override fun onAppContentLanguageChanged() {
+    override fun onRemoteContentLanguagePreferenceChanged() {
         refreshTrigger.update { it + 1 }
     }
 }

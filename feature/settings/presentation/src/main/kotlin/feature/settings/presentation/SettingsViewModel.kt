@@ -2,7 +2,7 @@ package feature.settings.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import feature.settings.domain.SetContentLanguageUseCase
+import feature.settings.domain.RemoteContentLanguagePreferenceUseCase
 import feature.settings.domain.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
-    private val setContentLanguageUseCase: SetContentLanguageUseCase,
+    private val remoteContentLanguagePreferenceUseCase: RemoteContentLanguagePreferenceUseCase,
 ) : ViewModel() {
     private val _uiModel = MutableStateFlow(SettingsUiModel.initial())
     val uiModel = _uiModel.asStateFlow()
@@ -25,7 +25,7 @@ class SettingsViewModel(
 
     fun handleLanguageClick(language: String) {
         viewModelScope.launch {
-            setContentLanguageUseCase.execute(language)
+            remoteContentLanguagePreferenceUseCase.setLanguage(language)
             _uiModel.update { it.copy(language = language) }
         }
     }

@@ -1,6 +1,6 @@
 package injection
 
-import core.domain.AppContentLanguageChangeListener
+import core.domain.RemoteContentLanguagePreferenceChangeListener
 import feature.movie.data.MovieRepositoryImpl
 import feature.movie.data.remote.MovieService
 import feature.movie.domain.MovieRepository
@@ -26,7 +26,7 @@ val movieModule = module {
             get(),
             get()
         )
-    }.binds(arrayOf(MovieRepository::class, AppContentLanguageChangeListener::class))
+    }.binds(arrayOf(MovieRepository::class, RemoteContentLanguagePreferenceChangeListener::class))
     viewModelOf(::MoviesViewModel)
     viewModelOf(::MovieDetailViewModel)
     factory { RateMovieUseCase(get(), get()) }

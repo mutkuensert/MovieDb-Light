@@ -13,7 +13,7 @@ import core.database.LanguagePreference
 import core.database.account.FavoriteMovieDao
 import core.database.account.RatedMovieDao
 import core.database.account.WatchlistMovieDao
-import core.domain.AppContentLanguageChangeListener
+import core.domain.RemoteContentLanguagePreferenceChangeListener
 import core.domain.account.SortBy
 import core.domain.profile.FavoriteMoviesRefresher
 import core.domain.profile.RatedMoviesRefresher
@@ -41,7 +41,7 @@ class ProfileRepositoryImpl(
     private val languagePreference: LanguagePreference,
 ) : ProfileRepository, FavoriteMoviesRefresher,
     WatchlistMoviesRefresher,
-    RatedMoviesRefresher, AppContentLanguageChangeListener {
+    RatedMoviesRefresher, RemoteContentLanguagePreferenceChangeListener {
     private val favoriteMoviesRefreshTrigger = MutableStateFlow(0)
     private val watchlistMoviesRefreshTrigger = MutableStateFlow(0)
     private val ratedMoviesRefreshTrigger = MutableStateFlow(0)
@@ -146,7 +146,7 @@ class ProfileRepositoryImpl(
         favoriteMoviesRefreshTrigger.update { it + 1 }
     }
 
-    override fun onAppContentLanguageChanged() {
+    override fun onRemoteContentLanguagePreferenceChanged() {
         ratedMoviesRefreshTrigger.update { it + 1 }
         watchlistMoviesRefreshTrigger.update { it + 1 }
         favoriteMoviesRefreshTrigger.update { it + 1 }
