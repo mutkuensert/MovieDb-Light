@@ -53,7 +53,7 @@ abstract class FeatureModuleCreatorTask : DefaultTask() {
                     }
 
                     dependencies {
-                        implementation(project(":feature:$featureName:domain"))
+                        implementation(projects.feature.$featureName.domain"))
                     }
                 """.trimIndent()
 
@@ -77,7 +77,7 @@ abstract class FeatureModuleCreatorTask : DefaultTask() {
                     }
 
                     dependencies {
-                        implementation(project(":feature:$featureName:domain"))
+                        implementation(projects.feature.$featureName.domain"))
                     }
                 """.trimIndent()
 
