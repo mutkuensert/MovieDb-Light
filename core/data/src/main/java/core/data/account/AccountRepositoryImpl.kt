@@ -31,6 +31,7 @@ import core.domain.account.SortBy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import libraries.StrResource
+import moviedblight.core.data.R
 
 class AccountRepositoryImpl(
     private val accountService: AccountService,
@@ -142,8 +143,7 @@ class AccountRepositoryImpl(
             } else {
                 favoriteMovieDao.deleteIds(FavoriteMovieIdEntity(movieId))
             }
-            val somethingIsWrongMessage =
-                strResource.get(moviedblight.core.data.R.string.something_is_wrong)
+            val somethingIsWrongMessage = strResource.get(R.string.something_is_wrong)
             val sessionId = sessionManager.getSessionId()
                 ?: return@withContext Err(AuthFailure(somethingIsWrongMessage))
 
