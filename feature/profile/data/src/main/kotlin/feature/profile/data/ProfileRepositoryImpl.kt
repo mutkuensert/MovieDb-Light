@@ -13,11 +13,11 @@ import core.database.LanguagePreference
 import core.database.account.FavoriteMovieDao
 import core.database.account.RatedMovieDao
 import core.database.account.WatchlistMovieDao
-import core.domain.RemoteContentLanguagePreferenceChangeListener
+import core.domain.common.listener.RemoteContentLanguagePreferenceChangeListener
 import core.domain.account.SortBy
-import core.domain.profile.FavoriteMoviesRefresher
-import core.domain.profile.RatedMoviesRefresher
-import core.domain.profile.WatchlistMoviesRefresher
+import core.domain.profile.FavoriteMovieChangeListener
+import core.domain.profile.MovieRateChangeListener
+import core.domain.profile.MovieWatchlistChangeListener
 import feature.profile.domain.Movie
 import feature.profile.domain.ProfileRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,9 +39,9 @@ class ProfileRepositoryImpl(
     private val watchlistMovieDao: WatchlistMovieDao,
     private val ratedMovieDao: RatedMovieDao,
     private val languagePreference: LanguagePreference,
-) : ProfileRepository, FavoriteMoviesRefresher,
-    WatchlistMoviesRefresher,
-    RatedMoviesRefresher, RemoteContentLanguagePreferenceChangeListener {
+) : ProfileRepository, FavoriteMovieChangeListener,
+    MovieWatchlistChangeListener,
+    MovieRateChangeListener, RemoteContentLanguagePreferenceChangeListener {
     private val favoriteMoviesRefreshTrigger = MutableStateFlow(0)
     private val watchlistMoviesRefreshTrigger = MutableStateFlow(0)
     private val ratedMoviesRefreshTrigger = MutableStateFlow(0)
@@ -134,15 +134,15 @@ class ProfileRepositoryImpl(
         }
     }
 
-    override fun refreshRatedMovies() {
+    override fun onMovieRateChanged() {
         ratedMoviesRefreshTrigger.update { it + 1 }
     }
 
-    override fun refreshWatchlistMovies() {
+    override fun onMovieWatchlistChanged() {
         watchlistMoviesRefreshTrigger.update { it + 1 }
     }
 
-    override fun refreshFavoriteMovies() {
+    override fun onFavoriteMovieChanged() {
         favoriteMoviesRefreshTrigger.update { it + 1 }
     }
 

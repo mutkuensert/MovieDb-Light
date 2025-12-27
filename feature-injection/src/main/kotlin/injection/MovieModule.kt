@@ -1,6 +1,6 @@
 package injection
 
-import core.domain.RemoteContentLanguagePreferenceChangeListener
+import core.domain.common.listener.RemoteContentLanguagePreferenceChangeListener
 import feature.movie.data.MovieRepositoryImpl
 import feature.movie.data.remote.MovieService
 import feature.movie.domain.MovieRepository

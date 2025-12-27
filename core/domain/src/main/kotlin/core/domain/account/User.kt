@@ -1,4 +1,4 @@
-package core.domain
+package core.domain.account
 
 data class User(
     val id: Int,

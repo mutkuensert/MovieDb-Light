@@ -15,7 +15,7 @@ import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.similar.SimilarMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
-import core.domain.RemoteContentLanguagePreferenceChangeListener
+import core.domain.common.listener.RemoteContentLanguagePreferenceChangeListener
 import core.domain.Failure
 import core.domain.common.model.Provider
 import core.domain.movie.AccountStates

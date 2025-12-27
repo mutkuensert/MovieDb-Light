@@ -25,7 +25,7 @@ import core.database.user.UserManager
 import core.domain.AuthFailure
 import core.domain.AuthStateListener
 import core.domain.Failure
-import core.domain.User
+import core.domain.account.User
 import core.domain.account.AccountRepository
 import core.domain.account.SortBy
 import kotlinx.coroutines.Dispatchers

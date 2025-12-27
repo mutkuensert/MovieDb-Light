@@ -1,6 +1,6 @@
 package feature.settings.domain
 
-import core.domain.RemoteContentLanguagePreferenceChangeListener
+import core.domain.common.listener.RemoteContentLanguagePreferenceChangeListener
 
 class RemoteContentLanguagePreferenceUseCase(
     private val settingsRepository: SettingsRepository,

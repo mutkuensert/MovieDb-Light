@@ -2,7 +2,6 @@ package core.domain.account
 
 import com.github.michaelbull.result.Result
 import core.domain.Failure
-import core.domain.User
 
 interface AccountRepository {
 

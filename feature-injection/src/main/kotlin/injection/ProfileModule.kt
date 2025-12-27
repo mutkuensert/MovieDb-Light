@@ -1,9 +1,9 @@
 package injection
 
-import core.domain.RemoteContentLanguagePreferenceChangeListener
-import core.domain.profile.FavoriteMoviesRefresher
-import core.domain.profile.RatedMoviesRefresher
-import core.domain.profile.WatchlistMoviesRefresher
+import core.domain.common.listener.RemoteContentLanguagePreferenceChangeListener
+import core.domain.profile.FavoriteMovieChangeListener
+import core.domain.profile.MovieRateChangeListener
+import core.domain.profile.MovieWatchlistChangeListener
 import feature.profile.data.ProfileRepositoryImpl
 import feature.profile.domain.LogoutUseCase
 import feature.profile.domain.ProfileRepository
@@ -30,9 +30,9 @@ val profileModule = module {
     }.binds(
         arrayOf(
             ProfileRepository::class,
-            FavoriteMoviesRefresher::class,
-            WatchlistMoviesRefresher::class,
-            RatedMoviesRefresher::class,
+            FavoriteMovieChangeListener::class,
+            MovieWatchlistChangeListener::class,
+            MovieRateChangeListener::class,
             RemoteContentLanguagePreferenceChangeListener::class
         )
     )
