@@ -64,6 +64,7 @@ dependencies {
     implementation(projects.feature.movie.presentation)
     implementation(projects.feature.profile.presentation)
     implementation(projects.feature.settings.presentation)
+    implementation(projects.feature.search.presentation)
     implementation(projects.libraries)
     base()
     baseAndroid()

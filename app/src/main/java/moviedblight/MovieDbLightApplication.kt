@@ -8,6 +8,7 @@ import core.domain.domainModule
 import core.ui.uiModule
 import injection.movieModule
 import injection.profileModule
+import injection.searchModule
 import injection.settingsModule
 import libraries.librariesModule
 import org.koin.android.ext.koin.androidContext
@@ -30,6 +31,7 @@ class MovieDbLightApplication : Application() {
                 uiModule,
                 movieModule,
                 profileModule,
+                searchModule,
                 settingsModule,
                 librariesModule
             )

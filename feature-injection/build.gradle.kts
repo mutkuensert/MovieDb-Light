@@ -19,6 +19,9 @@ dependencies {
     implementation(projects.feature.settings.data)
     implementation(projects.feature.settings.domain)
     implementation(projects.feature.settings.presentation)
+    implementation(projects.feature.search.data)
+    implementation(projects.feature.search.domain)
+    implementation(projects.feature.search.presentation)
     implementation(libs.retrofit)
     unitTest()
 }
