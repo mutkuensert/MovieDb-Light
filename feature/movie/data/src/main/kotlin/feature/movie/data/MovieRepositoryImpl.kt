@@ -49,7 +49,6 @@ class MovieRepositoryImpl(
     private val sessionManager: SessionManager,
     private val languagePreference: LanguagePreference,
 ) : MovieRepository, RemoteContentLanguagePreferenceChangeListener {
-
     private val refreshTrigger = MutableStateFlow(0)
 
     override fun getPopularMovies(countryCode: String?): Flow<PagingData<Movie>> {
