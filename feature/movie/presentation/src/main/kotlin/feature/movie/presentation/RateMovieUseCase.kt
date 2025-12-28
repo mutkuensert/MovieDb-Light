@@ -10,7 +10,7 @@ class RateMovieUseCase(
     private val movieRateChangeListener: MovieRateChangeListener,
     private val movieRepository: MovieRepository,
 ) {
-    suspend fun execute(movieId: Int, rating: Int): Result<Unit, Failure> {
+    suspend operator fun invoke(movieId: Int, rating: Int): Result<Unit, Failure> {
         return movieRepository.rateMovie(movieId, rating).onSuccess {
             movieRateChangeListener.onMovieRateChanged()
         }

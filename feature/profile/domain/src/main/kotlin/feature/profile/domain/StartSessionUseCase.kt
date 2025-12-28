@@ -5,16 +5,15 @@ import com.github.michaelbull.result.flatMap
 import com.github.michaelbull.result.onSuccess
 import core.domain.AuthenticationRepository
 import core.domain.Failure
-import core.domain.account.User
 import core.domain.account.AccountRepository
 import core.domain.account.SortBy
+import core.domain.account.User
 
 class StartSessionUseCase(
     private val accountRepository: AccountRepository,
     private val authenticationRepository: AuthenticationRepository,
 ) {
-
-    suspend fun execute(): Result<User, Failure> {
+    suspend operator fun invoke(): Result<User, Failure> {
         return authenticationRepository.startSession().flatMap {
             accountRepository.fetchAccountDetails().onSuccess {
                 accountRepository.fetchWatchlistMovies(SortBy.CreatedAt.ASCENDING)

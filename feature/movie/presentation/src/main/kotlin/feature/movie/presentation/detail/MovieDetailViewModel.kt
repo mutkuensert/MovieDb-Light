@@ -137,7 +137,7 @@ class MovieDetailViewModel(
 
     fun handleWatchlistClick(movieId: Int, inWatchlist: Boolean) {
         viewModelScope.launch {
-            syncMovieWatchlistStatusUseCase.execute(movieId, inWatchlist).onSuccess {
+            syncMovieWatchlistStatusUseCase(movieId, inWatchlist).onSuccess {
                 _uiModel.update {
                     it.copy(inWatchlist = !uiModel.value.inWatchlist!!)
                 }
@@ -147,7 +147,7 @@ class MovieDetailViewModel(
 
     fun handleFavoriteClick() {
         viewModelScope.launch {
-            syncMovieFavoriteStatusUseCase.execute(movieId, !uiModel.value.favorite!!)
+            syncMovieFavoriteStatusUseCase(movieId, !uiModel.value.favorite!!)
                 .onSuccess {
                     _uiModel.update {
                         it.copy(favorite = !uiModel.value.favorite!!)
@@ -158,7 +158,7 @@ class MovieDetailViewModel(
 
     fun handleRateClick(value: Int) {
         viewModelScope.launch {
-            rateMovieUseCase.execute(movieId, value).onSuccess {
+            rateMovieUseCase(movieId, value).onSuccess {
                 _uiModel.update {
                     it.copy(userRate = value.toString())
                 }
@@ -168,7 +168,7 @@ class MovieDetailViewModel(
 
     fun handleRemoveRatingClick() {
         viewModelScope.launch {
-            removeRatingUseCase.execute(movieId).onSuccess {
+            removeRatingUseCase(movieId).onSuccess {
                 _uiModel.update {
                     it.copy(userRate = null)
                 }

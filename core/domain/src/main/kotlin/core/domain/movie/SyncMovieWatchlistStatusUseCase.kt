@@ -10,7 +10,7 @@ class SyncMovieWatchlistStatusUseCase(
     private val movieWatchlistChangeListener: MovieWatchlistChangeListener,
     private val accountRepository: AccountRepository
 ) {
-    suspend fun execute(movieId: Int, inWatchlist: Boolean): Result<Unit, Failure> {
+    suspend operator fun invoke(movieId: Int, inWatchlist: Boolean): Result<Unit, Failure> {
         return accountRepository.syncMovieWatchlistStatus(movieId, inWatchlist).onSuccess {
             movieWatchlistChangeListener.onMovieWatchlistChanged()
         }

@@ -85,7 +85,7 @@ class MoviesViewModel(
             "Can't be null if button is visible"
         }
         viewModelScope.launch {
-            syncMovieWatchlistStatusUseCase.execute(movie.id, !inWatchlist)
+            syncMovieWatchlistStatusUseCase(movie.id, !inWatchlist)
         }
     }
 

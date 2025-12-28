@@ -86,7 +86,7 @@ class ProfileViewModel(
 
     fun logout() {
         viewModelScope.launch {
-            logoutUseCase.execute().onSuccess {
+            logoutUseCase().onSuccess {
                 navigator.navigateBack()
                 navigator.navigateToRoute(LoginRoute())
             }.onFailure(popupHandler::showFailurePopup)

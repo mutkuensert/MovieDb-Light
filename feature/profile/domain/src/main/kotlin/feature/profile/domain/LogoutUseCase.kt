@@ -10,8 +10,7 @@ class LogoutUseCase(
     private val authenticationRepository: AuthenticationRepository,
     private val authStateListeners: List<AuthStateListener>,
 ) {
-
-    suspend fun execute(): Result<Unit, Failure> {
+    suspend operator fun invoke(): Result<Unit, Failure> {
         return authenticationRepository.logout().onSuccess {
             authStateListeners.forEach { it.onUnauthorized() }
         }

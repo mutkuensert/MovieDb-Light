@@ -10,7 +10,7 @@ class SyncMovieFavoriteStatusUseCase(
     private val favoriteMovieChangeListener: FavoriteMovieChangeListener,
     private val accountRepository: AccountRepository
 ) {
-    suspend fun execute(movieId: Int, favorite: Boolean): Result<Unit, Failure> {
+    suspend operator fun invoke(movieId: Int, favorite: Boolean): Result<Unit, Failure> {
         return accountRepository.syncMovieFavoriteStatus(movieId, favorite).onSuccess {
             favoriteMovieChangeListener.onFavoriteMovieChanged()
         }

@@ -56,7 +56,7 @@ class LoginViewModel(
 
     private fun startSession() {
         viewModelScope.launch {
-            startSessionUseCase.execute().onSuccess {
+            startSessionUseCase().onSuccess {
                 navigator.navigateBack()
                 navigator.navigateToRoute(ProfileRoute)
             }.onFailure(popupHandler::showFailurePopup)
