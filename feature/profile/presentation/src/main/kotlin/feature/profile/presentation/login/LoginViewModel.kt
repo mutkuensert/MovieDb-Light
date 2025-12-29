@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
-import core.domain.AuthStateProvider
-import core.domain.AuthenticationRepository
+import core.domain.auth.AuthStateProvider
+import core.domain.auth.AuthenticationRepository
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.SettingsRoute

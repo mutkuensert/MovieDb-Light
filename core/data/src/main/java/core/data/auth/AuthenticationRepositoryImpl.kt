@@ -7,7 +7,7 @@ import com.github.michaelbull.result.mapBoth
 import com.github.michaelbull.result.onSuccess
 import core.data.SessionManager
 import core.data.network.toFailure
-import core.domain.AuthenticationRepository
+import core.domain.auth.AuthenticationRepository
 import core.domain.Failure
 import core.domain.UndefinedFailure
 import libraries.StrResource

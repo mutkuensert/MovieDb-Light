@@ -1,4 +1,4 @@
-package core.domain
+package core.domain.auth
 
 import kotlinx.coroutines.flow.StateFlow
 

@@ -2,7 +2,7 @@ package core.data
 
 import android.content.Context
 import core.database.user.EncryptedPreferences
-import core.domain.AuthStateProvider
+import core.domain.auth.AuthStateProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 

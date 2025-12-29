@@ -23,7 +23,7 @@ import core.database.account.model.WatchlistMovieIdEntity
 import core.database.user.UserDetails
 import core.database.user.UserManager
 import core.domain.AuthFailure
-import core.domain.AuthStateListener
+import core.domain.auth.AuthStateListener
 import core.domain.Failure
 import core.domain.account.User
 import core.domain.account.AccountRepository

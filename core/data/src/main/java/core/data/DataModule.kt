@@ -11,9 +11,9 @@ import core.data.network.ResultCallAdapterFactory
 import core.data.network.interceptor.AccountIdInterceptor
 import core.data.network.interceptor.ApiKeyInterceptor
 import core.database.user.UserManager
-import core.domain.AuthStateListener
-import core.domain.AuthStateProvider
-import core.domain.AuthenticationRepository
+import core.domain.auth.AuthStateListener
+import core.domain.auth.AuthStateProvider
+import core.domain.auth.AuthenticationRepository
 import core.domain.account.AccountRepository
 import kotlinx.serialization.json.Json
 import libraries.StrResource

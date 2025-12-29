@@ -3,7 +3,7 @@ package feature.profile.domain
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.flatMap
 import com.github.michaelbull.result.onSuccess
-import core.domain.AuthenticationRepository
+import core.domain.auth.AuthenticationRepository
 import core.domain.Failure
 import core.domain.account.AccountRepository
 import core.domain.account.SortBy
