@@ -23,12 +23,6 @@ features. The application is divided into the following main module types:
 - **Core**: Contains shared functionality across features
 - **Feature**: Feature-specific modules divided into data, domain, and presentation layers
 
-Each feature follows the principles of clean architecture with:
-
-- **Presentation Layer**: Contains UI components, ViewModels, and state management
-- **Domain Layer**: Contains business logic, use cases, and entity models
-- **Data Layer**: Handles data operations, repositories, and external service interactions
-
 ```mermaid
 graph TD
 
@@ -88,15 +82,12 @@ Core modules contain functionality shared across multiple features:
 
 ### Feature Modules
 
-Each feature is isolated in its own module group with three sub-modules:
+Each feature is isolated in its own module group with four sub-modules:
 
 - **feature:[feature-name]:data**: Implements repositories, network services, and data sources
 - **feature:[feature-name]:domain**: Contains business logic, repository interfaces use cases
 - **feature:[feature-name]:presentation**: UI components, ViewModels, and UI states
-
-### Feature Injection Module
-
-Dependency injection setup module for feature modules
+- **feature:[feature-name]:injection**: Dependency injection configs for data, domain and presentation modules
 
 ### Libraries Module
 
@@ -141,7 +132,7 @@ To create a new feature module with data, domain, and presentation layers, run:
 
 This task:
 
-- Creates a new feature module with data, domain, and presentation sub-modules
+- Creates a new feature module with data, domain, presentation and injection sub-modules
 - Sets up the necessary directory structure for each sub-module
 - Creates build.gradle.kts files with appropriate dependencies
 - Updates settings.gradle.kts to include all the new modules
