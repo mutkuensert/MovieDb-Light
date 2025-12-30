@@ -1,7 +1,7 @@
 package feature.movie.data
 
 import core.data.paging.GenericRemoteMediator
-import core.data.model.common.MoviesResponse
+import core.data.common.model.MoviesResponse
 import core.data.network.NetworkResult
 import core.database.feature.movies.popular.PopularMovie
 import core.database.feature.movies.popular.PopularMovieDao

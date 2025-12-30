@@ -2,7 +2,7 @@ package feature.settings.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import feature.settings.domain.SetRemoteContentLanguagePreferenceUseCase
+import feature.settings.domain.usecase.SetRemoteContentLanguagePreferenceUseCase
 import feature.settings.domain.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

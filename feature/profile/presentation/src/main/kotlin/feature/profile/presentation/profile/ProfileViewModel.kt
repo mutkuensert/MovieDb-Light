@@ -13,7 +13,7 @@ import core.ui.route.LoginRoute
 import core.ui.route.MovieDetailRoute
 import core.ui.route.SettingsRoute
 import core.ui.showFailurePopup
-import feature.profile.domain.LogoutUseCase
+import feature.profile.domain.usecase.LogoutUseCase
 import feature.profile.domain.ProfileRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -7,8 +7,8 @@ import core.data.account.model.FavoriteTvShowsResponse
 import core.data.account.model.PostFavoriteTvShowResponse
 import core.data.account.model.SortBySto
 import core.data.account.model.WatchlistMovieRequest
-import core.data.model.common.GenericStatusResponse
-import core.data.model.common.MoviesResponse
+import core.data.common.model.GenericStatusResponse
+import core.data.common.model.MoviesResponse
 import core.data.network.NetworkResult
 import retrofit2.http.Body
 import retrofit2.http.GET

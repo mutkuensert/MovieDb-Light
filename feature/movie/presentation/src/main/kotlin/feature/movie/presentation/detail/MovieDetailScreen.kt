@@ -85,6 +85,9 @@ import core.ui.component.Poster
 import core.ui.component.PosterSize
 import core.ui.component.PrimaryButton
 import feature.movie.presentation.R
+import feature.movie.presentation.detail.model.MovieDetailUiModel
+import feature.movie.presentation.detail.model.MovieUiModel
+import feature.movie.presentation.detail.model.PersonUiModel
 import kotlinx.coroutines.flow.flowOf
 import org.koin.androidx.compose.koinViewModel
 

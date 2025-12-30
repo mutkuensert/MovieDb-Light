@@ -1,8 +1,8 @@
 package feature.movie.data.remote
 
-import core.data.model.common.AccountStatesResponse
-import core.data.model.common.GenericStatusResponse
-import core.data.model.common.MoviesResponse
+import core.data.common.model.AccountStatesResponse
+import core.data.common.model.GenericStatusResponse
+import core.data.common.model.MoviesResponse
 import core.data.network.NetworkResult
 import feature.movie.data.remote.response.MovieCreditsResponse
 import feature.movie.data.remote.response.MovieDetailsResponse

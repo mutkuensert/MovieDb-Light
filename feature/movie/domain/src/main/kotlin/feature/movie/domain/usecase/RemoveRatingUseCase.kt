@@ -1,0 +1,18 @@
+package feature.movie.domain.usecase
+
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.onSuccess
+import core.domain.Failure
+import core.domain.profile.RatedMoviesRefresher
+import feature.movie.domain.MovieRepository
+
+class RemoveRatingUseCase(
+    private val movieRepository: MovieRepository,
+    private val ratedMoviesRefresher: RatedMoviesRefresher,
+) {
+    suspend operator fun invoke(movieId: Int): Result<Unit, Failure> {
+        return movieRepository.removeRating(movieId).onSuccess {
+            ratedMoviesRefresher()
+        }
+    }
+}

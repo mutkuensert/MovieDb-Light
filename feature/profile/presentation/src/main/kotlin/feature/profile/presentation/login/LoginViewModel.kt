@@ -11,7 +11,7 @@ import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.SettingsRoute
 import core.ui.showFailurePopup
-import feature.profile.domain.StartSessionUseCase
+import feature.profile.domain.usecase.StartSessionUseCase
 import feature.profile.presentation.profile.ProfileRoute
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

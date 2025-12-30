@@ -4,7 +4,10 @@ import androidx.paging.PagingData
 import com.github.michaelbull.result.Result
 import core.domain.Failure
 import core.domain.common.model.Provider
-import core.domain.movie.AccountStates
+import feature.movie.domain.model.AccountStates
+import feature.movie.domain.model.Movie
+import feature.movie.domain.model.MovieDetails
+import feature.movie.domain.model.Person
 import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
@@ -20,4 +23,5 @@ interface MovieRepository {
     suspend fun getAccountStates(movieId: Int): Result<AccountStates, Failure>
     suspend fun rateMovie(movieId: Int, rating: Int): Result<Unit, Failure>
     suspend fun removeRating(movieId: Int): Result<Unit, Failure>
+    fun updateLanguageRelatedData()
 }

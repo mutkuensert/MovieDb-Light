@@ -15,16 +15,15 @@ import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.similar.SimilarMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
-import core.domain.common.listener.RemoteContentLanguagePreferenceChangeListener
 import core.domain.Failure
 import core.domain.common.model.Provider
-import core.domain.movie.AccountStates
 import feature.movie.data.remote.MovieService
 import feature.movie.data.remote.response.PostMovieRatingRequest
-import feature.movie.domain.Movie
-import feature.movie.domain.MovieDetails
 import feature.movie.domain.MovieRepository
-import feature.movie.domain.Person
+import feature.movie.domain.model.AccountStates
+import feature.movie.domain.model.Movie
+import feature.movie.domain.model.MovieDetails
+import feature.movie.domain.model.Person
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,7 +47,7 @@ class MovieRepositoryImpl(
     private val similarMovieDao: SimilarMovieDao,
     private val sessionManager: SessionManager,
     private val languagePreference: LanguagePreference,
-) : MovieRepository, RemoteContentLanguagePreferenceChangeListener {
+) : MovieRepository {
     private val refreshTrigger = MutableStateFlow(0)
 
     override fun getPopularMovies(countryCode: String?): Flow<PagingData<Movie>> {
@@ -270,7 +269,7 @@ class MovieRepositoryImpl(
         return movieService.deleteRating(movieId, sessionManager.requireSessionId()).mapToDomain { }
     }
 
-    override fun onRemoteContentLanguagePreferenceChanged() {
+    override fun updateLanguageRelatedData() {
         refreshTrigger.update { it + 1 }
     }
 }

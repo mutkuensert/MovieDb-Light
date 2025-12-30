@@ -11,10 +11,9 @@ import core.data.network.ResultCallAdapterFactory
 import core.data.network.interceptor.AccountIdInterceptor
 import core.data.network.interceptor.ApiKeyInterceptor
 import core.database.user.UserManager
-import core.domain.auth.AuthStateListener
+import core.domain.account.AccountRepository
 import core.domain.auth.AuthStateProvider
 import core.domain.auth.AuthenticationRepository
-import core.domain.account.AccountRepository
 import kotlinx.serialization.json.Json
 import libraries.StrResource
 import okhttp3.MediaType.Companion.toMediaType
@@ -43,7 +42,7 @@ val dataModule = module {
     single<AuthenticationRepository> {
         AuthenticationRepositoryImpl(get(), get(), get())
     }
-    single {
+    single<AccountRepository> {
         AccountRepositoryImpl(
             get(),
             get(),
@@ -55,7 +54,7 @@ val dataModule = module {
             get(),
             get(),
         )
-    }.binds(arrayOf(AccountRepository::class, AuthStateListener::class))
+    }
 }
 
 private fun getJson(): Json {

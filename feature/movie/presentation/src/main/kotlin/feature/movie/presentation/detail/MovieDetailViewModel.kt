@@ -8,8 +8,8 @@ import androidx.paging.map
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import core.domain.auth.AuthStateProvider
-import core.domain.movie.SyncMovieFavoriteStatusUseCase
-import core.domain.movie.SyncMovieWatchlistStatusUseCase
+import feature.movie.domain.usecase.SyncMovieFavoriteStatusUseCase
+import feature.movie.domain.usecase.SyncMovieWatchlistStatusUseCase
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
@@ -17,8 +17,11 @@ import core.ui.route.MovieDetailRoute
 import core.ui.showFailurePopup
 import feature.movie.domain.MovieRepository
 import feature.movie.presentation.R
-import feature.movie.presentation.RateMovieUseCase
-import feature.movie.presentation.RemoveRatingUseCase
+import feature.movie.domain.usecase.RateMovieUseCase
+import feature.movie.domain.usecase.RemoveRatingUseCase
+import feature.movie.presentation.detail.model.MovieDetailUiModel
+import feature.movie.presentation.detail.model.MovieUiModel
+import feature.movie.presentation.detail.model.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest

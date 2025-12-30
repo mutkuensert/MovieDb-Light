@@ -11,7 +11,7 @@ import core.data.account.model.AccountDetailsResponse
 import core.data.account.model.FavoriteMovieRequest
 import core.data.account.model.WatchlistMovieRequest
 import core.data.account.model.toDto
-import core.data.model.common.MovieDto
+import core.data.common.model.MovieDto
 import core.data.network.toFailure
 import core.database.LanguagePreference
 import core.database.account.FavoriteMovieDao
@@ -23,11 +23,10 @@ import core.database.account.model.WatchlistMovieIdEntity
 import core.database.user.UserDetails
 import core.database.user.UserManager
 import core.domain.AuthFailure
-import core.domain.auth.AuthStateListener
 import core.domain.Failure
-import core.domain.account.User
 import core.domain.account.AccountRepository
 import core.domain.account.SortBy
+import core.domain.account.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import libraries.StrResource
@@ -43,7 +42,7 @@ class AccountRepositoryImpl(
     private val favoriteTvShowDao: FavoriteTvShowDao,
     private val languagePreference: LanguagePreference,
     private val strResource: StrResource,
-) : AccountRepository, AuthStateListener {
+) : AccountRepository {
 
     override suspend fun fetchAccountDetails(): Result<User, Failure> {
         val user = userManager.getUser()?.toUser()
@@ -194,7 +193,7 @@ class AccountRepositoryImpl(
         }
     }
 
-    override suspend fun onUnauthorized() {
+    override suspend fun clearUserRelatedData() {
         withContext(Dispatchers.IO) {
             favoriteMovieDao.clearAllIds()
             favoriteMovieDao.clearAllMovies()

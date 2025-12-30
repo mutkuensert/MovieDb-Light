@@ -5,11 +5,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import core.domain.movie.SyncMovieWatchlistStatusUseCase
+import feature.movie.domain.usecase.SyncMovieWatchlistStatusUseCase
 import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
-import feature.movie.domain.Movie
+import feature.movie.domain.model.Movie
 import feature.movie.domain.MovieRepository
+import feature.movie.presentation.list.model.MovieUiModel
+import feature.movie.presentation.list.model.MoviesUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

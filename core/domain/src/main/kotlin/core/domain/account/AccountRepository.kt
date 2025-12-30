@@ -17,4 +17,6 @@ interface AccountRepository {
         movieId: Int,
         inWatchlist: Boolean,
     ): Result<Unit, Failure>
+
+    suspend fun clearUserRelatedData()
 }

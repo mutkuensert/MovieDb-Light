@@ -1,6 +1,6 @@
 package feature.profile.data
 
-import core.data.model.common.MoviesResponse
+import core.data.common.model.MoviesResponse
 import core.data.network.NetworkResult
 import core.data.paging.GenericRemoteMediator
 import core.database.account.FavoriteMovieDao

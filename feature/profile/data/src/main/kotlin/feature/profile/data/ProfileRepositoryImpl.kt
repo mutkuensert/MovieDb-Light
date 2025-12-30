@@ -13,13 +13,9 @@ import core.database.LanguagePreference
 import core.database.account.FavoriteMovieDao
 import core.database.account.RatedMovieDao
 import core.database.account.WatchlistMovieDao
-import core.domain.common.listener.RemoteContentLanguagePreferenceChangeListener
 import core.domain.account.SortBy
-import core.domain.profile.FavoriteMovieChangeListener
-import core.domain.profile.MovieRateChangeListener
-import core.domain.profile.MovieWatchlistChangeListener
-import feature.profile.domain.Movie
 import feature.profile.domain.ProfileRepository
+import feature.profile.domain.model.Movie
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,9 +35,7 @@ class ProfileRepositoryImpl(
     private val watchlistMovieDao: WatchlistMovieDao,
     private val ratedMovieDao: RatedMovieDao,
     private val languagePreference: LanguagePreference,
-) : ProfileRepository, FavoriteMovieChangeListener,
-    MovieWatchlistChangeListener,
-    MovieRateChangeListener, RemoteContentLanguagePreferenceChangeListener {
+) : ProfileRepository {
     private val favoriteMoviesRefreshTrigger = MutableStateFlow(0)
     private val watchlistMoviesRefreshTrigger = MutableStateFlow(0)
     private val ratedMoviesRefreshTrigger = MutableStateFlow(0)
@@ -134,19 +128,19 @@ class ProfileRepositoryImpl(
         }
     }
 
-    override fun onMovieRateChanged() {
+    override fun updateRatedMovies() {
         ratedMoviesRefreshTrigger.update { it + 1 }
     }
 
-    override fun onMovieWatchlistChanged() {
+    override fun updateWatchlistMovies() {
         watchlistMoviesRefreshTrigger.update { it + 1 }
     }
 
-    override fun onFavoriteMovieChanged() {
+    override fun updateFavoriteMovies() {
         favoriteMoviesRefreshTrigger.update { it + 1 }
     }
 
-    override fun onRemoteContentLanguagePreferenceChanged() {
+    override fun updateLanguageRelatedData() {
         ratedMoviesRefreshTrigger.update { it + 1 }
         watchlistMoviesRefreshTrigger.update { it + 1 }
         favoriteMoviesRefreshTrigger.update { it + 1 }

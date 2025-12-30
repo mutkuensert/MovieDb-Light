@@ -1,24 +1,28 @@
 package injection
 
-import core.domain.common.listener.RemoteContentLanguagePreferenceChangeListener
-import core.domain.profile.FavoriteMovieChangeListener
-import core.domain.profile.MovieRateChangeListener
-import core.domain.profile.MovieWatchlistChangeListener
+import core.domain.common.LanguageRelatedDataRefresher
+import core.domain.profile.FavoriteMoviesRefresher
+import core.domain.profile.RatedMoviesRefresher
+import core.domain.profile.WatchlistMoviesRefresher
 import feature.profile.data.ProfileRepositoryImpl
-import feature.profile.domain.LogoutUseCase
 import feature.profile.domain.ProfileRepository
-import feature.profile.domain.StartSessionUseCase
+import feature.profile.domain.datarefresher.FavoriteMoviesRefresherImpl
+import feature.profile.domain.datarefresher.LanguageRelatedDataRefresherImpl
+import feature.profile.domain.datarefresher.RatedMoviesRefresherImpl
+import feature.profile.domain.datarefresher.WatchlistMoviesRefresherImpl
+import feature.profile.domain.usecase.LogoutUseCase
+import feature.profile.domain.usecase.StartSessionUseCase
 import feature.profile.presentation.login.LoginViewModel
 import feature.profile.presentation.profile.ProfileViewModel
 import org.koin.core.module.dsl.viewModelOf
-import org.koin.dsl.binds
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val profileModule = module {
     viewModelOf(::ProfileViewModel)
-    factory { LogoutUseCase(get(), getAll()) }
+    factory { LogoutUseCase(get(), get()) }
     factory { StartSessionUseCase(get(), get()) }
-    single {
+    single<ProfileRepository> {
         ProfileRepositoryImpl(
             get(),
             get(),
@@ -27,15 +31,10 @@ val profileModule = module {
             get(),
             get()
         )
-    }.binds(
-        arrayOf(
-            ProfileRepository::class,
-            FavoriteMovieChangeListener::class,
-            MovieWatchlistChangeListener::class,
-            MovieRateChangeListener::class,
-            RemoteContentLanguagePreferenceChangeListener::class
-        )
-    )
-
+    }
     viewModelOf(::LoginViewModel)
+    single<RatedMoviesRefresher> { RatedMoviesRefresherImpl(get()) }
+    single<FavoriteMoviesRefresher> { FavoriteMoviesRefresherImpl(get()) }
+    single<WatchlistMoviesRefresher> { WatchlistMoviesRefresherImpl(get()) }
+    single { LanguageRelatedDataRefresherImpl(get()) }.bind(LanguageRelatedDataRefresher::class)
 }

@@ -43,6 +43,8 @@ import core.ui.StatusBarColorHandler
 import core.ui.component.InteractivePoster
 import core.ui.component.PosterSize
 import feature.movie.presentation.R
+import feature.movie.presentation.list.model.MovieUiModel
+import feature.movie.presentation.list.model.MoviesUiModel
 import kotlinx.coroutines.flow.flowOf
 import libraries.LocalizationHelper
 import org.koin.androidx.compose.koinViewModel
