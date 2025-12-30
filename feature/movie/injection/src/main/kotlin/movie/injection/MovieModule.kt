@@ -36,5 +36,5 @@ val movieModule = module {
     factory { RemoveRatingUseCase(get(), get()) }
     factory { SyncMovieFavoriteStatusUseCase(get(), get()) }
     factory { SyncMovieWatchlistStatusUseCase(get(), get()) }
-    single { LanguageRelatedDataRefresherImpl(get()) }.bind(LanguageRelatedDataRefresher::class)
+    factory { LanguageRelatedDataRefresherImpl(get()) }.bind(LanguageRelatedDataRefresher::class)
 }

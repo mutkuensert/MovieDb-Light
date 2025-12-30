@@ -33,8 +33,8 @@ val profileModule = module {
         )
     }
     viewModelOf(::LoginViewModel)
-    single<RatedMoviesRefresher> { RatedMoviesRefresherImpl(get()) }
-    single<FavoriteMoviesRefresher> { FavoriteMoviesRefresherImpl(get()) }
-    single<WatchlistMoviesRefresher> { WatchlistMoviesRefresherImpl(get()) }
-    single { LanguageRelatedDataRefresherImpl(get()) }.bind(LanguageRelatedDataRefresher::class)
+    factory<RatedMoviesRefresher> { RatedMoviesRefresherImpl(get()) }
+    factory<FavoriteMoviesRefresher> { FavoriteMoviesRefresherImpl(get()) }
+    factory<WatchlistMoviesRefresher> { WatchlistMoviesRefresherImpl(get()) }
+    factory { LanguageRelatedDataRefresherImpl(get()) }.bind(LanguageRelatedDataRefresher::class)
 }
