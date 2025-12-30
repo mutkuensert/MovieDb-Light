@@ -1,4 +1,4 @@
-package injection
+package movie.injection
 
 import core.domain.common.LanguageRelatedDataRefresher
 import feature.movie.data.MovieRepositoryImpl

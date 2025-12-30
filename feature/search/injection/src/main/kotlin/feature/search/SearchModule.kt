@@ -1,4 +1,4 @@
-package injection
+package feature.search
 
 import feature.search.data.SearchRepositoryImpl
 import feature.search.data.SearchService

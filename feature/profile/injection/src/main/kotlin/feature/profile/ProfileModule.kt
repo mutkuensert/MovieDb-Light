@@ -1,4 +1,4 @@
-package injection
+package feature.profile
 
 import core.domain.common.LanguageRelatedDataRefresher
 import core.domain.profile.FavoriteMoviesRefresher

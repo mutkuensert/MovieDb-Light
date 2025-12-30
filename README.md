@@ -33,7 +33,6 @@ Each feature follows the principles of clean architecture with:
 graph TD
 
     App[app]
-    Feature-injection[feature-injection]
     Libraries[libraries]
 
     subgraph Core[Core]
@@ -47,6 +46,7 @@ graph TD
         F1[feature-data]
         F2[feature-domain]
         F3[feature-presentation]
+        F4[feature-injection]
     end
 
 %% Libraries module dependencies
@@ -64,16 +64,14 @@ graph TD
     F3 --> C4
     F1 --> F2
     F3 --> F2
-
-%% feature-injection dependencies
-    Feature-injection --> Core
-    Feature-injection --> Feature
-    Feature-injection --> Libraries
+    F4 --> F1
+    F4 --> F2
+    F4 --> F3
 
 %% App dependencies
     App --> Core
-    App --> Feature-injection
     App --> F3
+    App --> F4
 
 ```
 
@@ -260,7 +258,7 @@ The adapter handles different types of errors:
 - Parsing errors
 
 Each error is transformed into a user-friendly message using
-the [StrResources](./libraries/src/main/kotlin/libraries/StrResources.kt).
+the [StrResource](./libraries/src/main/kotlin/libraries/StrResource.kt).
 
 #### Creating and Using a Service
 

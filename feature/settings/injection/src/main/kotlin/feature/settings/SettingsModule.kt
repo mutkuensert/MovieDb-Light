@@ -1,4 +1,4 @@
-package injection
+package feature.settings
 
 import feature.settings.data.SettingsRepositoryImpl
 import feature.settings.domain.SettingsRepository
