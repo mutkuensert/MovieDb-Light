@@ -340,7 +340,7 @@ private fun Movies(
             if (movie != null) {
                 InteractivePoster(
                     modifier = Modifier
-                        .height(PosterHeight.medium)
+                        .height(PosterHeight.large)
                         .padding(horizontal = 6.dp, vertical = 10.dp)
                         .then(
                             when (index) {
