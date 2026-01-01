@@ -22,11 +22,11 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Beenhere
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.CircularProgressIndicator
@@ -79,16 +79,18 @@ import coil3.request.crossfade
 import core.ui.AppColors
 import core.ui.MoviedbLightTheme
 import core.ui.coil.debugPlaceholder
+import core.ui.component.ImageType
 import core.ui.component.InteractivePoster
 import core.ui.component.OneTimeEffect
 import core.ui.component.Poster
-import core.ui.component.PosterSize
+import core.ui.component.PosterHeight
 import core.ui.component.PrimaryButton
 import feature.movie.presentation.R
 import feature.movie.presentation.detail.model.MovieDetailUiModel
 import feature.movie.presentation.detail.model.MovieUiModel
 import feature.movie.presentation.detail.model.PersonUiModel
 import kotlinx.coroutines.flow.flowOf
+import libraries.image.TmdbImage
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -143,7 +145,7 @@ private fun MovieDetail(
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState()),
         ) {
-            MoviePoster(uiModel.imageUrl, uiModel.year, uiModel.vote, uiModel.runtime)
+            MoviePoster(uiModel.imagePath, uiModel.year, uiModel.vote, uiModel.runtime)
 
             Column(Modifier.padding(horizontal = 16.dp)) {
                 Row(
@@ -151,7 +153,7 @@ private fun MovieDetail(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Providers(
-                        uiModel.providerLogoUrls,
+                        uiModel.providerLogoPaths,
                         onClickStreamingServicesInfoButton,
                         Modifier.padding(top = 4.dp)
                     )
@@ -241,7 +243,7 @@ private fun ActionButtons(
                 contentColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(
-                    if (extended) Icons.Filled.KeyboardArrowDown else Icons.Filled.Add,
+                    if (extended) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowUp,
                     "Small floating action button."
                 )
             }
@@ -280,7 +282,7 @@ private fun TrailerButton(
 
 @Composable
 private fun MoviePoster(
-    imageUrl: String?,
+    imagePath: String?,
     year: String,
     vote: String,
     runtime: String,
@@ -291,7 +293,7 @@ private fun MoviePoster(
     Box(modifier) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(imageUrl)
+                .data(imagePath?.let { TmdbImage(it) }?.originalSizedUrl)
                 .crossfade(true)
                 .allowHardware(true)
                 .build(),
@@ -374,7 +376,7 @@ private fun Overview(overview: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun Providers(
-    providerLogoUrls: List<String>,
+    providerLogoPaths: List<String>,
     onClickStreamingServicesInfoButton: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -383,21 +385,21 @@ private fun Providers(
             Modifier.horizontalScroll(rememberScrollState()),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            providerLogoUrls.forEachIndexed { index, logoUrl ->
+            providerLogoPaths.forEachIndexed { index, logoPath ->
                 AsyncImage(
-                    model = logoUrl,
+                    model = TmdbImage(logoPath).originalSizedUrl,
                     error = debugPlaceholder(libraries.R.drawable.tmdb_logo_blue_square),
                     modifier = Modifier
                         .height(36.dp)
                         .clip(MaterialTheme.shapes.extraSmall),
                     contentDescription = stringResource(core.ui.R.string.image)
                 )
-                if (index != providerLogoUrls.lastIndex) {
+                if (index != providerLogoPaths.lastIndex) {
                     Spacer(Modifier.width(4.dp))
                 }
             }
         }
-        if (providerLogoUrls.isNotEmpty()) {
+        if (providerLogoPaths.isNotEmpty()) {
             IconButton(onClickStreamingServicesInfoButton, Modifier.padding(start = 2.dp)) {
                 Icon(
                     modifier = Modifier.height(24.dp),
@@ -420,7 +422,7 @@ private fun Cast(uiModel: MovieDetailUiModel, modifier: Modifier = Modifier) {
             Person(
                 person.name,
                 person.character,
-                person.imageUrl,
+                person.imagePath,
                 Modifier.padding(horizontal = 4.dp)
             )
 
@@ -446,7 +448,7 @@ private fun SimilarMovies(
             if (movies.loadState.refresh == LoadState.Loading) {
                 Box(
                     modifier = Modifier
-                        .height(PosterSize.Large.height)
+                        .height(PosterHeight.Large.height)
                         .fillParentMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
@@ -461,8 +463,19 @@ private fun SimilarMovies(
 
             if (movie != null) {
                 InteractivePoster(
-                    modifier = Modifier.padding(10.dp),
-                    url = movie.imageUrl,
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp, vertical = 10.dp)
+                        .then(
+                            when (index) {
+                                0 -> Modifier.padding(start = 10.dp)
+                                movies.itemCount - 1 if movies.loadState != LoadState.Loading -> {
+                                    Modifier.padding(end = 10.dp)
+                                }
+
+                                else -> Modifier
+                            }
+                        ),
+                    imagePath = movie.imagePath,
                     title = movie.title,
                     vote = movie.voteAverage,
                     onPosterClick = { onClickMovie(movie.id) },
@@ -516,7 +529,7 @@ private fun YearVoteRuntimeText(
 private fun Person(
     name: String,
     character: String,
-    imageUrl: String?,
+    imagePath: String?,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -524,7 +537,11 @@ private fun Person(
             .clip(MaterialTheme.shapes.medium),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Poster(url = imageUrl, posterSize = PosterSize.Medium)
+        Poster(
+            imagePath = imagePath,
+            imageType = ImageType.PROFILE,
+            posterHeight = PosterHeight.Medium
+        )
 
         Spacer(Modifier.height(4.dp))
 
@@ -734,7 +751,7 @@ private fun MovieDetailPreview() {
         MovieDetail(
             MovieDetailUiModel(
                 id = -1,
-                imageUrl = null,
+                imagePath = null,
                 title = "pharetra",
                 vote = "7.1",
                 showFavoriteButton = true,
@@ -746,12 +763,12 @@ private fun MovieDetailPreview() {
                 runtime = "120",
                 year = "2010",
                 overview = LoremIpsum(20).values.joinToString(" "),
-                providerLogoUrls = listOf("path", "path2"),
+                providerLogoPaths = listOf("path", "path2"),
                 trailerUrl = "123",
                 cast = listOf(
                     PersonUiModel(
                         id = 2722,
-                        imageUrl = null,
+                        imagePath = null,
                         name = "Some Person",
                         character = "recteque"
                     )

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_icon">Search icon</string>
+    <string name="trending_this_week">Trending this week</string>
+    <string name="person_detail_page_is_under_development">Person detail screen is under development</string>
+    <string name="tv_show_detail_feature_is_under_development">Tv show detail screen is under development</string>
+</resources>

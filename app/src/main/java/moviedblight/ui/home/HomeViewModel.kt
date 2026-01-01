@@ -19,6 +19,10 @@ class HomeViewModel(
         navigator.navigateToTab(NavTab.MovieTab)
     }
 
+    fun navigateToSearch() {
+        navigator.navigateToTab(NavTab.SearchTab)
+    }
+
     fun navigateToProfile() {
         navigator.navigateToTab(NavTab.ProfileTab)
     }

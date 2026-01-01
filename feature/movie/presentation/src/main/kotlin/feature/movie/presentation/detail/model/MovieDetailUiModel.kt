@@ -2,7 +2,7 @@ package feature.movie.presentation.detail.model
 
 data class MovieDetailUiModel(
     val id: Int,
-    val imageUrl: String?,
+    val imagePath: String?,
     val title: String,
     val vote: String,
     val showFavoriteButton: Boolean,
@@ -15,14 +15,14 @@ data class MovieDetailUiModel(
     val year: String,
     val overview: String,
     val trailerUrl: String?,
-    val providerLogoUrls: List<String>,
+    val providerLogoPaths: List<String>,
     val cast: List<PersonUiModel>
 ) {
     companion object {
         fun initial(id: Int): MovieDetailUiModel {
             return MovieDetailUiModel(
                 id = id,
-                imageUrl = null,
+                imagePath = null,
                 title = "",
                 vote = "",
                 showFavoriteButton = false,
@@ -35,7 +35,7 @@ data class MovieDetailUiModel(
                 year = "",
                 overview = "",
                 trailerUrl = null,
-                providerLogoUrls = emptyList(),
+                providerLogoPaths = emptyList(),
                 cast = emptyList()
             )
         }

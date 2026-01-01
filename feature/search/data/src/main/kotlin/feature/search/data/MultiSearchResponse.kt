@@ -1,6 +1,6 @@
 package feature.search.data
 
-import feature.search.domain.SearchResult
+import feature.search.domain.MultiResult
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.SerialName
@@ -14,13 +14,14 @@ import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-data class SearchResponse(
+@Serializable
+data class MultiSearchResponse(
     val page: Int,
-    val results: List<SearchResultDto>
+    val results: List<MultiSearchResultDto>
 )
 
-@Serializable(with = SearchResultDtoSerializer::class)
-sealed interface SearchResultDto {
+@Serializable(with = MultiSearchResultDtoSerializer::class)
+sealed interface MultiSearchResultDto {
     @SerialName("media_type")
     val mediaType: String
 
@@ -48,10 +49,10 @@ sealed interface SearchResultDto {
         val voteAverage: Float?,
         @SerialName("vote_count")
         val voteCount: Int?,
-        override val mediaType: String
-    ) : SearchResultDto {
-        fun toMovie(): SearchResult.Movie {
-            return SearchResult.Movie()
+        @SerialName("media_type") override val mediaType: String
+    ) : MultiSearchResultDto {
+        fun toMovie(): MultiResult.Movie {
+            return MultiResult.Movie(id, title, posterPath)
         }
     }
 
@@ -80,10 +81,10 @@ sealed interface SearchResultDto {
         val voteCount: Int?,
         @SerialName("origin_country")
         val originCountry: List<String>,
-        override val mediaType: String,
-    ) : SearchResultDto {
-        fun toTvShow(): SearchResult.TvShow {
-            return SearchResult.TvShow()
+        @SerialName("media_type") override val mediaType: String,
+    ) : MultiSearchResultDto {
+        fun toTvShow(): MultiResult.TvShow {
+            return MultiResult.TvShow(id, name, posterPath)
         }
     }
 
@@ -101,11 +102,15 @@ sealed interface SearchResultDto {
         @SerialName("profile_path")
         val profilePath: String?,
         @SerialName("known_for")
-        val knownFor: List<SearchResultDto>?,
-        override val mediaType: String
-    ) : SearchResultDto {
-        fun toPerson(): SearchResult.Person {
-            return SearchResult.Person()
+        val knownFor: List<MultiSearchResultDto>?,
+        @SerialName("media_type") override val mediaType: String
+    ) : MultiSearchResultDto {
+        fun toPerson(): MultiResult.Person {
+            return MultiResult.Person(
+                id,
+                name,
+                profilePath
+            )
         }
     }
 }
@@ -116,7 +121,7 @@ private object MediaType {
     const val PERSON = "person"
 }
 
-object SearchResultDtoSerializer : KSerializer<SearchResultDto> {
+object MultiSearchResultDtoSerializer : KSerializer<MultiSearchResultDto> {
     val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
@@ -125,38 +130,38 @@ object SearchResultDtoSerializer : KSerializer<SearchResultDto> {
         coerceInputValues = true
     }
     override val descriptor: SerialDescriptor
-        get() = PolymorphicSerializer(SearchResultDto::class).descriptor
+        get() = PolymorphicSerializer(MultiSearchResultDto::class).descriptor
 
-    override fun serialize(encoder: Encoder, value: SearchResultDto) {
+    override fun serialize(encoder: Encoder, value: MultiSearchResultDto) {
         when (value) {
-            is SearchResultDto.MovieDto -> {
-                encoder.encodeSerializableValue(SearchResultDto.MovieDto.serializer(), value)
+            is MultiSearchResultDto.MovieDto -> {
+                encoder.encodeSerializableValue(MultiSearchResultDto.MovieDto.serializer(), value)
             }
 
-            is SearchResultDto.TvShowDto -> {
-                encoder.encodeSerializableValue(SearchResultDto.TvShowDto.serializer(), value)
+            is MultiSearchResultDto.TvShowDto -> {
+                encoder.encodeSerializableValue(MultiSearchResultDto.TvShowDto.serializer(), value)
             }
 
-            is SearchResultDto.PersonDto -> {
-                encoder.encodeSerializableValue(SearchResultDto.PersonDto.serializer(), value)
+            is MultiSearchResultDto.PersonDto -> {
+                encoder.encodeSerializableValue(MultiSearchResultDto.PersonDto.serializer(), value)
             }
         }
     }
 
-    override fun deserialize(decoder: Decoder): SearchResultDto {
+    override fun deserialize(decoder: Decoder): MultiSearchResultDto {
         val jsonElement = (decoder as JsonDecoder).decodeJsonElement()
         return when (val itemType =
             jsonElement.jsonObject["media_type"]?.jsonPrimitive?.content) {
             MediaType.MOVIE -> {
-                json.decodeFromJsonElement(SearchResultDto.MovieDto.serializer(), jsonElement)
+                json.decodeFromJsonElement(MultiSearchResultDto.MovieDto.serializer(), jsonElement)
             }
 
             MediaType.TV_SHOW -> {
-                json.decodeFromJsonElement(SearchResultDto.TvShowDto.serializer(), jsonElement)
+                json.decodeFromJsonElement(MultiSearchResultDto.TvShowDto.serializer(), jsonElement)
             }
 
             MediaType.PERSON -> {
-                json.decodeFromJsonElement(SearchResultDto.PersonDto.serializer(), jsonElement)
+                json.decodeFromJsonElement(MultiSearchResultDto.PersonDto.serializer(), jsonElement)
             }
 
             else -> throw SerializationException("Unknown itemType: $itemType")

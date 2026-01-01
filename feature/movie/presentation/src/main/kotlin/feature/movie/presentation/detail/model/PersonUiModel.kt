@@ -4,11 +4,11 @@ import feature.movie.domain.model.Person
 
 data class PersonUiModel(
     val id: Int,
-    val imageUrl: String?,
+    val imagePath: String?,
     val name: String,
     val character: String,
 )
 
 fun Person.toUiModel(): PersonUiModel {
-    return PersonUiModel(id = id, imageUrl = imageUrl, name = name, character = character ?: "")
+    return PersonUiModel(id = id, imagePath = imagePath, name = name, character = character ?: "")
 }

@@ -9,4 +9,7 @@ sealed interface NavTab {
 
     @Serializable
     object ProfileTab : NavTab
+
+    @Serializable
+    object SearchTab : NavTab
 }

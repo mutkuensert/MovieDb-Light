@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import libraries.image.TmdbImage
 
 @OptIn(
     ExperimentalPagingApi::class,
@@ -61,7 +60,7 @@ class ProfileRepositoryImpl(
                     Movie(
                         id = entity.id,
                         title = entity.title,
-                        imageUrl = entity.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                        imagePath = entity.posterPath,
                         voteAverage = entity.voteAverage?.withDecimals(1),
                     )
                 }
@@ -91,7 +90,7 @@ class ProfileRepositoryImpl(
                     Movie(
                         id = entity.id,
                         title = entity.title,
-                        imageUrl = entity.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                        imagePath = entity.posterPath,
                         voteAverage = entity.voteAverage?.withDecimals(1),
                     )
                 }
@@ -120,7 +119,7 @@ class ProfileRepositoryImpl(
                     Movie(
                         id = entity.id,
                         title = entity.title,
-                        imageUrl = entity.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                        imagePath = entity.posterPath,
                         voteAverage = entity.voteAverage?.withDecimals(1),
                     )
                 }

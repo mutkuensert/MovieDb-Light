@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.PersonPin
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -58,6 +59,8 @@ import feature.profile.presentation.login.LoginDeeplink
 import feature.profile.presentation.login.LoginScreen
 import feature.profile.presentation.profile.ProfileRoute
 import feature.profile.presentation.profile.ProfileScreen
+import feature.search.presentation.SearchRoute
+import feature.search.presentation.SearchScreen
 import feature.settings.presentation.SettingsScreen
 import org.koin.androidx.compose.koinViewModel
 
@@ -80,6 +83,7 @@ fun HomeScreen(navigator: Navigator) {
             MainNavigation(
                 navigator,
                 viewModel::navigateToMovies,
+                viewModel::navigateToSearch,
                 viewModel::navigateToProfile
             )
 
@@ -146,6 +150,7 @@ private fun Popup(popup: Popup, viewModel: HomeViewModel) {
 fun MainNavigation(
     navigator: Navigator,
     onNavigateToMovies: () -> Unit,
+    onNavigateToSearch: () -> Unit,
     onNavigateToProfile: () -> Unit,
 ) {
     val navController = rememberNavController()
@@ -159,6 +164,7 @@ fun MainNavigation(
             BottomNavBar(
                 navController,
                 onNavigateToMovies,
+                onNavigateToSearch,
                 onNavigateToProfile
             )
         }
@@ -171,6 +177,16 @@ fun MainNavigation(
             navigation<NavTab.MovieTab>(MoviesRoute) {
                 composable<MoviesRoute> {
                     MoviesScreen()
+                }
+
+                composable<MovieDetailRoute> {
+                    MovieDetailScreen()
+                }
+            }
+
+            navigation<NavTab.SearchTab>(SearchRoute) {
+                composable<SearchRoute> {
+                    SearchScreen()
                 }
 
                 composable<MovieDetailRoute> {
@@ -208,6 +224,7 @@ fun MainNavigation(
 private fun BottomNavBar(
     navController: NavController,
     onNavigateToMovies: () -> Unit,
+    onNavigateToSearch: () -> Unit,
     onNavigateToProfile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -231,6 +248,23 @@ private fun BottomNavBar(
             icon = {
                 Icon(
                     imageVector = Icons.Filled.Movie,
+                    contentDescription = null
+                )
+            })
+
+        NavigationBarItem(
+            selected = currentDestination?.hierarchy?.any {
+                it.hasRoute(NavTab.SearchTab::class)
+            } == true,
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = MaterialTheme.colorScheme.onBackground,
+                unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                indicatorColor = Color.Gray
+            ),
+            onClick = onNavigateToSearch,
+            icon = {
+                Icon(
+                    imageVector = Icons.Filled.Search,
                     contentDescription = null
                 )
             })

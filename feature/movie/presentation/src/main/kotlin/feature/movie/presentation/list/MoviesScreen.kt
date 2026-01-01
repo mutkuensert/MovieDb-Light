@@ -41,7 +41,7 @@ import androidx.paging.compose.itemKey
 import core.ui.MoviedbLightTheme
 import core.ui.StatusBarColorHandler
 import core.ui.component.InteractivePoster
-import core.ui.component.PosterSize
+import core.ui.component.PosterHeight
 import feature.movie.presentation.R
 import feature.movie.presentation.list.model.MovieUiModel
 import feature.movie.presentation.list.model.MoviesUiModel
@@ -257,7 +257,7 @@ private fun Movies(
             if (movies.loadState.refresh == LoadState.Loading) {
                 Box(
                     modifier = Modifier
-                        .height(PosterSize.Large.height)
+                        .height(PosterHeight.Large.height)
                         .fillParentMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
@@ -269,11 +269,21 @@ private fun Movies(
             key = movies.itemKey { it.id }
         ) { index ->
             val movie = movies[index]
-
             if (movie != null) {
                 InteractivePoster(
-                    modifier = Modifier.padding(10.dp),
-                    url = movie.imageUrl,
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp, vertical = 10.dp)
+                        .then(
+                            when (index) {
+                                0 -> Modifier.padding(start = 10.dp)
+                                movies.itemCount - 1 if movies.loadState != LoadState.Loading -> {
+                                    Modifier.padding(end = 10.dp)
+                                }
+
+                                else -> Modifier
+                            }
+                        ),
+                    imagePath = movie.imagePath,
                     title = movie.title,
                     vote = movie.voteAverage,
                     onPosterClick = { onClickMovie(movie.id) },

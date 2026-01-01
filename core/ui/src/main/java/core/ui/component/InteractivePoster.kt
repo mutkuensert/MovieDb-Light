@@ -47,8 +47,9 @@ import core.ui.palette.titleTextColor
 @Composable
 fun InteractivePoster(
     modifier: Modifier = Modifier,
-    url: String?,
-    size: PosterSize = PosterSize.Large,
+    imagePath: String?,
+    imageType: ImageType = ImageType.POSTER,
+    posterHeight: PosterHeight = PosterHeight.Large,
     title: String = "",
     vote: String? = null,
     inWatchlist: Boolean? = null,
@@ -80,22 +81,23 @@ fun InteractivePoster(
                 .onGloballyPositioned {
                     imageWidth = with(density) { it.size.width.toDp() }
                 },
-            url = url,
-            posterSize = size,
+            imageType = imageType,
+            imagePath = imagePath,
+            posterHeight = posterHeight,
             onSuccess = { state ->
                 val bitmap = state.result.image.toBitmap().copy(Bitmap.Config.ARGB_8888, true)
                 infoButtonColor = bitmap.titleTextColor
                 textColor = bitmap.bodyTextColor
             },
             onError = {
-                imageWidth = size.estimatedWidth
+                imageWidth = posterHeight.estimatedWidth
             }
         )
 
         if (isInfoVisible) {
             InfoView(
                 Modifier
-                    .height(size.height)
+                    .height(posterHeight.height)
                     .width(imageWidth)
                     .align(Alignment.Center),
                 title,

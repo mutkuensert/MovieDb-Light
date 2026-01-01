@@ -1,7 +1,7 @@
 package feature.movie.domain.model
 
 data class MovieDetails(
-    val imageUrl: String?,
+    val imagePath: String?,
     val title: String?,
     val voteAverage: Float?,
     val runtime: Int?,

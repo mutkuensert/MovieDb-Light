@@ -8,4 +8,5 @@ android {
 
 dependencies {
     implementation(projects.feature.search.domain)
+    implementation(libs.androidx.paging.compose)
 }

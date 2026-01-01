@@ -3,7 +3,7 @@ package feature.profile.presentation.profile
 import core.domain.account.SortBy
 
 data class ProfileUiModel(
-    val profileImageUrl: String?,
+    val profileImagePath: String?,
     val name: String,
     val favoriteMoviesSortBy: SortByUiModel,
     val watchlistMoviesSortBy: SortByUiModel,
@@ -13,7 +13,7 @@ data class ProfileUiModel(
     companion object {
         fun empty(): ProfileUiModel {
             return ProfileUiModel(
-                profileImageUrl = null,
+                profileImagePath = null,
                 name = "",
                 favoriteMoviesSortBy = SortByUiModel.ASCENDING,
                 watchlistMoviesSortBy = SortByUiModel.ASCENDING,

@@ -10,7 +10,7 @@ import core.data.network.toFailure
 import core.domain.auth.AuthenticationRepository
 import core.domain.Failure
 import core.domain.UndefinedFailure
-import libraries.StrResource
+import libraries.stringresource.StrResource
 import moviedblight.core.data.R
 import timber.log.Timber
 

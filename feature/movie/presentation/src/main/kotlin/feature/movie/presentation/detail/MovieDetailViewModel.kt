@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import libraries.StrResource
+import libraries.stringresource.StrResource
 import kotlin.math.roundToInt
 
 class MovieDetailViewModel(
@@ -55,7 +55,7 @@ class MovieDetailViewModel(
             MovieUiModel(
                 movie.id,
                 movie.title,
-                movie.imageUrl,
+                movie.imagePath,
                 movie.voteAverage?.toString(),
                 movie.inWatchlist
             )
@@ -83,7 +83,7 @@ class MovieDetailViewModel(
             movieRepository.getMovieDetails(movieId).onSuccess { movieDetailsAndCast ->
                 _uiModel.update {
                     it.copy(
-                        imageUrl = movieDetailsAndCast.imageUrl,
+                        imagePath = movieDetailsAndCast.imagePath,
                         title = movieDetailsAndCast.title ?: "",
                         vote = movieDetailsAndCast.voteAverage?.toString() ?: "",
                         runtime = movieDetailsAndCast.runtime?.toString() ?: "",
@@ -103,7 +103,7 @@ class MovieDetailViewModel(
 
             movieRepository.getProviders(movieId).onSuccess { providers ->
                 _uiModel.update {
-                    it.copy(providerLogoUrls = providers.mapNotNull { provider -> provider.logoUrl })
+                    it.copy(providerLogoPaths = providers.mapNotNull { provider -> provider.logoPath })
                 }
             }.onFailure(popupHandler::showFailurePopup)
 

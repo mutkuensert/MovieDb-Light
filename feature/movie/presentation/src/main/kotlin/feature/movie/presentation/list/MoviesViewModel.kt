@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import feature.movie.domain.usecase.SyncMovieWatchlistStatusUseCase
 import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
-import feature.movie.domain.model.Movie
 import feature.movie.domain.MovieRepository
+import feature.movie.domain.model.Movie
+import feature.movie.domain.usecase.SyncMovieWatchlistStatusUseCase
 import feature.movie.presentation.list.model.MovieUiModel
 import feature.movie.presentation.list.model.MoviesUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,7 +42,7 @@ class MoviesViewModel(
             MovieUiModel(
                 it.id,
                 it.title,
-                it.imageUrl,
+                it.imagePath,
                 it.voteAverage?.toString(),
                 it.inWatchlist
             )

@@ -32,7 +32,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import libraries.LocalizationHelper
 import libraries.getYoutubeUrlByKey
-import libraries.image.TmdbImage
 
 @OptIn(
     ExperimentalPagingApi::class,
@@ -70,7 +69,7 @@ class MovieRepositoryImpl(
                     Movie(
                         id = entity.movie.id,
                         title = entity.movie.title,
-                        imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                        imagePath = entity.movie.posterPath,
                         voteAverage = entity.movie.voteAverage?.withDecimals(1),
                         inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
                     )
@@ -100,7 +99,7 @@ class MovieRepositoryImpl(
                     Movie(
                         id = entity.movie.id,
                         title = entity.movie.title,
-                        imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                        imagePath = entity.movie.posterPath,
                         voteAverage = entity.movie.voteAverage?.withDecimals(1),
                         inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
                     )
@@ -129,7 +128,7 @@ class MovieRepositoryImpl(
                     Movie(
                         id = entity.movie.id,
                         title = entity.movie.title,
-                        imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                        imagePath = entity.movie.posterPath,
                         voteAverage = entity.movie.voteAverage?.withDecimals(1),
                         inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
                     )
@@ -158,7 +157,7 @@ class MovieRepositoryImpl(
                     Movie(
                         id = entity.movie.id,
                         title = entity.movie.title,
-                        imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                        imagePath = entity.movie.posterPath,
                         voteAverage = entity.movie.voteAverage?.withDecimals(1),
                         inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
                     )
@@ -186,7 +185,7 @@ class MovieRepositoryImpl(
                     Movie(
                         id = entity.movie.id,
                         title = entity.movie.title,
-                        imageUrl = entity.movie.posterPath?.let { TmdbImage.Poster(it).w780Url },
+                        imagePath = entity.movie.posterPath,
                         voteAverage = entity.movie.voteAverage?.withDecimals(1),
                         inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
                     )
@@ -201,7 +200,7 @@ class MovieRepositoryImpl(
             languagePreference.getLanguageTag()
         ).mapToDomain {
             MovieDetails(
-                imageUrl = it.posterPath?.let { path -> TmdbImage.Poster(path) }?.originalSizedUrl,
+                imagePath = it.posterPath,
                 title = it.originalTitle,
                 voteAverage = it.voteAverage?.withDecimals(1),
                 runtime = it.runtime,
@@ -217,7 +216,7 @@ class MovieRepositoryImpl(
                 response.cast.map {
                     Person(
                         id = it.id,
-                        imageUrl = it.profilePath?.let { path -> TmdbImage.Profile(path) }?.h632Url,
+                        imagePath = it.profilePath,
                         name = it.name,
                         character = it.character
                     )
@@ -234,7 +233,7 @@ class MovieRepositoryImpl(
                 Provider(
                     it.providerId,
                     it.providerName,
-                    it.logoPath?.let { path -> TmdbImage.Logo(path) }?.w300Url
+                    it.logoPath
                 )
             }?.distinctBy { it.name }?.distinctBy { it.id } ?: listOf()
 

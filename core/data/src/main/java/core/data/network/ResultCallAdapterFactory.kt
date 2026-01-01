@@ -3,7 +3,7 @@ package core.data.network
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
-import libraries.StrResource
+import libraries.stringresource.StrResource
 import kotlinx.serialization.json.Json
 import moviedblight.core.data.R
 import okhttp3.Request

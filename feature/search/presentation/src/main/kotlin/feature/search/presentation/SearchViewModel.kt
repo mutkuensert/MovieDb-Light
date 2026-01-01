@@ -1,7 +1,89 @@
 package feature.search.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.filter
+import androidx.paging.map
+import core.ui.PopupHandler
+import core.ui.navigation.Navigator
+import core.ui.route.MovieDetailRoute
+import feature.search.domain.MultiResult
 import feature.search.domain.SearchRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
+import libraries.stringresource.StrResource
 
-class SearchViewModel(private val searchRepository: SearchRepository) : ViewModel() {
+@OptIn(FlowPreview::class)
+class SearchViewModel(
+    private val searchRepository: SearchRepository,
+    private val navigator: Navigator,
+    private val popupHandler: PopupHandler,
+    private val strResource: StrResource,
+) : ViewModel() {
+    private val _uiModel = MutableStateFlow(SearchUiModel.initial())
+    val uiModel = _uiModel.asStateFlow()
+    val trendingThisWeek = searchRepository.getTrendingThisWeek().map {
+        it.map { multiResult -> multiResult.toUiModel() }
+    }.cachedIn(viewModelScope)
+    val searchResult: Flow<PagingData<ResultUiModel>> = getSearchResultFlow().map { pagingData ->
+        pagingData.filter { it.imagePath != null }.map { multiResult -> multiResult.toUiModel() }
+    }.cachedIn(viewModelScope)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun getSearchResultFlow(): Flow<PagingData<MultiResult>> {
+        return uiModel.map { it.query }.debounce(750).flatMapLatest { query ->
+            if (query.length > 1) {
+                _uiModel.update { it.copy(showSearchResult = true) }
+                searchRepository.search(query)
+            } else {
+                _uiModel.update { it.copy(showSearchResult = false) }
+                flowOf(PagingData.empty())
+            }
+        }
+    }
+
+    fun handleQueryChange(query: String) {
+        _uiModel.update { it.copy(query = query) }
+    }
+
+    fun handleMovieClick(id: Int) {
+        navigator.navigateToRoute(MovieDetailRoute(id))
+    }
+
+    fun handleTvShowClick(id: Int) {
+        popupHandler.showSimpleMessage(strResource.get(R.string.tv_show_detail_feature_is_under_development))
+    }
+
+    fun handlePersonClick(id: Int) {
+        popupHandler.showSimpleMessage(strResource.get(R.string.person_detail_page_is_under_development))
+    }
+
+    private fun MultiResult.toUiModel(): ResultUiModel {
+        return when (this) {
+            is MultiResult.Movie -> ResultUiModel.Movie(
+                this.id,
+                this.imagePath
+            )
+
+            is MultiResult.Person -> ResultUiModel.Person(
+                this.id,
+                this.imagePath
+            )
+
+            is MultiResult.TvShow -> ResultUiModel.TvShow(
+                this.id,
+                this.imagePath
+            )
+        }
+    }
 }

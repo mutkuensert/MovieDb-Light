@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import libraries.image.TmdbImage
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProfileViewModel(
@@ -42,7 +41,7 @@ class ProfileViewModel(
         profileRepository.getFavoriteMovies(uiModel.favoriteMoviesSortBy.toDomain())
             .map { pagingData ->
                 pagingData.map {
-                    MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage?.toString())
+                    MovieUiModel(it.id, it.title, it.imagePath, it.voteAverage?.toString())
                 }
             }
     }.cachedIn(viewModelScope)
@@ -53,7 +52,7 @@ class ProfileViewModel(
         profileRepository.getWatchlistMovies(uiModel.watchlistMoviesSortBy.toDomain())
             .map { pagingData ->
                 pagingData.map {
-                    MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage?.toString())
+                    MovieUiModel(it.id, it.title, it.imagePath, it.voteAverage?.toString())
                 }
             }
     }.cachedIn(viewModelScope)
@@ -64,7 +63,7 @@ class ProfileViewModel(
         profileRepository.getRatedMovies(uiModel.ratedMoviesSortBy.toDomain())
             .map { pagingData ->
                 pagingData.map {
-                    MovieUiModel(it.id, it.title, it.imageUrl, it.voteAverage?.toString())
+                    MovieUiModel(it.id, it.title, it.imagePath, it.voteAverage?.toString())
                 }
             }
     }.cachedIn(viewModelScope)
@@ -74,9 +73,7 @@ class ProfileViewModel(
             accountRepository.fetchAccountDetails().onSuccess { user ->
                 _uiModel.update { model ->
                     model.copy(
-                        profileImageUrl = user.profilePicturePath?.let { path ->
-                            TmdbImage.Profile(path)
-                        }?.w185Url,
+                        profileImagePath = user.profilePicturePath,
                         name = user.userName
                     )
                 }

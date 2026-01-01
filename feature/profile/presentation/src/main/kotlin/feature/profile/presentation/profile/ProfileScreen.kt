@@ -57,12 +57,14 @@ import androidx.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import core.ui.MoviedbLightTheme
 import core.ui.StatusBarColorHandler
+import core.ui.component.ImageType
 import core.ui.component.InteractivePoster
-import core.ui.component.PosterSize
+import core.ui.component.PosterHeight
 import feature.profile.presentation.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.serialization.Serializable
+import libraries.image.TmdbImage
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
@@ -111,7 +113,7 @@ private fun Profile(
             .verticalScroll(rememberScrollState())
             .background(MaterialTheme.colorScheme.background)
     ) {
-        TopBar(uiModel.profileImageUrl, uiModel.name, onClickProfilePicture, onLogoutClick)
+        TopBar(uiModel.profileImagePath, uiModel.name, onClickProfilePicture, onLogoutClick)
 
         FeedHeader(
             Modifier
@@ -260,7 +262,7 @@ private fun FeedHeader(
 
 @Composable
 private fun TopBar(
-    imageUrl: String?,
+    imagePath: String?,
     text: String,
     onClickProfilePicture: () -> Unit,
     onLogoutClick: () -> Unit,
@@ -281,9 +283,9 @@ private fun TopBar(
                 .background(Color.White)
                 .clickable { onClickProfilePicture() }
         ) {
-            if (imageUrl != null) {
+            if (imagePath != null) {
                 AsyncImage(
-                    imageUrl,
+                    TmdbImage(imagePath).originalSizedUrl,
                     contentDescription = null
                 )
             }
@@ -322,7 +324,7 @@ private fun Movies(
             if (movies.loadState.refresh == LoadState.Loading) {
                 Box(
                     modifier = Modifier
-                        .height(PosterSize.Large.height)
+                        .height(PosterHeight.Large.height)
                         .fillParentMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
@@ -337,8 +339,20 @@ private fun Movies(
 
             if (movie != null) {
                 InteractivePoster(
-                    modifier = Modifier.padding(10.dp),
-                    url = movie.imageUrl,
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp, vertical = 10.dp)
+                        .then(
+                            when (index) {
+                                0 -> Modifier.padding(start = 10.dp)
+                                movies.itemCount - 1 if movies.loadState != LoadState.Loading -> {
+                                    Modifier.padding(end = 10.dp)
+                                }
+
+                                else -> Modifier
+                            }
+                        ),
+                    imagePath = movie.imagePath,
+                    imageType = ImageType.PROFILE,
                     title = movie.title,
                     vote = movie.voteAverage,
                     onPosterClick = { onClickMovie(movie.id) },

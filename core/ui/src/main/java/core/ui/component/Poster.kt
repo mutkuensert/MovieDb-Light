@@ -33,27 +33,46 @@ import coil3.request.allowHardware
 import coil3.request.crossfade
 import core.ui.R
 import core.ui.coil.debugPlaceholder
+import libraries.image.TmdbImage
 
 @Composable
 fun Poster(
     modifier: Modifier = Modifier,
-    url: String?,
-    posterSize: PosterSize = PosterSize.Medium,
+    imagePath: String?,
+    imageType: ImageType = ImageType.POSTER,
+    posterHeight: PosterHeight = PosterHeight.Large,
+    imageQuality: ImageQuality? = null,
+    contentScale: ContentScale = ContentScale.FillHeight,
     onSuccess: (AsyncImagePainter.State.Success) -> Unit = {},
     onError: (AsyncImagePainter.State.Error) -> Unit = {}
 ) {
-    val imageSizeModifier = when (posterSize) {
-        PosterSize.MaxHeight -> Modifier.fillMaxHeight()
-        else -> Modifier.height(posterSize.height)
+    val imageSizeModifier = when (posterHeight) {
+        PosterHeight.MaxHeight -> Modifier.fillMaxHeight()
+        else -> Modifier.height(posterHeight.height)
     }
 
-    Box {
+    Box(modifier) {
         var loading by remember { mutableStateOf(true) }
         var error by remember { mutableStateOf(false) }
+        var currentImageUrl by remember {
+            mutableStateOf(imagePath?.let {
+                TmdbImage(it).createImageUrl(imageType, posterHeight, imageQuality)
+            })
+        }
 
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(url)
+                .data(currentImageUrl)
+                .listener(
+                    onError = { _, _ ->
+                        val _currentImageUrl = currentImageUrl ?: return@listener
+                        if (imagePath == null) return@listener
+                        val originalSizedUrl = TmdbImage(imagePath).originalSizedUrl
+                        if (_currentImageUrl != originalSizedUrl) {
+                            currentImageUrl = originalSizedUrl
+                        }
+                    }
+                )
                 .crossfade(true)
                 .allowHardware(true)
                 .build(),
@@ -67,17 +86,16 @@ fun Poster(
                 onError(it)
             },
             error = debugPlaceholder(R.drawable.debug_placeholder_dog),
-            modifier = modifier
-                .then(imageSizeModifier)
+            modifier = imageSizeModifier
                 .shadow(elevation = 3.dp, shape = MaterialTheme.shapes.medium)
                 .clip(MaterialTheme.shapes.medium),
             contentDescription = stringResource(R.string.image),
-            contentScale = ContentScale.FillHeight
+            contentScale = contentScale
         )
 
         if (loading) {
             Box(
-                modifier = imageSizeModifier.width(posterSize.estimatedWidth),
+                modifier = imageSizeModifier.width(posterHeight.estimatedWidth),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(color = Color.Gray)
@@ -86,9 +104,8 @@ fun Poster(
 
         if (error && !LocalInspectionMode.current) {
             Box(
-                modifier = Modifier
-                    .then(imageSizeModifier)
-                    .width(posterSize.estimatedWidth)
+                modifier = imageSizeModifier
+                    .width(posterHeight.estimatedWidth)
                     .background(Color.Black, shape = MaterialTheme.shapes.medium),
                 contentAlignment = Alignment.Center
             ) {
@@ -103,8 +120,86 @@ fun Poster(
     }
 }
 
-enum class PosterSize(val height: Dp) {
-    Small(80.dp), Medium(160.dp), Large(240.dp), ExtraLarge(320.dp), MaxHeight((-1).dp);
+private fun TmdbImage.createImageUrl(
+    imageType: ImageType,
+    posterHeight: PosterHeight,
+    imageQuality: ImageQuality? = null,
+): String {
+    return when (imageType) {
+        ImageType.POSTER -> {
+            if (imageQuality != null) {
+                when (imageQuality) {
+                    ImageQuality.LOW -> this.poster.w342Url
+                    ImageQuality.MEDIUM -> this.poster.w500Url
+                    ImageQuality.HIGH -> this.poster.w780Url
+                    ImageQuality.ORIGINAL -> this.originalSizedUrl
+                }
+            } else {
+                when (posterHeight) {
+                    PosterHeight.Small -> this.poster.w500Url
+                    PosterHeight.Medium -> this.poster.w780Url
+                    PosterHeight.Large -> this.poster.w780Url
+                    else -> this.originalSizedUrl
+                }
+            }
+        }
 
-    val estimatedWidth: Dp get() = if (height != (-1).dp) height * 2 / 3 else Dp.Unspecified
+        ImageType.PROFILE -> {
+            if (imageQuality != null) {
+                when (imageQuality) {
+                    ImageQuality.LOW -> this.profile.w185Url
+                    ImageQuality.MEDIUM -> this.profile.h632Url
+                    ImageQuality.HIGH -> this.profile.h632Url
+                    ImageQuality.ORIGINAL -> this.originalSizedUrl
+                }
+            } else {
+                when (posterHeight) {
+                    PosterHeight.Small -> this.profile.h632Url
+                    PosterHeight.Medium -> this.profile.h632Url
+                    else -> this.originalSizedUrl
+                }
+            }
+        }
+
+        ImageType.LOGO -> {
+            if (imageQuality != null) {
+                when (imageQuality) {
+                    ImageQuality.LOW -> this.logo.w92Url
+                    ImageQuality.MEDIUM -> this.logo.w300Url
+                    ImageQuality.HIGH -> this.logo.w500Url
+                    ImageQuality.ORIGINAL -> this.originalSizedUrl
+                }
+            } else {
+                when (posterHeight) {
+                    PosterHeight.Small -> this.logo.w300Url
+                    PosterHeight.Medium -> this.logo.w500Url
+                    else -> this.originalSizedUrl
+                }
+            }
+        }
+    }
+}
+
+enum class PosterHeight(val height: Dp) {
+    Unspecified(Dp.Unspecified),
+    Small(80.dp),
+    Medium(160.dp),
+    Large(240.dp),
+    ExtraLarge(320.dp),
+    MaxHeight((-1).dp);
+
+    val estimatedWidth: Dp
+        get() = if (height != (-1).dp && height != Dp.Unspecified) {
+            height * 2 / 3
+        } else {
+            Dp.Unspecified
+        }
+}
+
+enum class ImageType {
+    POSTER, PROFILE, LOGO
+}
+
+enum class ImageQuality {
+    LOW, MEDIUM, HIGH, ORIGINAL
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_icon">Arama ikonu</string>
+    <string name="trending_this_week">Bu hafta trend</string>
+    <string name="person_detail_page_is_under_development">Kişi detay sayfası geliştirme aşamasındadır</string>
+    <string name="tv_show_detail_feature_is_under_development">Dizi detay sayfası geliştirme aşamasındadır</string>
+</resources>
