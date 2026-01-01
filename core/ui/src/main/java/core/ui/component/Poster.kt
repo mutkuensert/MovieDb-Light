@@ -30,8 +30,8 @@ import coil3.request.ImageRequest
 import coil3.request.allowHardware
 import coil3.request.crossfade
 import core.ui.R
-import core.ui.coil.debugPlaceholder
 import core.ui.TmdbImage
+import core.ui.coil.debugPlaceholder
 
 @Composable
 fun Poster(
@@ -80,6 +80,7 @@ fun Poster(
             },
             error = debugPlaceholder(R.drawable.debug_placeholder_dog),
             modifier = Modifier
+                .matchParentSize()
                 .shadow(elevation = 3.dp, shape = MaterialTheme.shapes.medium)
                 .clip(MaterialTheme.shapes.medium),
             contentDescription = stringResource(R.string.image),
