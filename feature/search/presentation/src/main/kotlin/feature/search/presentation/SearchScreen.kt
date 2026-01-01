@@ -24,7 +24,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -33,6 +32,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import core.ui.component.ImageQuality
+import core.ui.component.ImageType
 import core.ui.component.Poster
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
@@ -156,8 +156,12 @@ private fun Results(
                             }
                             .fillMaxSize(),
                         imagePath = result.imagePath,
-                        imageQuality = ImageQuality.HIGH,
-                        contentScale = ContentScale.Crop
+                        imageType = when (result) {
+                            is ResultUiModel.Movie -> ImageType.POSTER
+                            is ResultUiModel.Person -> ImageType.PROFILE
+                            is ResultUiModel.TvShow -> ImageType.POSTER
+                        },
+                        imageQuality = ImageQuality.HIGH
                     )
                 }
             }
