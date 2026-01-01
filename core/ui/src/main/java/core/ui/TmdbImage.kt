@@ -1,9 +1,8 @@
-package libraries.image
+package core.ui
 
 private const val IMAGE_BASE_URL = "https://image.tmdb.org/t/p/"
 
 class TmdbImage(val path: String) {
-
     val originalSizedUrl: String get() = IMAGE_BASE_URL + "original" + path
 
     fun getSizedUrl(size: String): String = IMAGE_BASE_URL + size + path

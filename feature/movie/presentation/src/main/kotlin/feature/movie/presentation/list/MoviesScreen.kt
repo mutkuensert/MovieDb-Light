@@ -257,7 +257,7 @@ private fun Movies(
             if (movies.loadState.refresh == LoadState.Loading) {
                 Box(
                     modifier = Modifier
-                        .height(PosterHeight.Large.height)
+                        .height(PosterHeight.large)
                         .fillParentMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
@@ -272,6 +272,7 @@ private fun Movies(
             if (movie != null) {
                 InteractivePoster(
                     modifier = Modifier
+                        .height(PosterHeight.large)
                         .padding(horizontal = 6.dp, vertical = 10.dp)
                         .then(
                             when (index) {

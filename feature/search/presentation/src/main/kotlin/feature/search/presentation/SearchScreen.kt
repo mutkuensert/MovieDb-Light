@@ -34,7 +34,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import core.ui.component.ImageQuality
 import core.ui.component.Poster
-import core.ui.component.PosterHeight
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
@@ -129,7 +128,6 @@ private fun Results(
     onClickPerson: (id: Int) -> Unit,
     onClickTvShow: (id: Int) -> Unit
 ) {
-    val posterHeight = PosterHeight.MaxHeight
     if (results.loadState.refresh == LoadState.Loading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -158,9 +156,8 @@ private fun Results(
                             }
                             .fillMaxSize(),
                         imagePath = result.imagePath,
-                        posterHeight = posterHeight,
                         imageQuality = ImageQuality.HIGH,
-                        contentScale = ContentScale.Fit
+                        contentScale = ContentScale.Crop
                     )
                 }
             }

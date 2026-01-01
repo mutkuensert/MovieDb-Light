@@ -2,8 +2,7 @@ package core.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.NoPhotography
@@ -24,7 +23,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
@@ -33,30 +31,25 @@ import coil3.request.allowHardware
 import coil3.request.crossfade
 import core.ui.R
 import core.ui.coil.debugPlaceholder
-import libraries.image.TmdbImage
+import core.ui.TmdbImage
 
 @Composable
 fun Poster(
     modifier: Modifier = Modifier,
     imagePath: String?,
     imageType: ImageType = ImageType.POSTER,
-    posterHeight: PosterHeight = PosterHeight.Large,
-    imageQuality: ImageQuality? = null,
-    contentScale: ContentScale = ContentScale.FillHeight,
+    imageQuality: ImageQuality = ImageQuality.MEDIUM,
+    contentScale: ContentScale = ContentScale.Crop,
+    aspectRatio: Float = 2f / 3f,
     onSuccess: (AsyncImagePainter.State.Success) -> Unit = {},
     onError: (AsyncImagePainter.State.Error) -> Unit = {}
 ) {
-    val imageSizeModifier = when (posterHeight) {
-        PosterHeight.MaxHeight -> Modifier.fillMaxHeight()
-        else -> Modifier.height(posterHeight.height)
-    }
-
-    Box(modifier) {
+    Box(modifier.aspectRatio(aspectRatio)) {
         var loading by remember { mutableStateOf(true) }
         var error by remember { mutableStateOf(false) }
         var currentImageUrl by remember {
             mutableStateOf(imagePath?.let {
-                TmdbImage(it).createImageUrl(imageType, posterHeight, imageQuality)
+                TmdbImage(it).createImageUrl(imageType, imageQuality)
             })
         }
 
@@ -86,7 +79,7 @@ fun Poster(
                 onError(it)
             },
             error = debugPlaceholder(R.drawable.debug_placeholder_dog),
-            modifier = imageSizeModifier
+            modifier = Modifier
                 .shadow(elevation = 3.dp, shape = MaterialTheme.shapes.medium)
                 .clip(MaterialTheme.shapes.medium),
             contentDescription = stringResource(R.string.image),
@@ -95,7 +88,7 @@ fun Poster(
 
         if (loading) {
             Box(
-                modifier = imageSizeModifier.width(posterHeight.estimatedWidth),
+                modifier = Modifier.matchParentSize(),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(color = Color.Gray)
@@ -104,8 +97,8 @@ fun Poster(
 
         if (error && !LocalInspectionMode.current) {
             Box(
-                modifier = imageSizeModifier
-                    .width(posterHeight.estimatedWidth)
+                modifier = Modifier
+                    .matchParentSize()
                     .background(Color.Black, shape = MaterialTheme.shapes.medium),
                 contentAlignment = Alignment.Center
             ) {
@@ -122,78 +115,44 @@ fun Poster(
 
 private fun TmdbImage.createImageUrl(
     imageType: ImageType,
-    posterHeight: PosterHeight,
-    imageQuality: ImageQuality? = null,
+    imageQuality: ImageQuality
 ): String {
     return when (imageType) {
         ImageType.POSTER -> {
-            if (imageQuality != null) {
-                when (imageQuality) {
-                    ImageQuality.LOW -> this.poster.w342Url
-                    ImageQuality.MEDIUM -> this.poster.w500Url
-                    ImageQuality.HIGH -> this.poster.w780Url
-                    ImageQuality.ORIGINAL -> this.originalSizedUrl
-                }
-            } else {
-                when (posterHeight) {
-                    PosterHeight.Small -> this.poster.w500Url
-                    PosterHeight.Medium -> this.poster.w780Url
-                    PosterHeight.Large -> this.poster.w780Url
-                    else -> this.originalSizedUrl
-                }
+            when (imageQuality) {
+                ImageQuality.LOW -> this.poster.w342Url
+                ImageQuality.MEDIUM -> this.poster.w500Url
+                ImageQuality.HIGH -> this.poster.w780Url
+                ImageQuality.ORIGINAL -> this.originalSizedUrl
             }
         }
 
         ImageType.PROFILE -> {
-            if (imageQuality != null) {
-                when (imageQuality) {
-                    ImageQuality.LOW -> this.profile.w185Url
-                    ImageQuality.MEDIUM -> this.profile.h632Url
-                    ImageQuality.HIGH -> this.profile.h632Url
-                    ImageQuality.ORIGINAL -> this.originalSizedUrl
-                }
-            } else {
-                when (posterHeight) {
-                    PosterHeight.Small -> this.profile.h632Url
-                    PosterHeight.Medium -> this.profile.h632Url
-                    else -> this.originalSizedUrl
-                }
+            when (imageQuality) {
+                ImageQuality.LOW -> this.profile.w185Url
+                ImageQuality.MEDIUM -> this.profile.h632Url
+                ImageQuality.HIGH -> this.profile.h632Url
+                ImageQuality.ORIGINAL -> this.originalSizedUrl
             }
+
         }
 
         ImageType.LOGO -> {
-            if (imageQuality != null) {
-                when (imageQuality) {
-                    ImageQuality.LOW -> this.logo.w92Url
-                    ImageQuality.MEDIUM -> this.logo.w300Url
-                    ImageQuality.HIGH -> this.logo.w500Url
-                    ImageQuality.ORIGINAL -> this.originalSizedUrl
-                }
-            } else {
-                when (posterHeight) {
-                    PosterHeight.Small -> this.logo.w300Url
-                    PosterHeight.Medium -> this.logo.w500Url
-                    else -> this.originalSizedUrl
-                }
+            when (imageQuality) {
+                ImageQuality.LOW -> this.logo.w92Url
+                ImageQuality.MEDIUM -> this.logo.w300Url
+                ImageQuality.HIGH -> this.logo.w500Url
+                ImageQuality.ORIGINAL -> this.originalSizedUrl
             }
         }
     }
 }
 
-enum class PosterHeight(val height: Dp) {
-    Unspecified(Dp.Unspecified),
-    Small(80.dp),
-    Medium(160.dp),
-    Large(240.dp),
-    ExtraLarge(320.dp),
-    MaxHeight((-1).dp);
-
-    val estimatedWidth: Dp
-        get() = if (height != (-1).dp && height != Dp.Unspecified) {
-            height * 2 / 3
-        } else {
-            Dp.Unspecified
-        }
+object PosterHeight {
+    val small = 80.dp
+    val medium = 160.dp
+    val large = 240.dp
+    val extraLarge = 320.dp
 }
 
 enum class ImageType {

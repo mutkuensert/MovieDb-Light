@@ -64,7 +64,7 @@ import feature.profile.presentation.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.serialization.Serializable
-import libraries.image.TmdbImage
+import core.ui.TmdbImage
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
@@ -324,7 +324,7 @@ private fun Movies(
             if (movies.loadState.refresh == LoadState.Loading) {
                 Box(
                     modifier = Modifier
-                        .height(PosterHeight.Large.height)
+                        .height(PosterHeight.large)
                         .fillParentMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
@@ -340,6 +340,7 @@ private fun Movies(
             if (movie != null) {
                 InteractivePoster(
                     modifier = Modifier
+                        .height(PosterHeight.medium)
                         .padding(horizontal = 6.dp, vertical = 10.dp)
                         .then(
                             when (index) {

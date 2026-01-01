@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Beenhere
@@ -31,8 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,7 +48,9 @@ fun InteractivePoster(
     modifier: Modifier = Modifier,
     imagePath: String?,
     imageType: ImageType = ImageType.POSTER,
-    posterHeight: PosterHeight = PosterHeight.Large,
+    imageQuality: ImageQuality = ImageQuality.MEDIUM,
+    contentScale: ContentScale = ContentScale.Crop,
+    aspectRatio: Float = 2f / 3f,
     title: String = "",
     vote: String? = null,
     inWatchlist: Boolean? = null,
@@ -70,35 +71,27 @@ fun InteractivePoster(
 
     Box(
         modifier = modifier
+            .aspectRatio(aspectRatio)
             .clip(MaterialTheme.shapes.medium)
             .clickable(onClick = onPosterClick)
     ) {
-        val density = LocalDensity.current
-        var imageWidth by remember { mutableStateOf(0.dp) }
         Poster(
-            modifier = Modifier
-                .then(blurModifier)
-                .onGloballyPositioned {
-                    imageWidth = with(density) { it.size.width.toDp() }
-                },
-            imageType = imageType,
+            modifier = blurModifier,
             imagePath = imagePath,
-            posterHeight = posterHeight,
+            imageType = imageType,
+            imageQuality = imageQuality,
+            contentScale = contentScale,
             onSuccess = { state ->
                 val bitmap = state.result.image.toBitmap().copy(Bitmap.Config.ARGB_8888, true)
                 infoButtonColor = bitmap.titleTextColor
                 textColor = bitmap.bodyTextColor
-            },
-            onError = {
-                imageWidth = posterHeight.estimatedWidth
             }
         )
 
         if (isInfoVisible) {
-            InfoView(
+            InfoText(
                 Modifier
-                    .height(posterHeight.height)
-                    .width(imageWidth)
+                    .matchParentSize()
                     .align(Alignment.Center),
                 title,
                 textColor,
@@ -115,7 +108,7 @@ fun InteractivePoster(
 }
 
 @Composable
-private fun InfoView(
+private fun InfoText(
     modifier: Modifier = Modifier,
     title: String,
     textColor: Color,

@@ -90,7 +90,7 @@ import feature.movie.presentation.detail.model.MovieDetailUiModel
 import feature.movie.presentation.detail.model.MovieUiModel
 import feature.movie.presentation.detail.model.PersonUiModel
 import kotlinx.coroutines.flow.flowOf
-import libraries.image.TmdbImage
+import core.ui.TmdbImage
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -448,7 +448,7 @@ private fun SimilarMovies(
             if (movies.loadState.refresh == LoadState.Loading) {
                 Box(
                     modifier = Modifier
-                        .height(PosterHeight.Large.height)
+                        .height(PosterHeight.large)
                         .fillParentMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
@@ -464,6 +464,7 @@ private fun SimilarMovies(
             if (movie != null) {
                 InteractivePoster(
                     modifier = Modifier
+                        .height(PosterHeight.large)
                         .padding(horizontal = 6.dp, vertical = 10.dp)
                         .then(
                             when (index) {
@@ -538,9 +539,9 @@ private fun Person(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Poster(
-            imagePath = imagePath,
-            imageType = ImageType.PROFILE,
-            posterHeight = PosterHeight.Medium
+            Modifier.height(PosterHeight.medium),
+            imagePath,
+            ImageType.PROFILE
         )
 
         Spacer(Modifier.height(4.dp))
