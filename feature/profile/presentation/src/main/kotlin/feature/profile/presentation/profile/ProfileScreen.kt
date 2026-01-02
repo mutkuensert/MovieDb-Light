@@ -62,10 +62,12 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
+import core.ui.LightGreen
 import core.ui.MoviedbLightTheme
 import core.ui.StatusBarColorHandler
 import core.ui.TmdbImage
 import core.ui.component.InteractivePoster
+import core.ui.darkenBy
 import feature.profile.presentation.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
@@ -368,7 +370,7 @@ private fun Filter(
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.surface.darkenBy(30)
                 ) {
                     Column(Modifier.padding(horizontal = 4.dp)) {
                         Text(stringResource(R.string.sort_by_added_time))
@@ -385,7 +387,7 @@ private fun Filter(
                                         Icons.Filled.CheckCircle,
                                         stringResource(R.string.sort_by_ascending_selected_icon),
                                         tint = if (sortBy == SortByUiModel.ASCENDING) {
-                                            Color(0xFF30F100)
+                                            LightGreen
                                         } else {
                                             Color.White
                                         }
@@ -409,7 +411,7 @@ private fun Filter(
                                         Icons.Filled.CheckCircle,
                                         stringResource(R.string.sort_by_descending_selected_icon),
                                         tint = if (sortBy == SortByUiModel.DESCENDING) {
-                                            Color(0xFF30F100)
+                                            LightGreen
                                         } else {
                                             Color.White
                                         }
@@ -425,6 +427,14 @@ private fun Filter(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun FilterPreview() {
+    MoviedbLightTheme {
+        Filter(sortBy = SortByUiModel.ASCENDING) { }
     }
 }
 

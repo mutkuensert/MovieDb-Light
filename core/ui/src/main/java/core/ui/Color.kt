@@ -1,5 +1,6 @@
 package core.ui
 
+import androidx.annotation.IntRange
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.ColorUtils
@@ -21,6 +22,16 @@ val ColdWhite = Color(0xFFF5F7FA)
 val DisabledGray = Color(0xffe4e4e4)
 
 val Color.isDark: Boolean get() = ColorUtils.calculateLuminance(this.toArgb()) < 0.1
+
+fun Color.darkenBy(@IntRange(0, 100) percent: Int): Color {
+    val factor = 1f - (percent / 100f)
+    return Color(
+        red = (red * factor).coerceIn(0f, 1f),
+        green = (green * factor).coerceIn(0f, 1f),
+        blue = (blue * factor).coerceIn(0f, 1f),
+        alpha = alpha
+    )
+}
 
 object AppColors {
     val star = Color(0xFFFFC107)
