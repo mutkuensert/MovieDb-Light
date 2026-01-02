@@ -41,6 +41,7 @@ import core.ui.StatusBarColorHandler
 import core.ui.component.InteractivePoster
 import feature.movie.presentation.R
 import feature.movie.presentation.list.model.MovieUiModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -49,16 +50,11 @@ import org.koin.androidx.compose.koinViewModel
 fun MoviesScreen(
     viewModel: MoviesViewModel = koinViewModel()
 ) {
-    val upcomingMovies = viewModel.upcomingMovies.collectAsLazyPagingItems()
-    val moviesNowPlaying = viewModel.moviesNowPlaying.collectAsLazyPagingItems()
-    val popularMovies = viewModel.popularMovies.collectAsLazyPagingItems()
-    val topRatedMovies = viewModel.topRatedMovies.collectAsLazyPagingItems()
-
     Movies(
-        upcomingMovies,
-        moviesNowPlaying,
-        popularMovies,
-        topRatedMovies,
+        viewModel.upcomingMovies,
+        viewModel.moviesNowPlaying,
+        viewModel.popularMovies,
+        viewModel.topRatedMovies,
         viewModel::handleMovieClick,
         viewModel::handleWatchlistClick,
     )
@@ -75,10 +71,10 @@ private enum class MovieTab(@param:StringRes val titleRes: Int) {
 
 @Composable
 private fun Movies(
-    upcomingMovies: LazyPagingItems<MovieUiModel>,
-    moviesNowPlaying: LazyPagingItems<MovieUiModel>,
-    popularMovies: LazyPagingItems<MovieUiModel>,
-    topRatedMovies: LazyPagingItems<MovieUiModel>,
+    upcomingMovies: Flow<PagingData<MovieUiModel>>,
+    moviesNowPlaying: Flow<PagingData<MovieUiModel>>,
+    popularMovies: Flow<PagingData<MovieUiModel>>,
+    topRatedMovies: Flow<PagingData<MovieUiModel>>,
     onClickMovie: (movieId: Int) -> Unit,
     onClickWatchlist: (MovieUiModel) -> Unit,
 ) {
@@ -120,7 +116,7 @@ private fun Movies(
             when (page) {
                 0 -> {
                     Movies(
-                        movies = upcomingMovies,
+                        movies = upcomingMovies.collectAsLazyPagingItems(),
                         onClickMovie = onClickMovie,
                         onWatchlistClick = onClickWatchlist
                     )
@@ -128,7 +124,7 @@ private fun Movies(
 
                 1 -> {
                     Movies(
-                        movies = moviesNowPlaying,
+                        movies = moviesNowPlaying.collectAsLazyPagingItems(),
                         onClickMovie = onClickMovie,
                         onWatchlistClick = onClickWatchlist
                     )
@@ -136,7 +132,7 @@ private fun Movies(
 
                 2 -> {
                     Movies(
-                        movies = popularMovies,
+                        movies = popularMovies.collectAsLazyPagingItems(),
                         onClickMovie = onClickMovie,
                         onWatchlistClick = onClickWatchlist
                     )
@@ -144,7 +140,7 @@ private fun Movies(
 
                 3 -> {
                     Movies(
-                        movies = topRatedMovies,
+                        movies = topRatedMovies.collectAsLazyPagingItems(),
                         onClickMovie = onClickMovie,
                         onWatchlistClick = onClickWatchlist
                     )
@@ -211,7 +207,7 @@ private fun Movies(
 private fun MoviesScreenPreview() {
     MoviedbLightTheme {
         val emptyPagingData =
-            flowOf(PagingData.from<MovieUiModel>(emptyList())).collectAsLazyPagingItems()
+            flowOf(PagingData.from<MovieUiModel>(emptyList()))
         MoviedbLightTheme {
             Movies(
                 emptyPagingData,

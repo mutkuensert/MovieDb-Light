@@ -70,6 +70,7 @@ import core.ui.component.InteractivePoster
 import core.ui.darkenBy
 import feature.profile.presentation.R
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -81,15 +82,11 @@ object ProfileRoute
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
     val uiModel by viewModel.uiModel.collectAsStateWithLifecycle()
-    val favoriteMovies = viewModel.favoriteMovies.collectAsLazyPagingItems()
-    val watchlistMovies = viewModel.watchlistMovies.collectAsLazyPagingItems()
-    val ratedMovies = viewModel.ratedMovies.collectAsLazyPagingItems()
-
     Profile(
         uiModel,
-        favoriteMovies,
-        watchlistMovies,
-        ratedMovies,
+        viewModel.favoriteMovies,
+        viewModel.watchlistMovies,
+        viewModel.ratedMovies,
         viewModel::handleMovieClick,
         viewModel::logout,
         viewModel::handleSortFavoriteMoviesClick,
@@ -105,9 +102,9 @@ fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
 @Composable
 private fun Profile(
     uiModel: ProfileUiModel,
-    favoriteMovies: LazyPagingItems<MovieUiModel>,
-    watchlistMovies: LazyPagingItems<MovieUiModel>,
-    ratedMovies: LazyPagingItems<MovieUiModel>,
+    favoriteMovies: Flow<PagingData<MovieUiModel>>,
+    watchlistMovies: Flow<PagingData<MovieUiModel>>,
+    ratedMovies: Flow<PagingData<MovieUiModel>>,
     onClickMovie: (movieId: Int) -> Unit,
     onLogoutClick: () -> Unit,
     onClickSortFavoriteMoviesBy: (sortBy: SortByUiModel) -> Unit,
@@ -158,7 +155,7 @@ private fun Profile(
                             WatchlistMoviesTab(
                                 uiModel,
                                 onClickSortWatchlistMoviesBy,
-                                watchlistMovies,
+                                watchlistMovies.collectAsLazyPagingItems(),
                                 onClickMovie
                             )
                         }
@@ -167,7 +164,7 @@ private fun Profile(
                             FavoriteMoviesTab(
                                 uiModel,
                                 onClickSortFavoriteMoviesBy,
-                                favoriteMovies,
+                                favoriteMovies.collectAsLazyPagingItems(),
                                 onClickMovie
                             )
                         }
@@ -176,7 +173,7 @@ private fun Profile(
                             RatedMoviesTab(
                                 uiModel,
                                 onClickSortRatedMoviesBy,
-                                ratedMovies,
+                                ratedMovies.collectAsLazyPagingItems(),
                                 onClickMovie
                             )
                         }
@@ -493,7 +490,7 @@ private fun TopBar(
 @Composable
 private fun ProfilePreview() {
     val emptyLazyPagingItems =
-        flowOf(PagingData.empty<MovieUiModel>()).collectAsLazyPagingItems()
+        flowOf(PagingData.empty<MovieUiModel>())
     MoviedbLightTheme {
         Profile(
             ProfileUiModel(
