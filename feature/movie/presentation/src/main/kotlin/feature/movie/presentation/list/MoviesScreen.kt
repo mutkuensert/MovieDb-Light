@@ -66,7 +66,7 @@ fun MoviesScreen(
     StatusBarColorHandler(MaterialTheme.colorScheme.background)
 }
 
-private enum class MovieTabs(@param:StringRes val titleRes: Int) {
+private enum class MovieTab(@param:StringRes val titleRes: Int) {
     Upcoming(R.string.upcoming),
     NowPlaying(R.string.now_playing),
     Popular(R.string.popular),
@@ -98,7 +98,7 @@ private fun Movies(
             selectedTabIndex = selectedTabIndex,
             edgePadding = 4.dp
         ) {
-            MovieTabs.entries.forEachIndexed { index, destination ->
+            MovieTab.entries.forEachIndexed { index, destination ->
                 Tab(
                     selected = selectedTabIndex == index,
                     onClick = {
@@ -155,9 +155,9 @@ private fun Movies(
 }
 
 @Composable
-private fun TabTitle(destination: MovieTabs) {
+private fun TabTitle(tab: MovieTab) {
     Text(
-        text = stringResource(destination.titleRes),
+        text = stringResource(tab.titleRes),
         maxLines = 1,
         color = MaterialTheme.colorScheme.onSurface,
         style = MaterialTheme.typography.titleMedium,

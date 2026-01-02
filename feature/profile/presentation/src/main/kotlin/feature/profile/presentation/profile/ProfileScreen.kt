@@ -1,10 +1,12 @@
 package feature.profile.presentation.profile
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,12 +15,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.CheckCircle
@@ -26,16 +29,19 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryScrollableTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,6 +50,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -53,18 +61,16 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import core.ui.MoviedbLightTheme
 import core.ui.StatusBarColorHandler
-import core.ui.component.ImageType
+import core.ui.TmdbImage
 import core.ui.component.InteractivePoster
-import core.ui.component.PosterHeight
 import feature.profile.presentation.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import core.ui.TmdbImage
 import org.koin.androidx.compose.koinViewModel
 
 @Serializable
@@ -110,82 +116,245 @@ private fun Profile(
     Column(
         Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
             .background(MaterialTheme.colorScheme.background)
     ) {
         TopBar(uiModel.profileImagePath, uiModel.name, onClickProfilePicture, onLogoutClick)
 
-        FeedHeader(
-            Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 4.dp),
-            stringResource(R.string.favorite_movies),
-            uiModel.favoriteMoviesSortBy,
-            onClickSortFavoriteMoviesBy,
-        )
+        val coroutineScope = rememberCoroutineScope()
+        val pagerState = rememberPagerState(pageCount = { 3 })
+        var selectedTabIndex by remember { mutableIntStateOf(0) }
+        LaunchedEffect(pagerState.currentPage) {
+            selectedTabIndex = pagerState.currentPage
+        }
+        Column {
+            PrimaryScrollableTabRow(
+                selectedTabIndex = selectedTabIndex,
+                edgePadding = 4.dp
+            ) {
+                ProfileTab.entries.forEachIndexed { index, destination ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = {
+                            coroutineScope.launch { pagerState.animateScrollToPage(index) }
+                            selectedTabIndex = index
+                        },
+                        text = { TabTitle(destination) }
+                    )
+                }
+            }
 
-        Movies(favoriteMovies, uiModel.favoriteMoviesSortBy, onClickMovie)
+            HorizontalPager(
+                pagerState,
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                key = { page -> page }
+            ) { page ->
+                Column {
+                    when (page) {
+                        0 -> {
+                            WatchlistMoviesTab(
+                                uiModel,
+                                onClickSortWatchlistMoviesBy,
+                                watchlistMovies,
+                                onClickMovie
+                            )
+                        }
 
-        FeedHeader(
-            Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 4.dp),
-            stringResource(R.string.watchlist_movies),
-            uiModel.watchlistMoviesSortBy,
-            onClickSortWatchlistMoviesBy,
-        )
+                        1 -> {
+                            FavoriteMoviesTab(
+                                uiModel,
+                                onClickSortFavoriteMoviesBy,
+                                favoriteMovies,
+                                onClickMovie
+                            )
+                        }
 
-        Movies(watchlistMovies, uiModel.watchlistMoviesSortBy, onClickMovie)
+                        2 -> {
+                            RatedMoviesTab(
+                                uiModel,
+                                onClickSortRatedMoviesBy,
+                                ratedMovies,
+                                onClickMovie
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
-        FeedHeader(
-            Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 4.dp),
-            stringResource(R.string.rated_movies),
+@Composable
+private fun RatedMoviesTab(
+    uiModel: ProfileUiModel,
+    onClickSortRatedMoviesBy: (SortByUiModel) -> Unit,
+    ratedMovies: LazyPagingItems<MovieUiModel>,
+    onClickMovie: (Int) -> Unit
+) {
+    Column {
+        Filter(
+            Modifier.padding(top = 4.dp),
             uiModel.ratedMoviesSortBy,
             onClickSortRatedMoviesBy,
         )
+        val state = rememberLazyGridState()
+        Movies(
+            movies = ratedMovies,
+            state = state,
+            onClickMovie = onClickMovie,
+        )
+        SortByListener(
+            ratedMovies,
+            uiModel.ratedMoviesSortBy,
+            state
+        )
+    }
+}
 
-        Movies(ratedMovies, uiModel.ratedMoviesSortBy, onClickMovie)
+@Composable
+private fun FavoriteMoviesTab(
+    uiModel: ProfileUiModel,
+    onClickSortFavoriteMoviesBy: (SortByUiModel) -> Unit,
+    favoriteMovies: LazyPagingItems<MovieUiModel>,
+    onClickMovie: (Int) -> Unit
+) {
+    Column {
+        Filter(
+            Modifier.padding(top = 4.dp),
+            uiModel.favoriteMoviesSortBy,
+            onClickSortFavoriteMoviesBy,
+        )
+        val state = rememberLazyGridState()
+        Movies(
+            movies = favoriteMovies,
+            state = state,
+            onClickMovie = onClickMovie,
+        )
+        SortByListener(
+            favoriteMovies,
+            uiModel.favoriteMoviesSortBy,
+            state
+        )
+    }
+}
+
+@Composable
+private fun WatchlistMoviesTab(
+    uiModel: ProfileUiModel,
+    onClickSortWatchlistMoviesBy: (SortByUiModel) -> Unit,
+    watchlistMovies: LazyPagingItems<MovieUiModel>,
+    onClickMovie: (Int) -> Unit
+) {
+    Column {
+        Filter(
+            Modifier.padding(top = 4.dp),
+            uiModel.watchlistMoviesSortBy,
+            onClickSortWatchlistMoviesBy,
+        )
+        val state = rememberLazyGridState()
+        Movies(
+            movies = watchlistMovies,
+            state = state,
+            onClickMovie = onClickMovie,
+        )
+        SortByListener(
+            watchlistMovies,
+            uiModel.watchlistMoviesSortBy,
+            state
+        )
+    }
+}
+
+private enum class ProfileTab(@param:StringRes val titleRes: Int) {
+    WatchlistMovies(R.string.watchlist_movies),
+    FavoriteMovies(R.string.favorite_movies),
+    RatedMovies(R.string.rated_movies),
+}
+
+@Composable
+private fun TabTitle(tab: ProfileTab) {
+    Text(
+        text = stringResource(tab.titleRes),
+        maxLines = 1,
+        color = MaterialTheme.colorScheme.onSurface,
+        style = MaterialTheme.typography.titleMedium,
+        textAlign = TextAlign.Center,
+        overflow = TextOverflow.Ellipsis
+    )
+}
+
+@Composable
+private fun Movies(
+    modifier: Modifier = Modifier,
+    movies: LazyPagingItems<MovieUiModel>,
+    state: LazyGridState,
+    onClickMovie: (movieId: Int) -> Unit,
+) {
+    if (movies.loadState.refresh == LoadState.Loading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) { CircularProgressIndicator() }
+    } else {
+        LazyVerticalGrid(
+            modifier = modifier.fillMaxSize(),
+            state = state,
+            contentPadding = PaddingValues(vertical = 2.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            columns = GridCells.Fixed(2)
+        ) {
+            items(
+                count = movies.itemCount,
+                key = { index ->
+                    movies[index]?.id ?: index
+                }) { index ->
+                val movie = movies[index]
+                if (movie != null) {
+                    InteractivePoster(
+                        modifier = Modifier.fillMaxSize(),
+                        imagePath = movie.imagePath,
+                        title = movie.title,
+                        vote = movie.voteAverage,
+                        onPosterClick = { onClickMovie(movie.id) },
+                    )
+                }
+            }
+        }
     }
 }
 
 //https://issuetracker.google.com/issues/209652366?hl=ru
 @Composable
-private fun ScrollFeedToStartWhenSortedAgain(
+private fun SortByListener(
     movies: LazyPagingItems<MovieUiModel>,
     sortBy: SortByUiModel,
-    listState: LazyListState
+    gridState: LazyGridState
 ) {
     var previousSortBy: SortByUiModel? by rememberSaveable { mutableStateOf(null) }
     LaunchedEffect(movies.itemSnapshotList) {
         if (previousSortBy != sortBy) {
             delay(500) //To fix race condition between internal scroll based on item key and this scroll
-            listState.requestScrollToItem(0)
+            gridState.requestScrollToItem(0)
             previousSortBy = sortBy
         }
     }
 }
 
 @Composable
-private fun FeedHeader(
+private fun Filter(
     modifier: Modifier = Modifier,
-    text: String,
     sortBy: SortByUiModel,
     onClickSortBy: (sortBy: SortByUiModel) -> Unit
 ) {
-    Column(modifier) {
+    Box(modifier) {
         Row(
             Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = text,
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.titleMedium
-            )
-
+            Spacer(Modifier)
             var expanded by remember { mutableStateOf(false) }
             Box {
                 IconButton({ expanded = true }) {
@@ -256,7 +425,6 @@ private fun FeedHeader(
                 }
             }
         }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
     }
 }
 
@@ -293,7 +461,11 @@ private fun TopBar(
 
         Spacer(Modifier.width(16.dp))
 
-        Text(text = text, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
+        Text(
+            text = text,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.Bold
+        )
 
         Spacer(Modifier.weight(1f))
 
@@ -307,72 +479,11 @@ private fun TopBar(
     }
 }
 
-@Composable
-private fun Movies(
-    movies: LazyPagingItems<MovieUiModel>,
-    sortBy: SortByUiModel,
-    onClickMovie: (movieId: Int) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val lazyListState = rememberLazyListState()
-    LazyRow(
-        modifier = modifier.fillMaxWidth(),
-        state = lazyListState,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        item {
-            if (movies.loadState.refresh == LoadState.Loading) {
-                Box(
-                    modifier = Modifier
-                        .height(PosterHeight.large)
-                        .fillParentMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) { CircularProgressIndicator() }
-            }
-        }
-
-        items(
-            count = movies.itemCount,
-            key = movies.itemKey { it.id }
-        ) { index ->
-            val movie = movies[index]
-
-            if (movie != null) {
-                InteractivePoster(
-                    modifier = Modifier
-                        .height(PosterHeight.large)
-                        .padding(horizontal = 6.dp, vertical = 10.dp)
-                        .then(
-                            when (index) {
-                                0 -> Modifier.padding(start = 10.dp)
-                                movies.itemCount - 1 if movies.loadState != LoadState.Loading -> {
-                                    Modifier.padding(end = 10.dp)
-                                }
-
-                                else -> Modifier
-                            }
-                        ),
-                    imagePath = movie.imagePath,
-                    imageType = ImageType.PROFILE,
-                    title = movie.title,
-                    vote = movie.voteAverage,
-                    onPosterClick = { onClickMovie(movie.id) },
-                )
-            }
-        }
-    }
-
-    ScrollFeedToStartWhenSortedAgain(
-        movies,
-        sortBy,
-        lazyListState
-    )
-}
-
 @Preview
 @Composable
 private fun ProfilePreview() {
-    val emptyLazyPagingItems = flowOf(PagingData.empty<MovieUiModel>()).collectAsLazyPagingItems()
+    val emptyLazyPagingItems =
+        flowOf(PagingData.empty<MovieUiModel>()).collectAsLazyPagingItems()
     MoviedbLightTheme {
         Profile(
             ProfileUiModel(
