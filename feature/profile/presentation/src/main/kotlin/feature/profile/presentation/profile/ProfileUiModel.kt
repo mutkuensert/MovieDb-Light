@@ -15,9 +15,9 @@ data class ProfileUiModel(
             return ProfileUiModel(
                 profileImagePath = null,
                 name = "",
-                favoriteMoviesSortBy = SortByUiModel.ASCENDING,
-                watchlistMoviesSortBy = SortByUiModel.ASCENDING,
-                ratedMoviesSortBy = SortByUiModel.ASCENDING,
+                favoriteMoviesSortBy = SortByUiModel.DESCENDING,
+                watchlistMoviesSortBy = SortByUiModel.DESCENDING,
+                ratedMoviesSortBy = SortByUiModel.DESCENDING,
             )
         }
     }
