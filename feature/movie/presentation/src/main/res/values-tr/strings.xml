@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="popular">Popüler</string>
-    <string name="top_rated">Yüksek Puanlanan</string>
+    <string name="top_rated">Yüksek puanlanan</string>
     <string name="now_playing">Yayında</string>
     <string name="upcoming">Yakında yayında</string>
     <string name="options">Seçenekler</string>

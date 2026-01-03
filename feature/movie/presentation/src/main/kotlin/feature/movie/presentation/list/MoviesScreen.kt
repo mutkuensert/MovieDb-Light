@@ -63,9 +63,9 @@ fun MoviesScreen(
 }
 
 private enum class MovieTab(@param:StringRes val titleRes: Int) {
-    Upcoming(R.string.upcoming),
-    NowPlaying(R.string.now_playing),
     Popular(R.string.popular),
+    NowPlaying(R.string.now_playing),
+    Upcoming(R.string.upcoming),
     TopRated(R.string.top_rated)
 }
 
@@ -114,23 +114,7 @@ private fun Movies(
             key = { page -> page }
         ) { page ->
             when (page) {
-                0 -> {
-                    Movies(
-                        movies = upcomingMovies.collectAsLazyPagingItems(),
-                        onClickMovie = onClickMovie,
-                        onWatchlistClick = onClickWatchlist
-                    )
-                }
-
-                1 -> {
-                    Movies(
-                        movies = moviesNowPlaying.collectAsLazyPagingItems(),
-                        onClickMovie = onClickMovie,
-                        onWatchlistClick = onClickWatchlist
-                    )
-                }
-
-                2 -> {
+                MovieTab.Popular.ordinal -> {
                     Movies(
                         movies = popularMovies.collectAsLazyPagingItems(),
                         onClickMovie = onClickMovie,
@@ -138,7 +122,23 @@ private fun Movies(
                     )
                 }
 
-                3 -> {
+                MovieTab.NowPlaying.ordinal -> {
+                    Movies(
+                        movies = moviesNowPlaying.collectAsLazyPagingItems(),
+                        onClickMovie = onClickMovie,
+                        onWatchlistClick = onClickWatchlist
+                    )
+                }
+
+                MovieTab.Upcoming.ordinal -> {
+                    Movies(
+                        movies = upcomingMovies.collectAsLazyPagingItems(),
+                        onClickMovie = onClickMovie,
+                        onWatchlistClick = onClickWatchlist
+                    )
+                }
+
+                MovieTab.TopRated.ordinal -> {
                     Movies(
                         movies = topRatedMovies.collectAsLazyPagingItems(),
                         onClickMovie = onClickMovie,
