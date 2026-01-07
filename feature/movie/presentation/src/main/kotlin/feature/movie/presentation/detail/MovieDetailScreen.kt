@@ -9,6 +9,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -78,6 +78,7 @@ import coil3.request.allowHardware
 import coil3.request.crossfade
 import core.ui.AppColors
 import core.ui.MoviedbLightTheme
+import core.ui.TmdbImage
 import core.ui.coil.debugPlaceholder
 import core.ui.component.ImageType
 import core.ui.component.InteractivePoster
@@ -90,7 +91,6 @@ import feature.movie.presentation.detail.model.MovieDetailUiModel
 import feature.movie.presentation.detail.model.MovieUiModel
 import feature.movie.presentation.detail.model.PersonUiModel
 import kotlinx.coroutines.flow.flowOf
-import core.ui.TmdbImage
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -414,21 +414,18 @@ private fun Providers(
 
 @Composable
 private fun Cast(uiModel: MovieDetailUiModel, modifier: Modifier = Modifier) {
-    LazyRow(modifier.height(260.dp)) {
-        itemsIndexed(uiModel.cast) { index, person ->
-            if (index == 0) {
-                Spacer(Modifier.width(4.dp))
-            }
+    LazyRow(
+        modifier.height(260.dp),
+        contentPadding = PaddingValues(horizontal = 4.dp)
+    ) {
+        items(uiModel.cast.size) { index ->
+            val person = uiModel.cast[index]
             Person(
                 person.name,
                 person.character,
                 person.imagePath,
                 Modifier.padding(horizontal = 4.dp)
             )
-
-            if (index == uiModel.cast.lastIndex) {
-                Spacer(Modifier.width(4.dp))
-            }
         }
     }
 }
