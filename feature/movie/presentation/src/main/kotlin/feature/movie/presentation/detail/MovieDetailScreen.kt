@@ -424,7 +424,7 @@ private fun Cast(uiModel: MovieDetailUiModel, modifier: Modifier = Modifier) {
                 person.name,
                 person.character,
                 person.imagePath,
-                Modifier.padding(horizontal = 4.dp)
+                Modifier.padding(horizontal = 2.dp)
             )
         }
     }
@@ -746,6 +746,38 @@ private fun MovieDetailPreview() {
         val emptyPagingData =
             flowOf(PagingData.from<MovieUiModel>(emptyList())).collectAsLazyPagingItems()
 
+        val cast = listOf(
+            PersonUiModel(
+                id = 2723,
+                imagePath = null,
+                name = "Some Person",
+                character = "recteque"
+            ),
+            PersonUiModel(
+                id = 2724,
+                imagePath = null,
+                name = "Some Person",
+                character = "recteque"
+            ),
+            PersonUiModel(
+                id = 2725,
+                imagePath = null,
+                name = "Some Person",
+                character = "recteque"
+            ),
+            PersonUiModel(
+                id = 2726,
+                imagePath = null,
+                name = "Some Person",
+                character = "recteque"
+            ),
+            PersonUiModel(
+                id = 2727,
+                imagePath = null,
+                name = "Some Person",
+                character = "recteque"
+            ),
+        )
         MovieDetail(
             MovieDetailUiModel(
                 id = -1,
@@ -763,14 +795,7 @@ private fun MovieDetailPreview() {
                 overview = LoremIpsum(20).values.joinToString(" "),
                 providerLogoPaths = listOf("path", "path2"),
                 trailerUrl = "123",
-                cast = listOf(
-                    PersonUiModel(
-                        id = 2722,
-                        imagePath = null,
-                        name = "Some Person",
-                        character = "recteque"
-                    )
-                )
+                cast = cast
             ),
             {},
             emptyPagingData,
