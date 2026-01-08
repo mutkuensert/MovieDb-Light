@@ -24,4 +24,5 @@ interface MovieRepository {
     suspend fun rateMovie(movieId: Int, rating: Int): Result<Unit, Failure>
     suspend fun removeRating(movieId: Int): Result<Unit, Failure>
     fun updateLanguageRelatedData()
+    suspend fun getImagePaths(movieId: Int): Result<List<String>, Failure>
 }

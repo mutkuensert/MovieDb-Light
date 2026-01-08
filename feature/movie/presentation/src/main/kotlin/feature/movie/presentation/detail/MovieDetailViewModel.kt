@@ -8,17 +8,17 @@ import androidx.paging.map
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import core.domain.auth.AuthStateProvider
-import feature.movie.domain.usecase.SyncMovieFavoriteStatusUseCase
-import feature.movie.domain.usecase.SyncMovieWatchlistStatusUseCase
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
 import core.ui.showFailurePopup
 import feature.movie.domain.MovieRepository
-import feature.movie.presentation.R
 import feature.movie.domain.usecase.RateMovieUseCase
 import feature.movie.domain.usecase.RemoveRatingUseCase
+import feature.movie.domain.usecase.SyncMovieFavoriteStatusUseCase
+import feature.movie.domain.usecase.SyncMovieWatchlistStatusUseCase
+import feature.movie.presentation.R
 import feature.movie.presentation.detail.model.MovieDetailUiModel
 import feature.movie.presentation.detail.model.MovieUiModel
 import feature.movie.presentation.detail.model.toUiModel
@@ -83,7 +83,8 @@ class MovieDetailViewModel(
             movieRepository.getMovieDetails(movieId).onSuccess { movieDetailsAndCast ->
                 _uiModel.update {
                     it.copy(
-                        imagePath = movieDetailsAndCast.imagePath,
+                        imagePaths = movieDetailsAndCast.imagePath?.let { path -> listOf(path) }
+                            ?: listOf(),
                         title = movieDetailsAndCast.title ?: "",
                         vote = movieDetailsAndCast.voteAverage?.toString() ?: "",
                         runtime = movieDetailsAndCast.runtime?.toString() ?: "",
@@ -95,23 +96,29 @@ class MovieDetailViewModel(
                 }
             }.onFailure(popupHandler::showFailurePopup)
 
+            movieRepository.getImagePaths(movieId).onSuccess { paths ->
+                _uiModel.update {
+                    it.copy(imagePaths = it.imagePaths + paths)
+                }
+            }
+
             movieRepository.getMovieCast(movieId).onSuccess { cast ->
                 _uiModel.update {
                     it.copy(cast = cast.map { person -> person.toUiModel() })
                 }
-            }.onFailure(popupHandler::showFailurePopup)
+            }
 
             movieRepository.getProviders(movieId).onSuccess { providers ->
                 _uiModel.update {
                     it.copy(providerLogoPaths = providers.mapNotNull { provider -> provider.logoPath })
                 }
-            }.onFailure(popupHandler::showFailurePopup)
+            }
 
             movieRepository.getTrailerUrl(movieId).onSuccess { url ->
                 _uiModel.update {
                     it.copy(trailerUrl = url)
                 }
-            }.onFailure(popupHandler::showFailurePopup)
+            }
 
             if (authStateProvider.loggedIn.value) {
                 movieRepository.getAccountStates(movieId).onSuccess { accountStates ->

@@ -271,4 +271,11 @@ class MovieRepositoryImpl(
     override fun updateLanguageRelatedData() {
         refreshTrigger.update { it + 1 }
     }
+
+    override suspend fun getImagePaths(movieId: Int): Result<List<String>, Failure> {
+        return movieService.getImages(movieId, language = languagePreference.getLanguageTag())
+            .mapToDomain { response ->
+                response.posters?.map { it.filePath } ?: emptyList()
+            }
+    }
 }

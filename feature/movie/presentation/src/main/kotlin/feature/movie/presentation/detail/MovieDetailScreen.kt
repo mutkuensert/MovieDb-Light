@@ -3,11 +3,15 @@ package feature.movie.presentation.detail
 import android.annotation.SuppressLint
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateIntOffsetAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,11 +19,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Beenhere
@@ -46,6 +56,7 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,10 +64,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -64,7 +80,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -145,7 +164,7 @@ private fun MovieDetail(
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState()),
         ) {
-            MoviePoster(uiModel.imagePath, uiModel.year, uiModel.vote, uiModel.runtime)
+            MoviePosters(uiModel.imagePaths, uiModel.year, uiModel.vote, uiModel.runtime)
 
             Column(Modifier.padding(horizontal = 16.dp)) {
                 Row(
@@ -174,15 +193,6 @@ private fun MovieDetail(
             Spacer(Modifier.height(16.dp))
 
             Cast(uiModel)
-
-            if (similarMovies.itemCount != 0) {
-                Text(
-                    modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-                    text = stringResource(R.string.similar),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
 
             SimilarMovies(similarMovies, onClickMovie, onClickWatchlist)
         }
@@ -255,7 +265,7 @@ private fun ActionButtons(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TrailerButton(
     trailerUrl: String,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     TooltipBox(
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
@@ -281,47 +291,178 @@ private fun TrailerButton(
 }
 
 @Composable
-private fun MoviePoster(
-    imagePath: String?,
+private fun MoviePosters(
+    imagePaths: List<String>,
     year: String,
     vote: String,
     runtime: String,
     modifier: Modifier = Modifier,
 ) {
-    var loading by remember { mutableStateOf(true) }
+    val pagerState = rememberPagerState(pageCount = {
+        imagePaths.size
+    })
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    var firstImageHeight: Dp? by remember { mutableStateOf(null) }
+    val density = LocalDensity.current
 
     Box(modifier) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(imagePath?.let { TmdbImage(it) }?.originalSizedUrl)
-                .crossfade(true)
-                .allowHardware(true)
-                .build(),
-            onLoading = { loading = true },
-            onSuccess = { loading = false },
-            onError = { loading = false },
-            error = debugPlaceholder(core.ui.R.drawable.debug_placeholder_dog),
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier.fillMaxWidth(),
-            contentDescription = stringResource(core.ui.R.string.image)
-        )
+        var success by remember { mutableStateOf(false) }
+        FirstPageHintEffect(pagerState, success)
 
-        if (loading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
+        HorizontalPager(
+            pagerState,
+            Modifier
+                .fillMaxWidth()
+                .then(
+                    if (firstImageHeight != null) {
+                        Modifier.height(firstImageHeight!!)
+                    } else {
+                        Modifier
+                    }
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            key = { page -> page }
+        ) { page ->
+            Box {
+                var loading by remember { mutableStateOf(false) }
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(TmdbImage(imagePaths[page]).originalSizedUrl)
+                        .crossfade(true)
+                        .allowHardware(true)
+                        .build(),
+                    onLoading = { loading = true },
+                    onSuccess = {
+                        loading = false
+                        success = true
+                    },
+                    onError = {
+                        loading = false
+                        success = false
+                    },
+                    error = debugPlaceholder(core.ui.R.drawable.debug_placeholder_dog),
+                    contentScale = ContentScale.FillWidth,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onGloballyPositioned {
+                            if (success && firstImageHeight == null) {
+                                firstImageHeight = with(density) { it.size.height.toDp() }
+                            }
+                        },
+                    contentDescription = stringResource(core.ui.R.string.image)
+                )
+
+                if (loading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(screenWidth * 3f / 2f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
+                    }
+                }
+
+                if (page == 0) {
+                    BottomGradient(Modifier.align(Alignment.BottomCenter))
+
+                    YearVoteRuntimeText(
+                        Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(start = 16.dp, bottom = 2.dp),
+                        year,
+                        vote,
+                        runtime
+                    )
+                }
             }
         }
 
+        if (pagerState.currentPage != 0 && imagePaths.size > 2) {
+            PageIndicator(pagerState)
+        }
+    }
+}
+
+@Composable
+fun BoxScope.PageIndicator(
+    pagerState: PagerState,
+    modifier: Modifier = Modifier,
+    activeColor: Color = Color.White,
+    inactiveColor: Color = Color.White,
+    indicatorSize: Dp = 16.dp,
+    spacing: Dp = 6.dp,
+    visibleDotsCount: Int = 5
+) {
+    val indicatorSizePx = LocalDensity.current.run { indicatorSize.toPx() }
+    val spacingPx = LocalDensity.current.run { spacing.toPx() }
+    val totalItemWidth = indicatorSizePx + spacingPx
+    val boxWidth = (visibleDotsCount * (indicatorSize + spacing)) - spacing
+    var targetOffset by remember { mutableStateOf(0) }
+    val offset = animateIntOffsetAsState(
+        targetValue = IntOffset(targetOffset, 0), label = "offset"
+    )
+
+    LaunchedEffect(pagerState.currentPage) {
+        if (pagerState.currentPage < visibleDotsCount - 2) {
+            targetOffset = 0
+            return@LaunchedEffect
+        }
+        var offsetDiff = if (pagerState.lastScrolledForward) {
+            totalItemWidth * -1
+        } else {
+            totalItemWidth
+        }
+
+        if (pagerState.currentPage == pagerState.pageCount) {
+            offsetDiff -= spacingPx
+        }
+        targetOffset += offsetDiff.toInt()
+    }
+
+    Box(
+        modifier = modifier
+            .width(boxWidth)
+            .height(indicatorSize)
+            .clipToBounds()
+            .align(Alignment.BottomCenter),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier
+                .wrapContentWidth(align = Alignment.Start, unbounded = true)
+                .offset { offset.value },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(spacing)
+        ) {
+            repeat(pagerState.pageCount) { iteration ->
+                val color = if (pagerState.currentPage == iteration) activeColor else inactiveColor
+
+                Box(
+                    modifier = Modifier
+                        .size(indicatorSize)
+                        .graphicsLayer {
+                            val currentPage = pagerState.currentPage
+                            if (currentPage != iteration) {
+                                scaleX = 0.5f
+                                scaleY = 0.5f
+                            }
+                        }
+                        .clip(CircleShape)
+                        .background(color)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun BoxScope.BottomGradient(modifier: Modifier = Modifier) {
+    Box(modifier) {
         Box(
             Modifier
                 .fillMaxWidth()
                 .height(36.dp)
-                .align(Alignment.BottomCenter)
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
@@ -331,14 +472,30 @@ private fun MoviePoster(
                     )
                 )
         )
-        YearVoteRuntimeText(
-            Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 16.dp, bottom = 2.dp),
-            year,
-            vote,
-            runtime
-        )
+    }
+}
+
+@Composable
+private fun FirstPageHintEffect(pagerState: PagerState, showHint: Boolean) {
+    var hasHinted by remember { mutableStateOf(false) }
+    val density = LocalDensity.current
+
+    LaunchedEffect(showHint) {
+        if (!hasHinted && pagerState.pageCount > 1 && showHint) {
+            hasHinted = true
+
+            repeat(2) {
+                pagerState.animateScrollBy(
+                    value = with(density) { 30.dp.toPx() },
+                    animationSpec = tween()
+                )
+
+                pagerState.animateScrollBy(
+                    value = -with(density) { 30.dp.toPx() },
+                    animationSpec = tween()
+                )
+            }
+        }
     }
 }
 
@@ -432,17 +589,26 @@ private fun Cast(uiModel: MovieDetailUiModel, modifier: Modifier = Modifier) {
 
 @Composable
 private fun SimilarMovies(
-    movies: LazyPagingItems<MovieUiModel>,
+    similarMovies: LazyPagingItems<MovieUiModel>,
     onClickMovie: (movieId: Int) -> Unit,
-    onWatchlistClick: (id: Int, inWatchlist: Boolean) -> Unit,
+    onClickWatchlist: (id: Int, inWatchlist: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    if (similarMovies.itemCount != 0) {
+        Text(
+            modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+            text = stringResource(R.string.similar),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.titleMedium
+        )
+    }
+
     LazyRow(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         item {
-            if (movies.loadState.refresh == LoadState.Loading) {
+            if (similarMovies.loadState.refresh == LoadState.Loading) {
                 Box(
                     modifier = Modifier
                         .height(PosterHeight.large)
@@ -453,10 +619,10 @@ private fun SimilarMovies(
         }
 
         items(
-            count = movies.itemCount,
-            key = movies.itemKey { it.id }
+            count = similarMovies.itemCount,
+            key = similarMovies.itemKey { it.id }
         ) { index ->
-            val movie = movies[index]
+            val movie = similarMovies[index]
 
             if (movie != null) {
                 InteractivePoster(
@@ -466,7 +632,7 @@ private fun SimilarMovies(
                         .then(
                             when (index) {
                                 0 -> Modifier.padding(start = 10.dp)
-                                movies.itemCount - 1 if movies.loadState != LoadState.Loading -> {
+                                similarMovies.itemCount - 1 if similarMovies.loadState != LoadState.Loading -> {
                                     Modifier.padding(end = 10.dp)
                                 }
 
@@ -478,7 +644,7 @@ private fun SimilarMovies(
                     vote = movie.voteAverage,
                     onPosterClick = { onClickMovie(movie.id) },
                     inWatchlist = movie.inWatchlist,
-                    onWatchlistClick = { onWatchlistClick(movie.id, !movie.inWatchlist!!) }
+                    onWatchlistClick = { onClickWatchlist(movie.id, !movie.inWatchlist!!) }
                 )
             }
         }
@@ -781,7 +947,7 @@ private fun MovieDetailPreview() {
         MovieDetail(
             MovieDetailUiModel(
                 id = -1,
-                imagePath = null,
+                imagePaths = listOf("", "", "", "", "", "", "", ""),
                 title = "pharetra",
                 vote = "7.1",
                 showFavoriteButton = true,

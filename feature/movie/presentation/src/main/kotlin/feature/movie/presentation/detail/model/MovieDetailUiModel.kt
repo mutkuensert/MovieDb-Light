@@ -2,7 +2,7 @@ package feature.movie.presentation.detail.model
 
 data class MovieDetailUiModel(
     val id: Int,
-    val imagePath: String?,
+    val imagePaths: List<String>,
     val title: String,
     val vote: String,
     val showFavoriteButton: Boolean,
@@ -22,7 +22,7 @@ data class MovieDetailUiModel(
         fun initial(id: Int): MovieDetailUiModel {
             return MovieDetailUiModel(
                 id = id,
-                imagePath = null,
+                imagePaths = emptyList(),
                 title = "",
                 vote = "",
                 showFavoriteButton = false,
