@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -80,8 +81,14 @@ fun HomeScreen(navigator: Navigator) {
         )
 
         Box {
+            val navController = rememberNavController()
+
+            LaunchedEffect(navController) {
+                navigator.configure(navController)
+            }
+
             MainNavigation(
-                navigator,
+                navController,
                 viewModel::navigateToMovies,
                 viewModel::navigateToSearch,
                 viewModel::navigateToProfile
@@ -148,17 +155,11 @@ private fun Popup(popup: Popup, viewModel: HomeViewModel) {
 
 @Composable
 fun MainNavigation(
-    navigator: Navigator,
+    navController: NavHostController,
     onNavigateToMovies: () -> Unit,
     onNavigateToSearch: () -> Unit,
     onNavigateToProfile: () -> Unit,
 ) {
-    val navController = rememberNavController()
-
-    LaunchedEffect(navController) {
-        navigator.configure(navController)
-    }
-
     Scaffold(
         bottomBar = {
             BottomNavBar(
