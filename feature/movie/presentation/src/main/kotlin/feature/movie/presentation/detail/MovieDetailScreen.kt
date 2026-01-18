@@ -3,7 +3,7 @@ package feature.movie.presentation.detail
 import android.annotation.SuppressLint
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateIntOffsetAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -81,7 +81,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.core.net.toUri
@@ -394,18 +393,15 @@ fun BoxScope.PageIndicator(
     spacing: Dp = 6.dp,
     visibleDotsCount: Int = 5
 ) {
-    val indicatorSizePx = LocalDensity.current.run { indicatorSize.toPx() }
-    val spacingPx = LocalDensity.current.run { spacing.toPx() }
-    val totalItemWidth = indicatorSizePx + spacingPx
+    val totalItemWidth = indicatorSize + spacing
     val boxWidth = (visibleDotsCount * (indicatorSize + spacing)) - spacing
-    var targetOffset by remember { mutableStateOf(0) }
-    val offset = animateIntOffsetAsState(
-        targetValue = IntOffset(targetOffset, 0), label = "offset"
-    )
+    var targetOffset by remember { mutableStateOf(0.dp) }
+    val offset = animateDpAsState(targetOffset)
 
     LaunchedEffect(pagerState.currentPage) {
-        if (pagerState.currentPage < visibleDotsCount - 2) {
-            targetOffset = 0
+        val currentPage = pagerState.currentPage
+        if (currentPage < visibleDotsCount - 2) {
+            targetOffset = 0.dp
             return@LaunchedEffect
         }
         var offsetDiff = if (pagerState.lastScrolledForward) {
@@ -414,10 +410,10 @@ fun BoxScope.PageIndicator(
             totalItemWidth
         }
 
-        if (pagerState.currentPage == pagerState.pageCount) {
-            offsetDiff -= spacingPx
+        if (currentPage == pagerState.pageCount - 1) {
+            offsetDiff -= spacing
         }
-        targetOffset += offsetDiff.toInt()
+        targetOffset += offsetDiff
     }
 
     Box(
@@ -426,12 +422,12 @@ fun BoxScope.PageIndicator(
             .height(indicatorSize)
             .clipToBounds()
             .align(Alignment.BottomCenter),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.CenterStart
     ) {
         Row(
             modifier = Modifier
                 .wrapContentWidth(align = Alignment.Start, unbounded = true)
-                .offset { offset.value },
+                .offset(x = offset.value),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(spacing)
         ) {
