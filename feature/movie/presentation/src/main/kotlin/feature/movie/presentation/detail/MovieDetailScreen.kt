@@ -104,6 +104,7 @@ import core.ui.component.OneTimeEffect
 import core.ui.component.Poster
 import core.ui.component.PosterHeight
 import core.ui.component.PrimaryButton
+import core.ui.darkenBy
 import feature.movie.presentation.R
 import feature.movie.presentation.detail.model.MovieDetailUiModel
 import feature.movie.presentation.detail.model.MovieUiModel
@@ -174,6 +175,15 @@ private fun MovieDetail(
                         uiModel.providerLogoPaths,
                         onClickStreamingServicesInfoButton,
                         Modifier.padding(top = 4.dp)
+                    )
+                }
+
+                if (uiModel.genres.isNotBlank()) {
+                    Text(
+                        text = uiModel.genres,
+                        modifier = Modifier.padding(top = 8.dp),
+                        color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
 
@@ -954,6 +964,7 @@ private fun MovieDetailPreview() {
                 favorite = true,
                 runtime = "120",
                 year = "2010",
+                genres = "Comedy, Action",
                 overview = LoremIpsum(20).values.joinToString(" "),
                 providerLogoPaths = listOf("path", "path2"),
                 trailerUrl = "123",

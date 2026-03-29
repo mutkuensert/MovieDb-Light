@@ -6,5 +6,6 @@ data class MovieDetails(
     val voteAverage: Float?,
     val runtime: Int?,
     val releaseDate: String?,
-    val overview: String?
+    val genres: List<String>,
+    val overview: String?,
 )

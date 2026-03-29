@@ -198,14 +198,15 @@ class MovieRepositoryImpl(
         return movieService.getMovieDetails(
             movieId,
             languagePreference.getLanguageTag()
-        ).mapToDomain {
+        ).mapToDomain { response ->
             MovieDetails(
-                imagePath = it.posterPath,
-                title = it.originalTitle,
-                voteAverage = it.voteAverage?.withDecimals(1),
-                runtime = it.runtime,
-                releaseDate = it.releaseDate,
-                overview = it.overview
+                imagePath = response.posterPath,
+                title = response.originalTitle,
+                voteAverage = response.voteAverage?.withDecimals(1),
+                runtime = response.runtime,
+                releaseDate = response.releaseDate,
+                genres = response.genres?.mapNotNull { it.name } ?: emptyList(),
+                overview = response.overview
             )
         }
     }

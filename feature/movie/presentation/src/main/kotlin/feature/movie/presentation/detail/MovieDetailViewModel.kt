@@ -80,17 +80,18 @@ class MovieDetailViewModel(
         viewModelScope.launch {
             loadingAnimator.start()
 
-            movieRepository.getMovieDetails(movieId).onSuccess { movieDetailsAndCast ->
+            movieRepository.getMovieDetails(movieId).onSuccess { movieDetails ->
                 _uiModel.update {
                     it.copy(
-                        imagePaths = movieDetailsAndCast.imagePath?.let { path -> listOf(path) }
+                        imagePaths = movieDetails.imagePath?.let { path -> listOf(path) }
                             ?: listOf(),
-                        title = movieDetailsAndCast.title ?: "",
-                        vote = movieDetailsAndCast.voteAverage?.toString() ?: "",
-                        runtime = movieDetailsAndCast.runtime?.toString() ?: "",
-                        year = movieDetailsAndCast.releaseDate?.split("-")
+                        title = movieDetails.title ?: "",
+                        vote = movieDetails.voteAverage?.toString() ?: "",
+                        runtime = movieDetails.runtime?.toString() ?: "",
+                        year = movieDetails.releaseDate?.split("-")
                             ?.firstOrNull() ?: "",
-                        overview = movieDetailsAndCast.overview ?: "",
+                        genres = movieDetails.genres.joinToString(", "),
+                        overview = movieDetails.overview ?: "",
                         cast = emptyList()
                     )
                 }
