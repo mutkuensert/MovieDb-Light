@@ -197,29 +197,28 @@ private fun MovieDetail(
                         Modifier.padding(top = 8.dp)
                     )
                 }
+
+                if (uiModel.directors.isNotEmpty()) {
+                    Text(
+                        stringResource(R.string.directors, uiModel.directors.joinToString(", ")),
+                        Modifier.padding(top = 8.dp),
+                        color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                if (uiModel.writers.isNotEmpty()) {
+                    Text(
+                        stringResource(R.string.writers, uiModel.writers.joinToString(", ")),
+                        color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
 
             Spacer(Modifier.height(16.dp))
 
             Cast(uiModel)
-
-            if (uiModel.directors.isNotEmpty()) {
-                Text(
-                    stringResource(R.string.directors, uiModel.directors.joinToString(", ")),
-                    Modifier.padding(start = 16.dp, top = 4.dp),
-                    color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-
-            if (uiModel.writers.isNotEmpty()) {
-                Text(
-                    stringResource(R.string.writers, uiModel.writers.joinToString(", ")),
-                    Modifier.padding(start = 16.dp),
-                    color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
 
             SimilarMovies(similarMovies, onClickMovie, onClickWatchlist)
         }
