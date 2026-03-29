@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("base-library")
     kotlin("plugin.serialization")
@@ -7,7 +10,14 @@ android {
     namespace = "moviedblight.core.data"
 
     defaultConfig {
-        buildConfigField("String", "API_KEY_TMDB", "\"" + System.getenv("API_KEY_TMDB") + "\"")
+        val localProperties = Properties()
+        val propertiesFile = rootProject.file("local.properties")
+        if (propertiesFile.exists()) {
+            localProperties.load(FileInputStream(propertiesFile))
+        }
+
+        val apiKey = System.getenv("API_KEY_TMDB") ?: localProperties.getProperty("API_KEY_TMDB")
+        buildConfigField("String", "API_KEY_TMDB", "\"" + apiKey + "\"")
     }
 }
 
