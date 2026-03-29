@@ -17,7 +17,9 @@ data class MovieDetailUiModel(
     val overview: String,
     val trailerUrl: String?,
     val providerLogoPaths: List<String>,
-    val cast: List<PersonUiModel>
+    val cast: List<PersonUiModel>,
+    val directors: List<String>,
+    val writers: List<String>,
 ) {
     companion object {
         fun initial(id: Int): MovieDetailUiModel {
@@ -38,7 +40,9 @@ data class MovieDetailUiModel(
                 overview = "",
                 trailerUrl = null,
                 providerLogoPaths = emptyList(),
-                cast = emptyList()
+                cast = emptyList(),
+                directors = emptyList(),
+                writers = emptyList(),
             )
         }
     }

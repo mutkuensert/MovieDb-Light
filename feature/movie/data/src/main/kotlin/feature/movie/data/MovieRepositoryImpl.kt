@@ -21,9 +21,12 @@ import feature.movie.data.remote.MovieService
 import feature.movie.data.remote.response.PostMovieRatingRequest
 import feature.movie.domain.MovieRepository
 import feature.movie.domain.model.AccountStates
+import feature.movie.domain.model.Director
 import feature.movie.domain.model.Movie
 import feature.movie.domain.model.MovieDetails
+import feature.movie.domain.model.People
 import feature.movie.domain.model.Person
+import feature.movie.domain.model.Writer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -211,10 +214,10 @@ class MovieRepositoryImpl(
         }
     }
 
-    override suspend fun getMovieCast(movieId: Int): Result<List<Person>, Failure> {
+    override suspend fun getPeople(movieId: Int): Result<People, Failure> {
         return movieService.getMovieCredits(movieId, languagePreference.getLanguageTag())
             .mapToDomain { response ->
-                response.cast.map {
+                val cast = response.cast.map {
                     Person(
                         id = it.id,
                         imagePath = it.profilePath,
@@ -222,6 +225,16 @@ class MovieRepositoryImpl(
                         character = it.character
                     )
                 }
+
+                val directors = response.crew.filter { it.job == "Director" }.map {
+                    Director(it.id, it.profilePath, it.name)
+                }
+
+                val writers = response.crew.filter { it.job == "Writer" }.map {
+                    Writer(it.id, it.profilePath, it.name)
+                }
+
+                People(cast, directors, writers)
             }
     }
 

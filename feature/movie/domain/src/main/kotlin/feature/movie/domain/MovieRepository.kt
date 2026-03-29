@@ -7,7 +7,7 @@ import core.domain.common.model.Provider
 import feature.movie.domain.model.AccountStates
 import feature.movie.domain.model.Movie
 import feature.movie.domain.model.MovieDetails
-import feature.movie.domain.model.Person
+import feature.movie.domain.model.People
 import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
@@ -17,7 +17,7 @@ interface MovieRepository {
     fun getTopRatedMovies(countryCode: String? = null): Flow<PagingData<Movie>>
     fun getSimilarMovies(movieId: Int): Flow<PagingData<Movie>>
     suspend fun getMovieDetails(movieId: Int): Result<MovieDetails, Failure>
-    suspend fun getMovieCast(movieId: Int): Result<List<Person>, Failure>
+    suspend fun getPeople(movieId: Int): Result<People, Failure>
     suspend fun getProviders(movieId: Int): Result<List<Provider>, Failure>
     suspend fun getTrailerUrl(movieId: Int): Result<String?, Failure>
     suspend fun getAccountStates(movieId: Int): Result<AccountStates, Failure>

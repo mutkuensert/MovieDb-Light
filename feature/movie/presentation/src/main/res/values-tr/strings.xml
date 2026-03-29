@@ -19,5 +19,7 @@
     <string name="rate">%s/10</string>
     <string name="rate_the_movie">Filme puan verin</string>
     <string name="remove_your_rating">Verdiğiniz puanı silin</string>
-    <string name="streaming_services_informations_are_provided_by_justwatch">Dizi ve film servisleri hakkındaki bilgiler JustWatch tarafından sağlanmaktadır.</string>
+    <string name="streaming_services_information_are_provided_by_justwatch">Dizi ve film servisleri hakkındaki bilgiler JustWatch tarafından sağlanmaktadır.</string>
+    <string name="directors">Directors: %s</string>
+    <string name="writers">Writers: %s</string>
 </resources>

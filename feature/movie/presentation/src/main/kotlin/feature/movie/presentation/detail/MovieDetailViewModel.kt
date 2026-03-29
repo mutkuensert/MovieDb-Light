@@ -103,9 +103,12 @@ class MovieDetailViewModel(
                 }
             }
 
-            movieRepository.getMovieCast(movieId).onSuccess { cast ->
+            movieRepository.getPeople(movieId).onSuccess { people ->
                 _uiModel.update {
-                    it.copy(cast = cast.map { person -> person.toUiModel() })
+                    it.copy(
+                        cast = people.cast.map { person -> person.toUiModel() },
+                        directors = people.directors.map { director -> director.name },
+                        writers = people.writers.map { writer -> writer.name })
                 }
             }
 
@@ -139,7 +142,7 @@ class MovieDetailViewModel(
     }
 
     fun handleStreamServicesInfoButton() {
-        popupHandler.showSimpleMessage(strResource.get(R.string.streaming_services_informations_are_provided_by_justwatch))
+        popupHandler.showSimpleMessage(strResource.get(R.string.streaming_services_information_are_provided_by_justwatch))
     }
 
     fun handleMovieClick(movieId: Int) {

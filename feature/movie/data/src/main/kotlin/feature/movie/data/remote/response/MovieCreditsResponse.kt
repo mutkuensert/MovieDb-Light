@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class MovieCreditsResponse(
     val id: Int,
-    val cast: List<MovieCastDto>
+    val cast: List<MovieCastDto>,
+    val crew: List<MovieCrewDto>
 )
 
 @Serializable
@@ -15,4 +16,12 @@ data class MovieCastDto(
     val name: String,
     @SerialName("profile_path") val profilePath: String?,
     val character: String?
+)
+
+@Serializable
+data class MovieCrewDto(
+    val id: Int,
+    val name: String,
+    @SerialName("profile_path") val profilePath: String?,
+    val job: String?
 )

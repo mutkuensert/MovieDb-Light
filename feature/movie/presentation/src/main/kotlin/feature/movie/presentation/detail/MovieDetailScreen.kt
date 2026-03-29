@@ -203,6 +203,24 @@ private fun MovieDetail(
 
             Cast(uiModel)
 
+            if (uiModel.directors.isNotEmpty()) {
+                Text(
+                    stringResource(R.string.directors, uiModel.directors.joinToString(", ")),
+                    Modifier.padding(start = 16.dp, top = 4.dp),
+                    color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            if (uiModel.writers.isNotEmpty()) {
+                Text(
+                    stringResource(R.string.writers, uiModel.writers.joinToString(", ")),
+                    Modifier.padding(start = 16.dp),
+                    color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
             SimilarMovies(similarMovies, onClickMovie, onClickWatchlist)
         }
     }
@@ -463,7 +481,7 @@ fun BoxScope.PageIndicator(
 }
 
 @Composable
-private fun BoxScope.BottomGradient(modifier: Modifier = Modifier) {
+private fun BottomGradient(modifier: Modifier = Modifier) {
     Box(modifier) {
         Box(
             Modifier
@@ -600,58 +618,60 @@ private fun SimilarMovies(
     onClickWatchlist: (id: Int, inWatchlist: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (similarMovies.itemCount != 0) {
-        Text(
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-            text = stringResource(R.string.similar),
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleMedium
-        )
-    }
-
-    LazyRow(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        item {
-            if (similarMovies.loadState.refresh == LoadState.Loading) {
-                Box(
-                    modifier = Modifier
-                        .height(PosterHeight.large)
-                        .fillParentMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) { CircularProgressIndicator() }
-            }
+    Column(modifier) {
+        if (similarMovies.itemCount != 0) {
+            Text(
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+                text = stringResource(R.string.similar),
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleMedium
+            )
         }
 
-        items(
-            count = similarMovies.itemCount,
-            key = similarMovies.itemKey { it.id }
-        ) { index ->
-            val movie = similarMovies[index]
+        LazyRow(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            item {
+                if (similarMovies.loadState.refresh == LoadState.Loading) {
+                    Box(
+                        modifier = Modifier
+                            .height(PosterHeight.large)
+                            .fillParentMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) { CircularProgressIndicator() }
+                }
+            }
 
-            if (movie != null) {
-                InteractivePoster(
-                    modifier = Modifier
-                        .height(PosterHeight.large)
-                        .padding(horizontal = 6.dp, vertical = 10.dp)
-                        .then(
-                            when (index) {
-                                0 -> Modifier.padding(start = 10.dp)
-                                similarMovies.itemCount - 1 if similarMovies.loadState != LoadState.Loading -> {
-                                    Modifier.padding(end = 10.dp)
+            items(
+                count = similarMovies.itemCount,
+                key = similarMovies.itemKey { it.id }
+            ) { index ->
+                val movie = similarMovies[index]
+
+                if (movie != null) {
+                    InteractivePoster(
+                        modifier = Modifier
+                            .height(PosterHeight.large)
+                            .padding(horizontal = 6.dp, vertical = 10.dp)
+                            .then(
+                                when (index) {
+                                    0 -> Modifier.padding(start = 10.dp)
+                                    similarMovies.itemCount - 1 if similarMovies.loadState != LoadState.Loading -> {
+                                        Modifier.padding(end = 10.dp)
+                                    }
+
+                                    else -> Modifier
                                 }
-
-                                else -> Modifier
-                            }
-                        ),
-                    imagePath = movie.imagePath,
-                    title = movie.title,
-                    vote = movie.voteAverage,
-                    onPosterClick = { onClickMovie(movie.id) },
-                    inWatchlist = movie.inWatchlist,
-                    onWatchlistClick = { onClickWatchlist(movie.id, !movie.inWatchlist!!) }
-                )
+                            ),
+                        imagePath = movie.imagePath,
+                        title = movie.title,
+                        vote = movie.voteAverage,
+                        onPosterClick = { onClickMovie(movie.id) },
+                        inWatchlist = movie.inWatchlist,
+                        onWatchlistClick = { onClickWatchlist(movie.id, !movie.inWatchlist!!) }
+                    )
+                }
             }
         }
     }
@@ -968,7 +988,9 @@ private fun MovieDetailPreview() {
                 overview = LoremIpsum(20).values.joinToString(" "),
                 providerLogoPaths = listOf("path", "path2"),
                 trailerUrl = "123",
-                cast = cast
+                cast = cast,
+                directors = listOf("Lorem Ipsum"),
+                writers = listOf("Lorem Ipsum"),
             ),
             {},
             emptyPagingData,
