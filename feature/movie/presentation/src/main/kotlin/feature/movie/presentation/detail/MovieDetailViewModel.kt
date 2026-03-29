@@ -125,7 +125,7 @@ class MovieDetailViewModel(
                     _uiModel.update {
                         it.copy(
                             userRate = accountStates.rate?.roundToInt()
-                                ?.toString(), //Implement a rating system supports floating number
+                                ?.toString(), //TODO Implement a rating system supports floating number
                             inWatchlist = accountStates.watchlist,
                             favorite = accountStates.favorite
                         )
