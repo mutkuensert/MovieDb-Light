@@ -13,7 +13,9 @@ android {
         val localProperties = Properties()
         val propertiesFile = rootProject.file("local.properties")
         if (propertiesFile.exists()) {
-            localProperties.load(FileInputStream(propertiesFile))
+            val inputStream = FileInputStream(propertiesFile)
+            localProperties.load(inputStream)
+            inputStream.close()
         }
 
         val apiKey = System.getenv("API_KEY_TMDB") ?: localProperties.getProperty("API_KEY_TMDB")
