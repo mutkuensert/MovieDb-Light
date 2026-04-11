@@ -106,6 +106,7 @@ import core.ui.component.PosterHeight
 import core.ui.component.PrimaryButton
 import core.ui.darkenBy
 import feature.movie.presentation.R
+import feature.movie.presentation.detail.model.CrewPersonUiModel
 import feature.movie.presentation.detail.model.MovieDetailUiModel
 import feature.movie.presentation.detail.model.MovieUiModel
 import feature.movie.presentation.detail.model.PersonUiModel
@@ -122,6 +123,7 @@ fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
         viewModel::handleStreamServicesInfoButton,
         similarMovies,
         viewModel::handleMovieClick,
+        viewModel::handlePersonClick,
         viewModel::handleWatchlistClick,
         viewModel::handleFavoriteClick,
         viewModel::handleRateClick,
@@ -141,6 +143,7 @@ private fun MovieDetail(
     onClickStreamingServicesInfoButton: () -> Unit,
     similarMovies: LazyPagingItems<MovieUiModel>,
     onClickMovie: (id: Int) -> Unit,
+    onClickPerson: (id: Int) -> Unit,
     onClickWatchlist: (id: Int, inWatchlist: Boolean) -> Unit,
     onClickFavorite: () -> Unit,
     onRateClick: (value: Int) -> Unit,
@@ -199,28 +202,67 @@ private fun MovieDetail(
                 }
 
                 if (uiModel.directors.isNotEmpty()) {
-                    Text(
-                        stringResource(R.string.directors, uiModel.directors.joinToString(", ")),
-                        Modifier.padding(top = 8.dp),
-                        color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
-                        style = MaterialTheme.typography.bodyMedium
+                    CrewPeople(
+                        label = stringResource(R.string.directors),
+                        people = uiModel.directors,
+                        onClickPerson = onClickPerson,
+                        modifier = Modifier.padding(top = 8.dp)
                     )
                 }
 
                 if (uiModel.writers.isNotEmpty()) {
-                    Text(
-                        stringResource(R.string.writers, uiModel.writers.joinToString(", ")),
-                        color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
-                        style = MaterialTheme.typography.bodyMedium
+                    CrewPeople(
+                        label = stringResource(R.string.writers),
+                        people = uiModel.writers,
+                        onClickPerson = onClickPerson
                     )
                 }
             }
 
             Spacer(Modifier.height(16.dp))
 
-            Cast(uiModel)
+            Cast(uiModel, onClickPerson)
 
             SimilarMovies(similarMovies, onClickMovie, onClickWatchlist)
+        }
+    }
+}
+
+@Composable
+private fun CrewPeople(
+    label: String,
+    people: List<CrewPersonUiModel>,
+    onClickPerson: (personId: Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "$label: ",
+            color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        people.forEachIndexed { index, person ->
+            Text(
+                text = person.name,
+                modifier = Modifier.clickable { onClickPerson(person.id) },
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.bodyMedium,
+                textDecoration = TextDecoration.Underline
+            )
+
+            if (index != people.lastIndex) {
+                Text(
+                    text = ", ",
+                    color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
 }
@@ -524,18 +566,19 @@ private fun FirstPageHintEffect(pagerState: PagerState, showHint: Boolean) {
 
 @Composable
 private fun Overview(overview: String, modifier: Modifier = Modifier) {
-    var isOverviewShrinked by remember { mutableStateOf(true) }
+    var collapsed by remember { mutableStateOf(true) }
 
     Box(modifier.clickable {
-        isOverviewShrinked = !isOverviewShrinked
+        collapsed = !collapsed
     }) {
         Text(
             modifier = Modifier
-                .then(if (isOverviewShrinked) Modifier.height(92.dp) else Modifier),
+                .then(if (collapsed) Modifier.height(92.dp) else Modifier),
             text = overview,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.bodyMedium
         )
-        if (isOverviewShrinked) {
+        if (collapsed) {
             Box(
                 Modifier
                     .fillMaxWidth()
@@ -593,7 +636,11 @@ private fun Providers(
 }
 
 @Composable
-private fun Cast(uiModel: MovieDetailUiModel, modifier: Modifier = Modifier) {
+private fun Cast(
+    uiModel: MovieDetailUiModel,
+    onClickPerson: (personId: Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyRow(
         modifier.height(260.dp),
         contentPadding = PaddingValues(horizontal = 4.dp)
@@ -601,9 +648,11 @@ private fun Cast(uiModel: MovieDetailUiModel, modifier: Modifier = Modifier) {
         items(uiModel.cast.size) { index ->
             val person = uiModel.cast[index]
             Person(
+                person.id,
                 person.name,
                 person.character,
                 person.imagePath,
+                onClickPerson,
                 Modifier.padding(horizontal = 2.dp)
             )
         }
@@ -716,14 +765,17 @@ private fun YearVoteRuntimeText(
 
 @Composable
 private fun Person(
+    id: Int,
     name: String,
     character: String,
     imagePath: String?,
+    onClickPerson: (personId: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
-            .clip(MaterialTheme.shapes.medium),
+            .clip(MaterialTheme.shapes.medium)
+            .clickable { onClickPerson(id) },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Poster(
@@ -969,6 +1021,7 @@ private fun MovieDetailPreview() {
                 character = "recteque"
             ),
         )
+        val crew = listOf(CrewPersonUiModel(id = 2728, name = "Lorem Ipsum"))
         MovieDetail(
             MovieDetailUiModel(
                 id = -1,
@@ -988,11 +1041,12 @@ private fun MovieDetailPreview() {
                 providerLogoPaths = listOf("path", "path2"),
                 trailerUrl = "123",
                 cast = cast,
-                directors = listOf("Lorem Ipsum"),
-                writers = listOf("Lorem Ipsum"),
+                directors = crew,
+                writers = crew,
             ),
             {},
             emptyPagingData,
+            {},
             {},
             { _, _ -> },
             {},

@@ -87,11 +87,18 @@ fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
         viewModel.favoriteMovies,
         viewModel.watchlistMovies,
         viewModel.ratedMovies,
+        viewModel.favoriteTvShows,
+        viewModel.watchlistTvShows,
+        viewModel.ratedTvShows,
         viewModel::handleMovieClick,
+        viewModel::handleTvShowClick,
         viewModel::logout,
         viewModel::handleSortFavoriteMoviesClick,
         viewModel::handleSortWatchlistMoviesClick,
         viewModel::handleSortRatedMoviesClick,
+        viewModel::handleSortFavoriteTvShowsClick,
+        viewModel::handleSortWatchlistTvShowsClick,
+        viewModel::handleSortRatedTvShowsClick,
         viewModel::handleProfilePictureClick,
     )
 
@@ -105,11 +112,18 @@ private fun Profile(
     favoriteMovies: Flow<PagingData<MovieUiModel>>,
     watchlistMovies: Flow<PagingData<MovieUiModel>>,
     ratedMovies: Flow<PagingData<MovieUiModel>>,
+    favoriteTvShows: Flow<PagingData<MovieUiModel>>,
+    watchlistTvShows: Flow<PagingData<MovieUiModel>>,
+    ratedTvShows: Flow<PagingData<MovieUiModel>>,
     onClickMovie: (movieId: Int) -> Unit,
+    onClickTvShow: (tvShowId: Int) -> Unit,
     onLogoutClick: () -> Unit,
     onClickSortFavoriteMoviesBy: (sortBy: SortByUiModel) -> Unit,
     onClickSortWatchlistMoviesBy: (sortBy: SortByUiModel) -> Unit,
     onClickSortRatedMoviesBy: (sortBy: SortByUiModel) -> Unit,
+    onClickSortFavoriteTvShowsBy: (sortBy: SortByUiModel) -> Unit,
+    onClickSortWatchlistTvShowsBy: (sortBy: SortByUiModel) -> Unit,
+    onClickSortRatedTvShowsBy: (sortBy: SortByUiModel) -> Unit,
     onClickProfilePicture: () -> Unit,
 ) {
     Column(
@@ -120,7 +134,7 @@ private fun Profile(
         TopBar(uiModel.profileImagePath, uiModel.name, onClickProfilePicture, onLogoutClick)
 
         val coroutineScope = rememberCoroutineScope()
-        val pagerState = rememberPagerState(pageCount = { 3 })
+        val pagerState = rememberPagerState(pageCount = { ProfileTab.entries.size })
         var selectedTabIndex by remember { mutableIntStateOf(0) }
         LaunchedEffect(pagerState.currentPage) {
             selectedTabIndex = pagerState.currentPage
@@ -151,7 +165,7 @@ private fun Profile(
             ) { page ->
                 Column {
                     when (page) {
-                        0 -> {
+                        ProfileTab.WatchlistMovies.ordinal -> {
                             WatchlistMoviesTab(
                                 uiModel,
                                 onClickSortWatchlistMoviesBy,
@@ -160,7 +174,7 @@ private fun Profile(
                             )
                         }
 
-                        1 -> {
+                        ProfileTab.FavoriteMovies.ordinal -> {
                             FavoriteMoviesTab(
                                 uiModel,
                                 onClickSortFavoriteMoviesBy,
@@ -169,7 +183,7 @@ private fun Profile(
                             )
                         }
 
-                        2 -> {
+                        ProfileTab.RatedMovies.ordinal -> {
                             RatedMoviesTab(
                                 uiModel,
                                 onClickSortRatedMoviesBy,
@@ -177,10 +191,118 @@ private fun Profile(
                                 onClickMovie
                             )
                         }
+
+                        ProfileTab.WatchlistTvShows.ordinal -> {
+                            WatchlistTvShowsTab(
+                                uiModel,
+                                onClickSortWatchlistTvShowsBy,
+                                watchlistTvShows.collectAsLazyPagingItems(),
+                                onClickTvShow
+                            )
+                        }
+
+                        ProfileTab.FavoriteTvShows.ordinal -> {
+                            FavoriteTvShowsTab(
+                                uiModel,
+                                onClickSortFavoriteTvShowsBy,
+                                favoriteTvShows.collectAsLazyPagingItems(),
+                                onClickTvShow
+                            )
+                        }
+
+                        ProfileTab.RatedTvShows.ordinal -> {
+                            RatedTvShowsTab(
+                                uiModel,
+                                onClickSortRatedTvShowsBy,
+                                ratedTvShows.collectAsLazyPagingItems(),
+                                onClickTvShow
+                            )
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun RatedTvShowsTab(
+    uiModel: ProfileUiModel,
+    onClickSortRatedTvShowsBy: (SortByUiModel) -> Unit,
+    ratedTvShows: LazyPagingItems<MovieUiModel>,
+    onClickTvShow: (Int) -> Unit
+) {
+    Column {
+        Filter(
+            Modifier.padding(top = 4.dp),
+            uiModel.ratedTvShowsSortBy,
+            onClickSortRatedTvShowsBy,
+        )
+        val state = rememberLazyGridState()
+        Movies(
+            movies = ratedTvShows,
+            state = state,
+            onClickMovie = onClickTvShow,
+        )
+        SortByListener(
+            ratedTvShows,
+            uiModel.ratedTvShowsSortBy,
+            state
+        )
+    }
+}
+
+@Composable
+private fun FavoriteTvShowsTab(
+    uiModel: ProfileUiModel,
+    onClickSortFavoriteTvShowsBy: (SortByUiModel) -> Unit,
+    favoriteTvShows: LazyPagingItems<MovieUiModel>,
+    onClickTvShow: (Int) -> Unit
+) {
+    Column {
+        Filter(
+            Modifier.padding(top = 4.dp),
+            uiModel.favoriteTvShowsSortBy,
+            onClickSortFavoriteTvShowsBy,
+        )
+        val state = rememberLazyGridState()
+        Movies(
+            movies = favoriteTvShows,
+            state = state,
+            onClickMovie = onClickTvShow,
+        )
+        SortByListener(
+            favoriteTvShows,
+            uiModel.favoriteTvShowsSortBy,
+            state
+        )
+    }
+}
+
+@Composable
+private fun WatchlistTvShowsTab(
+    uiModel: ProfileUiModel,
+    onClickSortWatchlistTvShowsBy: (SortByUiModel) -> Unit,
+    watchlistTvShows: LazyPagingItems<MovieUiModel>,
+    onClickTvShow: (Int) -> Unit
+) {
+    Column {
+        Filter(
+            Modifier.padding(top = 4.dp),
+            uiModel.watchlistTvShowsSortBy,
+            onClickSortWatchlistTvShowsBy,
+        )
+        val state = rememberLazyGridState()
+        Movies(
+            movies = watchlistTvShows,
+            state = state,
+            onClickMovie = onClickTvShow,
+        )
+        SortByListener(
+            watchlistTvShows,
+            uiModel.watchlistTvShowsSortBy,
+            state
+        )
     }
 }
 
@@ -269,6 +391,9 @@ private enum class ProfileTab(@param:StringRes val titleRes: Int) {
     WatchlistMovies(R.string.watchlist_movies),
     FavoriteMovies(R.string.favorite_movies),
     RatedMovies(R.string.rated_movies),
+    WatchlistTvShows(R.string.watchlist_tv_shows),
+    FavoriteTvShows(R.string.favorite_tv_shows),
+    RatedTvShows(R.string.rated_tv_shows),
 }
 
 @Composable
@@ -499,12 +624,22 @@ private fun ProfilePreview() {
                 SortByUiModel.ASCENDING,
                 SortByUiModel.ASCENDING,
                 SortByUiModel.ASCENDING,
+                SortByUiModel.ASCENDING,
+                SortByUiModel.ASCENDING,
+                SortByUiModel.ASCENDING,
             ),
             emptyLazyPagingItems,
             emptyLazyPagingItems,
             emptyLazyPagingItems,
+            emptyLazyPagingItems,
+            emptyLazyPagingItems,
+            emptyLazyPagingItems,
+            {},
             {},
             {}, {},
+            {},
+            {},
+            {},
             {},
             {},
             {})

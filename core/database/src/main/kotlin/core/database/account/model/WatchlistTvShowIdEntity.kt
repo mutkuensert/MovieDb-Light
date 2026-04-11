@@ -1,0 +1,7 @@
+package core.database.account.model
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
+data class WatchlistTvShowIdEntity(@PrimaryKey val id: Int)

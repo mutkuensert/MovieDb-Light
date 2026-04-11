@@ -26,7 +26,7 @@ class FavoriteMoviesRemoteMediator(
         paginatedData: MoviesResponse,
         page: Int
     ) {
-        favoriteMovieDao.insertMovie(paginatedData.results.map {
+        favoriteMovieDao.insertMovies(paginatedData.results.map {
             FavoriteMovieEntity(
                 it.id,
                 page,

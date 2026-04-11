@@ -17,6 +17,7 @@ class StartSessionUseCase(
         return authenticationRepository.startSession().flatMap {
             accountRepository.fetchAccountDetails().onSuccess {
                 accountRepository.fetchWatchlistMovies(SortBy.CreatedAt.ASCENDING)
+                accountRepository.fetchWatchlistTvShows(SortBy.CreatedAt.ASCENDING)
             }
         }
     }

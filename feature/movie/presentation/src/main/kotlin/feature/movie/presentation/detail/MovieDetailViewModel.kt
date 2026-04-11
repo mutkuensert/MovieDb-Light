@@ -12,6 +12,7 @@ import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
+import core.ui.route.PersonDetailRoute
 import core.ui.showFailurePopup
 import feature.movie.domain.MovieRepository
 import feature.movie.domain.usecase.RateMovieUseCase
@@ -107,8 +108,9 @@ class MovieDetailViewModel(
                 _uiModel.update {
                     it.copy(
                         cast = people.cast.map { person -> person.toUiModel() },
-                        directors = people.directors.map { director -> director.name },
-                        writers = people.writers.map { writer -> writer.name })
+                        directors = people.directors.map { director -> director.toUiModel() },
+                        writers = people.writers.map { writer -> writer.toUiModel() }
+                    )
                 }
             }
 
@@ -147,6 +149,10 @@ class MovieDetailViewModel(
 
     fun handleMovieClick(movieId: Int) {
         navigator.navigateToRoute(MovieDetailRoute(movieId))
+    }
+
+    fun handlePersonClick(personId: Int) {
+        navigator.navigateToRoute(PersonDetailRoute(personId))
     }
 
     fun handleWatchlistClick(movieId: Int, inWatchlist: Boolean) {

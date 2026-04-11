@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="born">Doğum: %s</string>
+    <string name="died">Ölüm: %s</string>
+    <string name="place_of_birth">Doğum yeri: %s</string>
+    <string name="acted_movies">Rol Aldığı Filmler</string>
+    <string name="crew_movies">Ekip Olarak Yer Aldığı Filmler</string>
+    <string name="as_character">%s rolünde</string>
+</resources>

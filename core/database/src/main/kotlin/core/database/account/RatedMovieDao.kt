@@ -14,14 +14,14 @@ interface RatedMovieDao {
     fun getPagingSource(): PagingSource<Int, RatedMovieEntity>
 
     @Query("SELECT * FROM RatedMovieEntity")
-    fun getAllMovies(): List<RatedMovieEntity>
+    suspend fun getAllMovies(): List<RatedMovieEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(movies: List<RatedMovieEntity>)
+    suspend fun insertMovies(movies: List<RatedMovieEntity>)
 
     @Query("DELETE FROM RatedMovieEntity WHERE id = :movieId")
-    fun delete(movieId: Int)
+    suspend  fun delete(movieId: Int)
 
     @Query("DELETE FROM RatedMovieEntity")
-    fun clearAllMovies()
+    suspend fun clearAll()
 }

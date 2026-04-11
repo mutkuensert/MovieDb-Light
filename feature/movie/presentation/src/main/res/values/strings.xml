@@ -20,6 +20,6 @@
     <string name="rate_the_movie">Rate the movie</string>
     <string name="remove_your_rating">Remove your rating</string>
     <string name="streaming_services_information_are_provided_by_justwatch">Streaming services information are provided by JustWatch.</string>
-    <string name="directors">Directors: %s</string>
-    <string name="writers">Writers: %s</string>
+    <string name="directors">Directors</string>
+    <string name="writers">Writers</string>
 </resources>

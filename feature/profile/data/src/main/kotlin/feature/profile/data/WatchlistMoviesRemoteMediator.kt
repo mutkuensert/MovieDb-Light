@@ -26,7 +26,7 @@ class WatchlistMoviesRemoteMediator(
         paginatedData: MoviesResponse,
         page: Int
     ) {
-        watchlistMovieDao.insertMovie(paginatedData.results.map {
+        watchlistMovieDao.insertMovies(paginatedData.results.map {
             WatchlistMovieEntity(
                 it.id,
                 page,

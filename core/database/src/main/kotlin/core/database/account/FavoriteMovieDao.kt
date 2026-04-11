@@ -16,17 +16,16 @@ interface FavoriteMovieDao {
     fun getPagingSource(): PagingSource<Int, FavoriteMovieEntity>
 
     @Query("SELECT * FROM FavoriteMovieEntity")
-    fun getAllMovies(): List<FavoriteMovieEntity>
+    suspend fun getAllMovies(): List<FavoriteMovieEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertMovie(movies: List<FavoriteMovieEntity>)
+    suspend fun insertMovies(movies: List<FavoriteMovieEntity>)
 
     @Query("DELETE FROM FavoriteMovieEntity WHERE id = :movieId")
-    fun deleteMovie(movieId: Int)
+    suspend fun deleteMovie(movieId: Int)
 
     @Query("DELETE FROM FavoriteMovieEntity")
-    fun clearAllMovies()
-
+    suspend fun clearAllMovies()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertIds(vararg id: FavoriteMovieIdEntity)

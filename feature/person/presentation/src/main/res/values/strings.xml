@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="born">Born: %s</string>
+    <string name="died">Died: %s</string>
+    <string name="place_of_birth">Place of birth: %s</string>
+    <string name="acted_movies">Acted Movies</string>
+    <string name="crew_movies">Crew Movies</string>
+    <string name="as_character">as %s</string>
+</resources>

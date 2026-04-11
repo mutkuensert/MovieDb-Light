@@ -206,17 +206,44 @@ private fun Movies(
 @Composable
 private fun MoviesScreenPreview() {
     MoviedbLightTheme {
-        val emptyPagingData =
-            flowOf(PagingData.from<MovieUiModel>(emptyList()))
-        MoviedbLightTheme {
-            Movies(
-                emptyPagingData,
-                emptyPagingData,
-                emptyPagingData,
-                emptyPagingData,
-                {},
-                {}
+        val fakeMovies = listOf(
+            MovieUiModel(
+                id = 1,
+                title = "Sample Movie 1",
+                imagePath = "/path/to/image1.jpg",
+                voteAverage = "8.5",
+                inWatchlist = false
+            ),
+            MovieUiModel(
+                id = 2,
+                title = "Sample Movie 2",
+                imagePath = "/path/to/image2.jpg",
+                voteAverage = "7.2",
+                inWatchlist = true
+            ),
+            MovieUiModel(
+                id = 3,
+                title = "Sample Movie 3",
+                imagePath = "/path/to/image3.jpg",
+                voteAverage = "9.1",
+                inWatchlist = false
+            ),
+            MovieUiModel(
+                id = 4,
+                title = "Sample Movie 4",
+                imagePath = "/path/to/image4.jpg",
+                voteAverage = "6.8",
+                inWatchlist = false
             )
-        }
+        )
+        val fakePagingData = flowOf(PagingData.from(fakeMovies))
+        Movies(
+            upcomingMovies = fakePagingData,
+            moviesNowPlaying = fakePagingData,
+            popularMovies = fakePagingData,
+            topRatedMovies = fakePagingData,
+            onClickMovie = {},
+            onClickWatchlist = {}
+        )
     }
 }

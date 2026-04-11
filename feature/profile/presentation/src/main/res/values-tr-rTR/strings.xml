@@ -5,6 +5,9 @@
     <string name="favorite_movies">Favori filmler</string>
     <string name="watchlist_movies">İzleme listesindeki filmler</string>
     <string name="rated_movies">Puan verilen filmler</string>
+    <string name="favorite_tv_shows">Favori diziler</string>
+    <string name="watchlist_tv_shows">İzleme listesindeki diziler</string>
+    <string name="rated_tv_shows">Puan verilen diziler</string>
     <string name="sort_by_ascending_selected_icon">Artan şekilde sıralandığını ifade eden ikon</string>
     <string name="sort_by_descending_selected_icon">Azalan şekilde sıralandığını ifade eden ikon</string>
     <string name="descending">Azalan</string>

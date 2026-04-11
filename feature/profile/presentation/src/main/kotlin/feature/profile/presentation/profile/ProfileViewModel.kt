@@ -12,6 +12,7 @@ import core.ui.navigation.Navigator
 import core.ui.route.LoginRoute
 import core.ui.route.MovieDetailRoute
 import core.ui.route.SettingsRoute
+import core.ui.route.TvShowDetailRoute
 import core.ui.showFailurePopup
 import feature.profile.domain.usecase.LogoutUseCase
 import feature.profile.domain.ProfileRepository
@@ -68,6 +69,39 @@ class ProfileViewModel(
             }
     }.cachedIn(viewModelScope)
 
+    val favoriteTvShows = uiModel.distinctUntilChanged { old, new ->
+        old.favoriteTvShowsSortBy == new.favoriteTvShowsSortBy
+    }.flatMapLatest { uiModel ->
+        profileRepository.getFavoriteTvShows(uiModel.favoriteTvShowsSortBy.toDomain())
+            .map { pagingData ->
+                pagingData.map {
+                    MovieUiModel(it.id, it.title, it.imagePath, it.voteAverage?.toString())
+                }
+            }
+    }.cachedIn(viewModelScope)
+
+    val watchlistTvShows = uiModel.distinctUntilChanged { old, new ->
+        old.watchlistTvShowsSortBy == new.watchlistTvShowsSortBy
+    }.flatMapLatest { uiModel ->
+        profileRepository.getWatchlistTvShows(uiModel.watchlistTvShowsSortBy.toDomain())
+            .map { pagingData ->
+                pagingData.map {
+                    MovieUiModel(it.id, it.title, it.imagePath, it.voteAverage?.toString())
+                }
+            }
+    }.cachedIn(viewModelScope)
+
+    val ratedTvShows = uiModel.distinctUntilChanged { old, new ->
+        old.ratedTvShowsSortBy == new.ratedTvShowsSortBy
+    }.flatMapLatest { uiModel ->
+        profileRepository.getRatedTvShows(uiModel.ratedTvShowsSortBy.toDomain())
+            .map { pagingData ->
+                pagingData.map {
+                    MovieUiModel(it.id, it.title, it.imagePath, it.voteAverage?.toString())
+                }
+            }
+    }.cachedIn(viewModelScope)
+
     fun initScreen() {
         viewModelScope.launch {
             accountRepository.fetchAccountDetails().onSuccess { user ->
@@ -94,6 +128,10 @@ class ProfileViewModel(
         navigator.navigateToRoute(MovieDetailRoute(movieId))
     }
 
+    fun handleTvShowClick(tvShowId: Int) {
+        navigator.navigateToRoute(TvShowDetailRoute(tvShowId))
+    }
+
     fun handleSortFavoriteMoviesClick(by: SortByUiModel) {
         _uiModel.update {
             it.copy(favoriteMoviesSortBy = by)
@@ -109,6 +147,24 @@ class ProfileViewModel(
     fun handleSortRatedMoviesClick(by: SortByUiModel) {
         _uiModel.update {
             it.copy(ratedMoviesSortBy = by)
+        }
+    }
+
+    fun handleSortFavoriteTvShowsClick(by: SortByUiModel) {
+        _uiModel.update {
+            it.copy(favoriteTvShowsSortBy = by)
+        }
+    }
+
+    fun handleSortWatchlistTvShowsClick(by: SortByUiModel) {
+        _uiModel.update {
+            it.copy(watchlistTvShowsSortBy = by)
+        }
+    }
+
+    fun handleSortRatedTvShowsClick(by: SortByUiModel) {
+        _uiModel.update {
+            it.copy(ratedTvShowsSortBy = by)
         }
     }
 

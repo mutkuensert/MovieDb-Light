@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="popular">Popüler</string>
+    <string name="top_rated">Yüksek puanlanan</string>
+    <string name="airing_today">Yayında</string>
+    <string name="upcoming">Yakında yayında</string>
+    <string name="options">Seçenekler</string>
+    <string name="select_a_country">Bir ülke seçin</string>
+    <string name="ok">Tamam</string>
+    <string name="cancel">İptal</string>
+    <string name="flag_icon">Bayrak ikonu</string>
+    <string name="runtime">%s dakika</string>
+    <string name="streaming_services_info_button_icon">Streaming servisleri için bilgi butonu ikonu</string>
+    <string name="similar">Benzer</string>
+    <string name="trailer">Fragman</string>
+    <string name="add_to_or_remove_from_watchlist_button">İzleme listesine ekle veya çıkar butonu</string>
+    <string name="rate_button">Puan verme butonu</string>
+    <string name="add_to_or_remove_from_favorites_button">Favoriye ekle veya çıkar butonu</string>
+    <string name="rate">%s/10</string>
+    <string name="rate_the_tv_show">Diziye puan verin</string>
+    <string name="remove_your_rating">Verdiğiniz puanı silin</string>
+    <string name="streaming_services_information_are_provided_by_justwatch">Dizi ve film servisleri hakkındaki bilgiler JustWatch tarafından sağlanmaktadır.</string>
+    <string name="directors">Yönetmenler</string>
+    <string name="writers">Yazarlar</string>
+</resources>

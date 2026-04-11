@@ -8,6 +8,9 @@ sealed interface NavTab {
     object MovieTab : NavTab
 
     @Serializable
+    object TvShowTab : NavTab
+
+    @Serializable
     object ProfileTab : NavTab
 
     @Serializable

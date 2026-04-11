@@ -9,8 +9,14 @@ interface ProfileRepository {
     fun getFavoriteMovies(sortBy: SortBy.CreatedAt = SortBy.CreatedAt.ASCENDING): Flow<PagingData<Movie>>
     fun getWatchlistMovies(sortBy: SortBy.CreatedAt = SortBy.CreatedAt.ASCENDING): Flow<PagingData<Movie>>
     fun getRatedMovies(sortBy: SortBy.CreatedAt = SortBy.CreatedAt.ASCENDING): Flow<PagingData<Movie>>
+    fun getFavoriteTvShows(sortBy: SortBy.CreatedAt = SortBy.CreatedAt.ASCENDING): Flow<PagingData<Movie>>
+    fun getWatchlistTvShows(sortBy: SortBy.CreatedAt = SortBy.CreatedAt.ASCENDING): Flow<PagingData<Movie>>
+    fun getRatedTvShows(sortBy: SortBy.CreatedAt = SortBy.CreatedAt.ASCENDING): Flow<PagingData<Movie>>
     fun updateFavoriteMovies()
     fun updateRatedMovies()
     fun updateWatchlistMovies()
+    fun updateFavoriteTvShows()
+    fun updateRatedTvShows()
+    fun updateWatchlistTvShows()
     fun updateLanguageRelatedData()
 }

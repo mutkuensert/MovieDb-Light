@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LiveTv
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.material.icons.filled.Search
@@ -51,10 +52,14 @@ import core.ui.navigation.Navigator
 import core.ui.route.LoginRoute
 import core.ui.route.MovieDetailRoute
 import core.ui.route.MoviesRoute
+import core.ui.route.PersonDetailRoute
 import core.ui.route.SettingsRoute
+import core.ui.route.TvShowDetailRoute
+import core.ui.route.TvShowsRoute
 import feature.movie.presentation.R
 import feature.movie.presentation.detail.MovieDetailScreen
 import feature.movie.presentation.list.MoviesScreen
+import feature.person.presentation.detail.PersonDetailScreen
 import feature.profile.presentation.login.LoginDeeplink
 import feature.profile.presentation.login.LoginScreen
 import feature.profile.presentation.profile.ProfileRoute
@@ -62,6 +67,8 @@ import feature.profile.presentation.profile.ProfileScreen
 import feature.search.presentation.SearchRoute
 import feature.search.presentation.SearchScreen
 import feature.settings.presentation.SettingsScreen
+import feature.tvshow.presentation.detail.TvShowDetailScreen
+import feature.tvshow.presentation.list.TvShowsScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -86,6 +93,7 @@ fun HomeScreen(navigator: Navigator) {
             MainNavigation(
                 navController,
                 viewModel::navigateToMovies,
+                viewModel::navigateToTvShows,
                 viewModel::navigateToSearch,
                 viewModel::navigateToProfile
             )
@@ -153,6 +161,7 @@ private fun Popup(popup: Popup, viewModel: HomeViewModel) {
 fun MainNavigation(
     navController: NavHostController,
     onNavigateToMovies: (reselected: Boolean) -> Unit,
+    onNavigateToTvShows: (reselected: Boolean) -> Unit,
     onNavigateToSearch: (reselected: Boolean) -> Unit,
     onNavigateToProfile: (reselected: Boolean) -> Unit,
 ) {
@@ -161,6 +170,7 @@ fun MainNavigation(
             BottomNavBar(
                 navController,
                 onNavigateToMovies,
+                onNavigateToTvShows,
                 onNavigateToSearch,
                 onNavigateToProfile
             )
@@ -179,6 +189,24 @@ fun MainNavigation(
                 composable<MovieDetailRoute> {
                     MovieDetailScreen()
                 }
+
+                composable<PersonDetailRoute> {
+                    PersonDetailScreen()
+                }
+            }
+
+            navigation<NavTab.TvShowTab>(TvShowsRoute) {
+                composable<TvShowsRoute> {
+                    TvShowsScreen()
+                }
+
+                composable<TvShowDetailRoute> {
+                    TvShowDetailScreen()
+                }
+
+                composable<PersonDetailRoute> {
+                    PersonDetailScreen()
+                }
             }
 
             navigation<NavTab.SearchTab>(SearchRoute) {
@@ -188,6 +216,14 @@ fun MainNavigation(
 
                 composable<MovieDetailRoute> {
                     MovieDetailScreen()
+                }
+
+                composable<PersonDetailRoute> {
+                    PersonDetailScreen()
+                }
+
+                composable<TvShowDetailRoute> {
+                    TvShowDetailScreen()
                 }
             }
 
@@ -211,6 +247,14 @@ fun MainNavigation(
                 composable<MovieDetailRoute> {
                     MovieDetailScreen()
                 }
+
+                composable<PersonDetailRoute> {
+                    PersonDetailScreen()
+                }
+
+                composable<TvShowDetailRoute> {
+                    TvShowDetailScreen()
+                }
             }
         }
     }
@@ -221,6 +265,7 @@ fun MainNavigation(
 private fun BottomNavBar(
     navController: NavController,
     onNavigateToMovies: (reselected: Boolean) -> Unit,
+    onNavigateToTvShows: (reselected: Boolean) -> Unit,
     onNavigateToSearch: (reselected: Boolean) -> Unit,
     onNavigateToProfile: (reselected: Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -246,6 +291,24 @@ private fun BottomNavBar(
             icon = {
                 Icon(
                     imageVector = Icons.Filled.Movie,
+                    contentDescription = null
+                )
+            })
+
+        val isTvShowTabSelected = currentDestination?.hierarchy?.any {
+            it.hasRoute(NavTab.TvShowTab::class)
+        } == true
+        NavigationBarItem(
+            selected = isTvShowTabSelected,
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = MaterialTheme.colorScheme.onBackground,
+                unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                indicatorColor = Color.Gray
+            ),
+            onClick = { onNavigateToTvShows.invoke(isTvShowTabSelected) },
+            icon = {
+                Icon(
+                    imageVector = Icons.Filled.LiveTv,
                     contentDescription = null
                 )
             })

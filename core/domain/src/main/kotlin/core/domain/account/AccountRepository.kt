@@ -18,5 +18,17 @@ interface AccountRepository {
         inWatchlist: Boolean,
     ): Result<Unit, Failure>
 
+    suspend fun syncTvShowFavoriteStatus(
+        tvShowId: Int,
+        isFavorite: Boolean,
+    ): Result<Unit, Failure>
+
+    suspend fun syncTvShowWatchlistStatus(
+        tvShowId: Int,
+        inWatchlist: Boolean,
+    ): Result<Unit, Failure>
+
     suspend fun clearUserRelatedData()
+    suspend fun fetchFavoriteTvShows(sortBy: SortBy.CreatedAt)
+    suspend fun fetchWatchlistTvShows(sortBy: SortBy.CreatedAt)
 }

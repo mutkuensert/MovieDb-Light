@@ -11,8 +11,11 @@ import core.data.account.model.toDto
 import core.data.util.withDecimals
 import core.database.LanguagePreference
 import core.database.account.FavoriteMovieDao
+import core.database.account.FavoriteTvShowDao
 import core.database.account.RatedMovieDao
+import core.database.account.RatedTvShowDao
 import core.database.account.WatchlistMovieDao
+import core.database.account.WatchlistTvShowDao
 import core.domain.account.SortBy
 import feature.profile.domain.ProfileRepository
 import feature.profile.domain.model.Movie
@@ -33,11 +36,17 @@ class ProfileRepositoryImpl(
     private val favoriteMovieDao: FavoriteMovieDao,
     private val watchlistMovieDao: WatchlistMovieDao,
     private val ratedMovieDao: RatedMovieDao,
+    private val favoriteTvShowDao: FavoriteTvShowDao,
+    private val watchlistTvShowDao: WatchlistTvShowDao,
+    private val ratedTvShowDao: RatedTvShowDao,
     private val languagePreference: LanguagePreference,
 ) : ProfileRepository {
     private val favoriteMoviesRefreshTrigger = MutableStateFlow(0)
     private val watchlistMoviesRefreshTrigger = MutableStateFlow(0)
     private val ratedMoviesRefreshTrigger = MutableStateFlow(0)
+    private val favoriteTvShowsRefreshTrigger = MutableStateFlow(0)
+    private val watchlistTvShowsRefreshTrigger = MutableStateFlow(0)
+    private val ratedTvShowsRefreshTrigger = MutableStateFlow(0)
 
     override fun getFavoriteMovies(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
         return favoriteMoviesRefreshTrigger.flatMapLatest {
@@ -127,6 +136,93 @@ class ProfileRepositoryImpl(
         }
     }
 
+    override fun getFavoriteTvShows(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
+        return favoriteTvShowsRefreshTrigger.flatMapLatest {
+            Pager(
+                config = PagingConfig(pageSize = 20),
+                remoteMediator = FavoriteTvShowsRemoteMediator(
+                    getTvShows = { page ->
+                        accountService.getFavoriteTvShows(
+                            page,
+                            sessionManager.requireSessionId(),
+                            languagePreference.getLanguageTag(),
+                            sortBy.toDto().value
+                        )
+                    },
+                    favoriteTvShowDao
+                ),
+                pagingSourceFactory = { favoriteTvShowDao.getPagingSource() }
+            ).flow.map { pagingData ->
+                pagingData.map { entity ->
+                    Movie(
+                        id = entity.id,
+                        title = entity.title,
+                        imagePath = entity.posterPath,
+                        voteAverage = entity.voteAverage?.withDecimals(1),
+                    )
+                }
+            }
+        }
+    }
+
+    override fun getWatchlistTvShows(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
+        return watchlistTvShowsRefreshTrigger.flatMapLatest {
+            Pager(
+                config = PagingConfig(pageSize = 20),
+                remoteMediator = WatchlistTvShowsRemoteMediator(
+                    getTvShows = { page ->
+                        accountService.getWatchlistTvShows(
+                            page,
+                            sessionManager.requireSessionId(),
+                            languagePreference.getLanguageTag(),
+                            sortBy.toDto().value
+                        )
+                    },
+                    watchlistTvShowDao
+                ),
+                pagingSourceFactory = { watchlistTvShowDao.getPagingSource() }
+            ).flow.map { pagingData ->
+                pagingData.map { entity ->
+                    Movie(
+                        id = entity.id,
+                        title = entity.title,
+                        imagePath = entity.posterPath,
+                        voteAverage = entity.voteAverage?.withDecimals(1),
+                    )
+                }
+            }
+        }
+    }
+
+    override fun getRatedTvShows(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
+        return ratedTvShowsRefreshTrigger.flatMapLatest {
+            Pager(
+                config = PagingConfig(pageSize = 20),
+                remoteMediator = RatedTvShowsRemoteMediator(
+                    getTvShows = { page ->
+                        accountService.getRatedTvShows(
+                            page,
+                            sessionManager.requireSessionId(),
+                            languagePreference.getLanguageTag(),
+                            sortBy.toDto().value
+                        )
+                    },
+                    ratedTvShowDao
+                ),
+                pagingSourceFactory = { ratedTvShowDao.getPagingSource() }
+            ).flow.map { pagingData ->
+                pagingData.map { entity ->
+                    Movie(
+                        id = entity.id,
+                        title = entity.title,
+                        imagePath = entity.posterPath,
+                        voteAverage = entity.voteAverage?.withDecimals(1),
+                    )
+                }
+            }
+        }
+    }
+
     override fun updateRatedMovies() {
         ratedMoviesRefreshTrigger.update { it + 1 }
     }
@@ -139,9 +235,24 @@ class ProfileRepositoryImpl(
         favoriteMoviesRefreshTrigger.update { it + 1 }
     }
 
+    override fun updateRatedTvShows() {
+        ratedTvShowsRefreshTrigger.update { it + 1 }
+    }
+
+    override fun updateWatchlistTvShows() {
+        watchlistTvShowsRefreshTrigger.update { it + 1 }
+    }
+
+    override fun updateFavoriteTvShows() {
+        favoriteTvShowsRefreshTrigger.update { it + 1 }
+    }
+
     override fun updateLanguageRelatedData() {
         ratedMoviesRefreshTrigger.update { it + 1 }
         watchlistMoviesRefreshTrigger.update { it + 1 }
         favoriteMoviesRefreshTrigger.update { it + 1 }
+        ratedTvShowsRefreshTrigger.update { it + 1 }
+        watchlistTvShowsRefreshTrigger.update { it + 1 }
+        favoriteTvShowsRefreshTrigger.update { it + 1 }
     }
 }

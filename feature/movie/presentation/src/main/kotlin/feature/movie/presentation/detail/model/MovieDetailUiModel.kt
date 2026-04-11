@@ -18,8 +18,8 @@ data class MovieDetailUiModel(
     val trailerUrl: String?,
     val providerLogoPaths: List<String>,
     val cast: List<PersonUiModel>,
-    val directors: List<String>,
-    val writers: List<String>,
+    val directors: List<CrewPersonUiModel>,
+    val writers: List<CrewPersonUiModel>,
 ) {
     companion object {
         fun initial(id: Int): MovieDetailUiModel {

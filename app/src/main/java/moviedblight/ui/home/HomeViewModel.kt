@@ -19,6 +19,10 @@ class HomeViewModel(
         navigator.navigateToTab(NavTab.MovieTab, reselected)
     }
 
+    fun navigateToTvShows(reselected: Boolean) {
+        navigator.navigateToTab(NavTab.TvShowTab, reselected)
+    }
+
     fun navigateToSearch(reselected: Boolean) {
         navigator.navigateToTab(NavTab.SearchTab, reselected)
     }

@@ -16,16 +16,16 @@ interface WatchlistMovieDao {
     fun getPagingSource(): PagingSource<Int, WatchlistMovieEntity>
 
     @Query("SELECT * FROM WatchlistMovieEntity")
-    fun getAllMovies(): List<WatchlistMovieEntity>
+    suspend fun getAllMovies(): List<WatchlistMovieEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertMovie(movies: List<WatchlistMovieEntity>)
+    suspend fun insertMovies(movies: List<WatchlistMovieEntity>)
 
     @Query("DELETE FROM WatchlistMovieEntity WHERE id = :movieId")
-    fun deleteMovie(movieId: Int)
+    suspend fun deleteMovie(movieId: Int)
 
     @Query("DELETE FROM WatchlistMovieEntity")
-    fun clearAllMovies()
+    suspend fun clearAllMovies()
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

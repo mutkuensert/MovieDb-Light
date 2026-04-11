@@ -1,0 +1,68 @@
+package feature.person.presentation.detail
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.github.michaelbull.result.onFailure
+import com.github.michaelbull.result.onSuccess
+import core.ui.LoadingAnimator
+import core.ui.PopupHandler
+import core.ui.navigation.Navigator
+import core.ui.route.MovieDetailRoute
+import core.ui.showFailurePopup
+import feature.person.domain.PersonRepository
+import feature.person.presentation.detail.model.PersonDetailUiModel
+import feature.person.presentation.detail.model.toUiModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+class PersonDetailViewModel(
+    private val personRepository: PersonRepository,
+    private val loadingAnimator: LoadingAnimator,
+    private val popupHandler: PopupHandler,
+    private val navigator: Navigator,
+    savedStateHandle: SavedStateHandle
+) : ViewModel() {
+    private var personId: Int = requireNotNull(savedStateHandle["id"]) {
+        "Person id can't be null"
+    }
+    private val _uiModel = MutableStateFlow(PersonDetailUiModel.initial(personId))
+    val uiModel = _uiModel.asStateFlow()
+
+    fun getDetails() {
+        viewModelScope.launch {
+            loadingAnimator.start()
+
+            personRepository.getPersonDetails(personId).onSuccess { personDetails ->
+                _uiModel.update {
+                    it.copy(
+                        imagePath = personDetails.imagePath,
+                        name = personDetails.name,
+                        knownForDepartment = personDetails.knownForDepartment ?: "",
+                        birthday = personDetails.birthday ?: "",
+                        deathday = personDetails.deathday ?: "",
+                        placeOfBirth = personDetails.placeOfBirth ?: "",
+                        biography = personDetails.biography ?: ""
+                    )
+                }
+            }.onFailure(popupHandler::showFailurePopup)
+
+            personRepository.getPersonMovieCredits(personId).onSuccess { credits ->
+                _uiModel.update {
+                    it.copy(
+                        castMovies = credits.cast.map { movie -> movie.toUiModel() },
+                        crewMovies = credits.crew.map { movie -> movie.toUiModel() }
+                    )
+                }
+            }.onFailure(popupHandler::showFailurePopup)
+
+            loadingAnimator.stop()
+        }
+    }
+
+    fun handleMovieClick(movieId: Int) {
+        navigator.navigateToRoute(MovieDetailRoute(movieId))
+    }
+}

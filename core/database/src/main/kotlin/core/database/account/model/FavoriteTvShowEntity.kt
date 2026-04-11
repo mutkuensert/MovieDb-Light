@@ -5,5 +5,12 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class FavoriteTvShowEntity(
-    @PrimaryKey val id: Int
-)
+    val id: Int,
+    val page: Int,
+    val title: String,
+    val posterPath: String?,
+    val voteAverage: Float?,
+) {
+    @PrimaryKey(autoGenerate = true)
+    var primaryKey: Int = 0
+}

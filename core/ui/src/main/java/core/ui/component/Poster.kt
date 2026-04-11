@@ -47,30 +47,26 @@ fun Poster(
     Box(modifier.aspectRatio(aspectRatio)) {
         var loading by remember { mutableStateOf(true) }
         var error by remember { mutableStateOf(false) }
-        var currentImageUrl by remember {
-            mutableStateOf(imagePath?.let {
-                TmdbImage(it).createImageUrl(imageType, imageQuality)
-            })
+        val imageUrl = imagePath?.let {
+            TmdbImage(it).createImageUrl(imageType, imageQuality)
+        }
+        val originalSizedUrl = imagePath?.let {
+            TmdbImage(it).originalSizedUrl
         }
 
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(currentImageUrl)
-                .listener(
-                    onError = { _, _ ->
-                        val _currentImageUrl = currentImageUrl ?: return@listener
-                        if (imagePath == null) return@listener
-                        val originalSizedUrl = TmdbImage(imagePath).originalSizedUrl
-                        if (_currentImageUrl != originalSizedUrl) {
-                            currentImageUrl = originalSizedUrl
-                        }
-                    }
-                )
+                .data(if (error) originalSizedUrl else imageUrl)
                 .crossfade(true)
                 .allowHardware(true)
                 .build(),
+            onLoading = {
+                loading = true
+                error = false
+            },
             onSuccess = {
                 loading = false
+                error = false
                 onSuccess(it)
             },
             onError = {
@@ -87,15 +83,6 @@ fun Poster(
             contentScale = contentScale
         )
 
-        if (loading) {
-            Box(
-                modifier = Modifier.matchParentSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = Color.Gray)
-            }
-        }
-
         if (error && !LocalInspectionMode.current) {
             Box(
                 modifier = Modifier
@@ -111,6 +98,15 @@ fun Poster(
                 )
             }
         }
+
+        if (loading) {
+            Box(
+                modifier = Modifier.matchParentSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Color.Gray)
+            }
+        }
     }
 }
 
@@ -124,7 +120,6 @@ private fun TmdbImage.createImageUrl(
                 ImageQuality.LOW -> this.poster.w342Url
                 ImageQuality.MEDIUM -> this.poster.w500Url
                 ImageQuality.HIGH -> this.poster.w780Url
-                ImageQuality.ORIGINAL -> this.originalSizedUrl
             }
         }
 
@@ -133,7 +128,6 @@ private fun TmdbImage.createImageUrl(
                 ImageQuality.LOW -> this.profile.w185Url
                 ImageQuality.MEDIUM -> this.profile.h632Url
                 ImageQuality.HIGH -> this.profile.h632Url
-                ImageQuality.ORIGINAL -> this.originalSizedUrl
             }
 
         }
@@ -143,9 +137,10 @@ private fun TmdbImage.createImageUrl(
                 ImageQuality.LOW -> this.logo.w92Url
                 ImageQuality.MEDIUM -> this.logo.w300Url
                 ImageQuality.HIGH -> this.logo.w500Url
-                ImageQuality.ORIGINAL -> this.originalSizedUrl
             }
         }
+
+        ImageType.ORIGINAL -> this.originalSizedUrl
     }
 }
 
@@ -157,9 +152,9 @@ object PosterHeight {
 }
 
 enum class ImageType {
-    POSTER, PROFILE, LOGO
+    POSTER, PROFILE, LOGO, ORIGINAL
 }
 
 enum class ImageQuality {
-    LOW, MEDIUM, HIGH, ORIGINAL
+    LOW, MEDIUM, HIGH
 }

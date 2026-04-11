@@ -8,8 +8,10 @@ data class ProfileUiModel(
     val favoriteMoviesSortBy: SortByUiModel,
     val watchlistMoviesSortBy: SortByUiModel,
     val ratedMoviesSortBy: SortByUiModel,
-
-    ) {
+    val favoriteTvShowsSortBy: SortByUiModel,
+    val watchlistTvShowsSortBy: SortByUiModel,
+    val ratedTvShowsSortBy: SortByUiModel,
+) {
     companion object {
         fun empty(): ProfileUiModel {
             return ProfileUiModel(
@@ -18,6 +20,9 @@ data class ProfileUiModel(
                 favoriteMoviesSortBy = SortByUiModel.DESCENDING,
                 watchlistMoviesSortBy = SortByUiModel.DESCENDING,
                 ratedMoviesSortBy = SortByUiModel.DESCENDING,
+                favoriteTvShowsSortBy = SortByUiModel.DESCENDING,
+                watchlistTvShowsSortBy = SortByUiModel.DESCENDING,
+                ratedTvShowsSortBy = SortByUiModel.DESCENDING,
             )
         }
     }

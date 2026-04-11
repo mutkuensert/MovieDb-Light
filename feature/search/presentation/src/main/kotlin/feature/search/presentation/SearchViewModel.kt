@@ -6,9 +6,10 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.filter
 import androidx.paging.map
-import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
+import core.ui.route.PersonDetailRoute
+import core.ui.route.TvShowDetailRoute
 import feature.search.domain.MultiResult
 import feature.search.domain.SearchRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,14 +22,11 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import libraries.stringresource.StrResource
 
 @OptIn(FlowPreview::class)
 class SearchViewModel(
     private val searchRepository: SearchRepository,
     private val navigator: Navigator,
-    private val popupHandler: PopupHandler,
-    private val strResource: StrResource,
 ) : ViewModel() {
     private val _uiModel = MutableStateFlow(SearchUiModel.initial())
     val uiModel = _uiModel.asStateFlow()
@@ -61,11 +59,11 @@ class SearchViewModel(
     }
 
     fun handleTvShowClick(id: Int) {
-        popupHandler.showSimpleMessage(strResource.get(R.string.tv_show_detail_feature_is_under_development))
+        navigator.navigateToRoute(TvShowDetailRoute(id))
     }
 
     fun handlePersonClick(id: Int) {
-        popupHandler.showSimpleMessage(strResource.get(R.string.person_detail_page_is_under_development))
+        navigator.navigateToRoute(PersonDetailRoute(id))
     }
 
     private fun MultiResult.toUiModel(): ResultUiModel {

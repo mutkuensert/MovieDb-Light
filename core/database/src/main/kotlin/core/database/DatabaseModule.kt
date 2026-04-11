@@ -10,7 +10,7 @@ val databaseModule = module {
         Room.databaseBuilder(
             androidApplication(),
             AppDatabase::class.java, "app-database"
-        ).addMigrations(MIGRATION_2_3).build()
+        ).addMigrations(MIGRATION_2_3, MIGRATION_4_5).build()
     }
     single { get<AppDatabase>().getPopularMovieDao() }
     single { get<AppDatabase>().getNowPlayingMovieDao() }
@@ -21,5 +21,12 @@ val databaseModule = module {
     single { get<AppDatabase>().getWatchlistMovieDao() }
     single { get<AppDatabase>().getRatedMovieDao() }
     single { get<AppDatabase>().getFavoriteTvShowDao() }
+    single { get<AppDatabase>().getWatchlistTvShowDao() }
+    single { get<AppDatabase>().getRatedTvShowDao() }
+    single { get<AppDatabase>().getPopularTvShowDao() }
+    single { get<AppDatabase>().getTvShowAiringTodayDao() }
+    single { get<AppDatabase>().getUpcomingTvShowDao() }
+    single { get<AppDatabase>().getTopRatedTvShowDao() }
+    single { get<AppDatabase>().getSimilarTvShowDao() }
     single { LanguagePreference(androidContext()) }
 }

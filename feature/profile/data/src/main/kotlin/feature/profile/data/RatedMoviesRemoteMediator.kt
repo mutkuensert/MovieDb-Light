@@ -15,7 +15,7 @@ class RatedMoviesRemoteMediator(
     }
 
     override suspend fun onClearAllCachedData() {
-        ratedMovieDao.clearAllMovies()
+        ratedMovieDao.clearAll()
     }
 
     override suspend fun onGetLastPageInCache(): Int? {
@@ -26,7 +26,7 @@ class RatedMoviesRemoteMediator(
         paginatedData: MoviesResponse,
         page: Int
     ) {
-        ratedMovieDao.insert(paginatedData.results.map {
+        ratedMovieDao.insertMovies(paginatedData.results.map {
             RatedMovieEntity(
                 it.id,
                 page,

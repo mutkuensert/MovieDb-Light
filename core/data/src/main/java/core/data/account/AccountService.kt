@@ -3,12 +3,13 @@ package core.data.account
 import core.data.account.model.AccountDetailsResponse
 import core.data.account.model.FavoriteMovieRequest
 import core.data.account.model.FavoriteTvShowDto
-import core.data.account.model.FavoriteTvShowsResponse
 import core.data.account.model.PostFavoriteTvShowResponse
 import core.data.account.model.SortBySto
 import core.data.account.model.WatchlistMovieRequest
+import core.data.account.model.WatchlistTvShowRequest
 import core.data.common.model.GenericStatusResponse
 import core.data.common.model.MoviesResponse
+import core.data.common.model.TvShowsResponse
 import core.data.network.NetworkResult
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -50,13 +51,35 @@ interface AccountService {
         @Query("session_id") sessionId: String,
     ): NetworkResult<GenericStatusResponse>
 
+    @POST("account/account_id/watchlist")
+    suspend fun postWatchlistTvShow(
+        @Body watchlistTvShowRequest: WatchlistTvShowRequest,
+        @Query("session_id") sessionId: String,
+    ): NetworkResult<GenericStatusResponse>
+
     @GET("account/account_id/favorite/tv")
     suspend fun getFavoriteTvShows(
         @Query("page") page: Int = 1,
         @Query("session_id") sessionId: String,
         @Query("language") language: String = "en-US",
         @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value
-    ): NetworkResult<FavoriteTvShowsResponse>
+    ): NetworkResult<TvShowsResponse>
+
+    @GET("account/account_id/watchlist/tv")
+    suspend fun getWatchlistTvShows(
+        @Query("page") page: Int = 1,
+        @Query("session_id") sessionId: String,
+        @Query("language") language: String = "en-US",
+        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value
+    ): NetworkResult<TvShowsResponse>
+
+    @GET("account/account_id/rated/tv")
+    suspend fun getRatedTvShows(
+        @Query("page") page: Int = 1,
+        @Query("session_id") sessionId: String,
+        @Query("language") language: String = "en-US",
+        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value
+    ): NetworkResult<TvShowsResponse>
 
     @POST("account/account_id/favorite")
     suspend fun postFavoriteTvShow(
