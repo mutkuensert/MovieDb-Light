@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -82,10 +81,7 @@ fun HomeScreen(navigator: Navigator) {
 
         Box {
             val navController = rememberNavController()
-            remember(navController) {
-                navigator.configure(navController)
-                true
-            }
+            navigator.NavigationExecutor(navController)
 
             MainNavigation(
                 navController,
@@ -156,9 +152,9 @@ private fun Popup(popup: Popup, viewModel: HomeViewModel) {
 @Composable
 fun MainNavigation(
     navController: NavHostController,
-    onNavigateToMovies: () -> Unit,
-    onNavigateToSearch: () -> Unit,
-    onNavigateToProfile: () -> Unit,
+    onNavigateToMovies: (reselected: Boolean) -> Unit,
+    onNavigateToSearch: (reselected: Boolean) -> Unit,
+    onNavigateToProfile: (reselected: Boolean) -> Unit,
 ) {
     Scaffold(
         bottomBar = {
@@ -224,9 +220,9 @@ fun MainNavigation(
 @Composable
 private fun BottomNavBar(
     navController: NavController,
-    onNavigateToMovies: () -> Unit,
-    onNavigateToSearch: () -> Unit,
-    onNavigateToProfile: () -> Unit,
+    onNavigateToMovies: (reselected: Boolean) -> Unit,
+    onNavigateToSearch: (reselected: Boolean) -> Unit,
+    onNavigateToProfile: (reselected: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -236,16 +232,17 @@ private fun BottomNavBar(
         modifier = modifier.height(100.dp),
         containerColor = MaterialTheme.colorScheme.background,
     ) {
+        val isMovieTabSelected = currentDestination?.hierarchy?.any {
+            it.hasRoute(NavTab.MovieTab::class)
+        } == true
         NavigationBarItem(
-            selected = currentDestination?.hierarchy?.any {
-                it.hasRoute(NavTab.MovieTab::class)
-            } == true,
+            selected = isMovieTabSelected,
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = MaterialTheme.colorScheme.onBackground,
                 unselectedIconColor = MaterialTheme.colorScheme.onBackground,
                 indicatorColor = Color.Gray
             ),
-            onClick = onNavigateToMovies,
+            onClick = { onNavigateToMovies.invoke(isMovieTabSelected) },
             icon = {
                 Icon(
                     imageVector = Icons.Filled.Movie,
@@ -253,16 +250,17 @@ private fun BottomNavBar(
                 )
             })
 
+        val isSearchTabSelected = currentDestination?.hierarchy?.any {
+            it.hasRoute(NavTab.SearchTab::class)
+        } == true
         NavigationBarItem(
-            selected = currentDestination?.hierarchy?.any {
-                it.hasRoute(NavTab.SearchTab::class)
-            } == true,
+            selected = isSearchTabSelected,
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = MaterialTheme.colorScheme.onBackground,
                 unselectedIconColor = MaterialTheme.colorScheme.onBackground,
                 indicatorColor = Color.Gray
             ),
-            onClick = onNavigateToSearch,
+            onClick = { onNavigateToSearch.invoke(isSearchTabSelected) },
             icon = {
                 Icon(
                     imageVector = Icons.Filled.Search,
@@ -270,16 +268,17 @@ private fun BottomNavBar(
                 )
             })
 
+        val isProfileTabSelected = currentDestination?.hierarchy?.any {
+            it.hasRoute(NavTab.ProfileTab::class)
+        } == true
         NavigationBarItem(
-            selected = currentDestination?.hierarchy?.any {
-                it.hasRoute(NavTab.ProfileTab::class)
-            } == true,
+            selected = isProfileTabSelected,
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = MaterialTheme.colorScheme.onBackground,
                 unselectedIconColor = MaterialTheme.colorScheme.onBackground,
                 indicatorColor = Color.Gray
             ),
-            onClick = onNavigateToProfile,
+            onClick = { onNavigateToProfile.invoke(isProfileTabSelected) },
             icon = {
                 Icon(
                     imageVector = Icons.Filled.PersonPin,

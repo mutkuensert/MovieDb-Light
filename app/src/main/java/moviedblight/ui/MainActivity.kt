@@ -1,6 +1,5 @@
 package moviedblight.ui
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,18 +9,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import libraries.AppScope
 import core.ui.LocalStatusBarBackgroundColorHandler
 import core.ui.MoviedbLightTheme
 import core.ui.StatusBarBackgroundColorHandler
 import core.ui.navigation.Navigator
-import kotlinx.coroutines.cancel
 import moviedblight.ui.home.HomeScreen
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
     private val navigator: Navigator by inject()
-    private val appScope: AppScope by inject()
     private val statusBarBackgroundColorHandler: StatusBarBackgroundColorHandler by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,15 +35,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        navigator.controller.handleDeepLink(intent)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        appScope.cancel()
     }
 }

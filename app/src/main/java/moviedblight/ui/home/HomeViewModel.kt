@@ -15,16 +15,16 @@ class HomeViewModel(
 ) : ViewModel() {
     val statusBarContentColor = statusBarBackgroundColorHandler.color
 
-    fun navigateToMovies() {
-        navigator.navigateToTab(NavTab.MovieTab)
+    fun navigateToMovies(reselected: Boolean) {
+        navigator.navigateToTab(NavTab.MovieTab, reselected)
     }
 
-    fun navigateToSearch() {
-        navigator.navigateToTab(NavTab.SearchTab)
+    fun navigateToSearch(reselected: Boolean) {
+        navigator.navigateToTab(NavTab.SearchTab, reselected)
     }
 
-    fun navigateToProfile() {
-        navigator.navigateToTab(NavTab.ProfileTab)
+    fun navigateToProfile(reselected: Boolean) {
+        navigator.navigateToTab(NavTab.ProfileTab, reselected)
     }
 
     fun closePopup() {
