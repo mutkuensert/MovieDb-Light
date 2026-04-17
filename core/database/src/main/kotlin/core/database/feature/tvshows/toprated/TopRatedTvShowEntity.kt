@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import core.database.account.model.WatchlistTvShowIdEntity
-import core.database.feature.tvshows.airingtoday.TvShowAiringTodayEntity
 
 @Entity
 data class TopRatedTvShowEntity(
