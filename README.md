@@ -291,9 +291,6 @@ class MyRepositoryImpl(
 ## Getting Started
 
 ### Prerequisites
-
-- Android Studio (latest version recommended)
-- JDK 17
 - API key for TMDB (The Movie Database) set as an environment variable:
   ```
   API_KEY_TMDB=your_api_key
