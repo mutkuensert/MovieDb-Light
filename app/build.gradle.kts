@@ -76,4 +76,5 @@ dependencies {
     base()
     baseAndroid()
     compose()
+    implementation(libs.androidx.core.splashscreen)
 }

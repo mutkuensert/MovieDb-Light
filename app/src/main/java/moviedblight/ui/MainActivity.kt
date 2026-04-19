@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import core.ui.LocalStatusBarBackgroundColorHandler
 import core.ui.MoviedbLightTheme
 import core.ui.StatusBarBackgroundColorHandler
@@ -21,6 +22,7 @@ class MainActivity : ComponentActivity() {
     private val statusBarBackgroundColorHandler: StatusBarBackgroundColorHandler by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
