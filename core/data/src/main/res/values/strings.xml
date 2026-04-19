@@ -14,5 +14,6 @@
     <string name="undefined_status_code">Oops! Something went wrong with your request. Please try again.</string>
     <string name="unknown_request_error">Oops! Something went wrong with your request. Please try again later.</string>
     <string name="something_is_wrong">Oops! Something went wrong with your request. Please try again later.</string>
+    <string name="update_your_device">Oops! Something went wrong with your request. Updating your device may fix the problem.</string>
     <string name="logout_attempt_has_failed">Logout attempt has failed.</string>
 </resources>

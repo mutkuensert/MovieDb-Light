@@ -3,8 +3,8 @@ package core.data.network
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
-import libraries.stringresource.StrResource
 import kotlinx.serialization.json.Json
+import libraries.stringresource.StrResource
 import moviedblight.core.data.R
 import okhttp3.Request
 import okio.Timeout
@@ -76,23 +76,37 @@ private class ResultCall<T>(
             }
 
             override fun onFailure(call: Call<T>, throwable: Throwable) {
-                val error = if (throwable is SSLPeerUnverifiedException) {
-                    val sslCertificateError = 495
-                    Err(
-                        NetworkError(
-                            httpCode = sslCertificateError,
-                            statusCode = null,
-                            message = strResource.get(R.string.something_is_wrong)
+                val error = when (throwable) {
+                    is SSLPeerUnverifiedException -> {
+                        val sslCertificateError = 495
+                        Err(
+                            NetworkError(
+                                httpCode = sslCertificateError,
+                                statusCode = null,
+                                message = strResource.get(R.string.something_is_wrong)
+                            )
                         )
-                    )
-                } else {
-                    Err(
-                        NetworkError(
-                            httpCode = null,
-                            statusCode = null,
-                            strResource.get(R.string.unknown_request_error)
+                    }
+
+                    is ProviderInstallerException -> {
+                        Err(
+                            NetworkError(
+                                httpCode = null,
+                                statusCode = null,
+                                message = strResource.get(R.string.update_your_device)
+                            )
                         )
-                    )
+                    }
+
+                    else -> {
+                        Err(
+                            NetworkError(
+                                httpCode = null,
+                                statusCode = null,
+                                strResource.get(R.string.unknown_request_error)
+                            )
+                        )
+                    }
                 }
                 Timber.e(throwable)
                 callback.onResponse(this@ResultCall, Response.success(error))

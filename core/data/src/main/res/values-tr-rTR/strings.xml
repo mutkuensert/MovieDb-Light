@@ -14,5 +14,6 @@
     <string name="undefined_status_code">Üzgünüz! İsteğinizde bir hata oluştu. Lütfen tekrar deneyin.</string>
     <string name="unknown_request_error">Üzgünüz! İsteğinizde bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
     <string name="something_is_wrong">Üzgünüz! İsteğinizde bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="update_your_device">Üzgünüz! İsteğinizde bir hata oluştu. Cihazınızı güncellemeniz sorunu çözebilir.</string>
     <string name="logout_attempt_has_failed">Çıkış yapma işlemi başarısız oldu.</string>
 </resources>

@@ -35,4 +35,5 @@ dependencies {
     debugImplementation(libs.chucker)
     releaseImplementation(libs.chucker.no.op)
     implementation(libs.androidx.paging.runtime)
+    implementation(libs.play.services.base)
 }
