@@ -1,7 +1,7 @@
 package feature.movie.domain.usecase
 
 import com.github.michaelbull.result.Result
-import com.github.michaelbull.result.onSuccess
+import com.github.michaelbull.result.onOk
 import core.domain.Failure
 import core.domain.account.AccountRepository
 import core.domain.profile.WatchlistMoviesRefresher
@@ -11,7 +11,7 @@ class SyncMovieWatchlistStatusUseCase(
     private val accountRepository: AccountRepository
 ) {
     suspend operator fun invoke(movieId: Int, inWatchlist: Boolean): Result<Unit, Failure> {
-        return accountRepository.syncMovieWatchlistStatus(movieId, inWatchlist).onSuccess {
+        return accountRepository.syncMovieWatchlistStatus(movieId, inWatchlist).onOk {
             watchlistMoviesRefresher()
         }
     }

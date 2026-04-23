@@ -3,8 +3,8 @@ package feature.person.presentation.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.michaelbull.result.onFailure
-import com.github.michaelbull.result.onSuccess
+import com.github.michaelbull.result.onErr
+import com.github.michaelbull.result.onOk
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
@@ -35,7 +35,7 @@ class PersonDetailViewModel(
         viewModelScope.launch {
             loadingAnimator.start()
 
-            personRepository.getPersonDetails(personId).onSuccess { personDetails ->
+            personRepository.getPersonDetails(personId).onOk { personDetails ->
                 _uiModel.update {
                     it.copy(
                         imagePath = personDetails.imagePath,
@@ -47,16 +47,16 @@ class PersonDetailViewModel(
                         biography = personDetails.biography ?: ""
                     )
                 }
-            }.onFailure(popupHandler::showFailurePopup)
+            }.onErr(popupHandler::showFailurePopup)
 
-            personRepository.getPersonMovieCredits(personId).onSuccess { credits ->
+            personRepository.getPersonMovieCredits(personId).onOk { credits ->
                 _uiModel.update {
                     it.copy(
                         castMovies = credits.cast.map { movie -> movie.toUiModel() },
                         crewMovies = credits.crew.map { movie -> movie.toUiModel() }
                     )
                 }
-            }.onFailure(popupHandler::showFailurePopup)
+            }.onErr(popupHandler::showFailurePopup)
 
             loadingAnimator.stop()
         }

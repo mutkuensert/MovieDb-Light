@@ -4,15 +4,15 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.mapBoth
-import com.github.michaelbull.result.onSuccess
+import com.github.michaelbull.result.onOk
 import core.data.SessionManager
 import core.data.network.toFailure
-import core.domain.auth.AuthenticationRepository
 import core.domain.Failure
 import core.domain.UndefinedFailure
-import utils.stringresource.StrResource
+import core.domain.auth.AuthenticationRepository
 import moviedblight.core.data.R
 import timber.log.Timber
+import utils.stringresource.StrResource
 
 class AuthenticationRepositoryImpl(
     private val authenticationService: AuthenticationService,
@@ -50,7 +50,7 @@ class AuthenticationRepositoryImpl(
     override suspend fun logout(): Result<Unit, Failure> {
         val sessionId = sessionManager.requireSessionId()
         return authenticationService.deleteSession(SessionIdRequest(sessionId))
-            .onSuccess {
+            .onOk {
                 if (it.success) {
                     sessionManager.removeSessionId()
                 }

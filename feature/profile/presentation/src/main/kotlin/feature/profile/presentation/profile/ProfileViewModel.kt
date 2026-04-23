@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import androidx.paging.map
-import com.github.michaelbull.result.onFailure
-import com.github.michaelbull.result.onSuccess
+import com.github.michaelbull.result.onErr
+import com.github.michaelbull.result.onOk
 import core.domain.account.AccountRepository
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
@@ -104,22 +104,22 @@ class ProfileViewModel(
 
     fun initScreen() {
         viewModelScope.launch {
-            accountRepository.fetchAccountDetails().onSuccess { user ->
+            accountRepository.fetchAccountDetails().onOk { user ->
                 _uiModel.update { model ->
                     model.copy(
                         profileImagePath = user.profilePicturePath,
                         name = user.userName
                     )
                 }
-            }.onFailure(popupHandler::showFailurePopup)
+            }.onErr(popupHandler::showFailurePopup)
         }
     }
 
     fun logout() {
         viewModelScope.launch {
-            logoutUseCase().onSuccess {
+            logoutUseCase().onOk {
                 navigator.popUpToRoute(LoginRoute())
-            }.onFailure(popupHandler::showFailurePopup)
+            }.onErr(popupHandler::showFailurePopup)
         }
     }
 

@@ -3,8 +3,8 @@ package feature.profile.presentation.login
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.michaelbull.result.onFailure
-import com.github.michaelbull.result.onSuccess
+import com.github.michaelbull.result.onErr
+import com.github.michaelbull.result.onOk
 import core.domain.auth.AuthStateProvider
 import core.domain.auth.AuthenticationRepository
 import core.ui.PopupHandler
@@ -55,19 +55,18 @@ class LoginViewModel(
 
     private fun startSession() {
         viewModelScope.launch {
-            startSessionUseCase().onSuccess {
+            startSessionUseCase().onOk {
                 popUpToProfile()
-            }.onFailure(popupHandler::showFailurePopup)
+            }.onErr(popupHandler::showFailurePopup)
         }
     }
 
     fun login() {
         viewModelScope.launch {
-            authenticationRepository.getRequestToken()
-                .onSuccess {
-                    requestToken = it
-                    _shouldOpenLoginPage.value = true
-                }.onFailure(popupHandler::showFailurePopup)
+            authenticationRepository.getRequestToken().onOk {
+                requestToken = it
+                _shouldOpenLoginPage.value = true
+            }.onErr(popupHandler::showFailurePopup)
         }
     }
 

@@ -1,7 +1,7 @@
 package feature.tvshow.domain.usecase
 
 import com.github.michaelbull.result.Result
-import com.github.michaelbull.result.onSuccess
+import com.github.michaelbull.result.onOk
 import core.domain.Failure
 import core.domain.account.AccountRepository
 import core.domain.profile.FavoriteTvShowsRefresher
@@ -11,7 +11,7 @@ class SyncTvShowFavoriteStatusUseCase(
     private val accountRepository: AccountRepository
 ) {
     suspend operator fun invoke(tvShowId: Int, favorite: Boolean): Result<Unit, Failure> {
-        return accountRepository.syncTvShowFavoriteStatus(tvShowId, favorite).onSuccess {
+        return accountRepository.syncTvShowFavoriteStatus(tvShowId, favorite).onOk {
             favoriteTvShowsRefresher()
         }
     }

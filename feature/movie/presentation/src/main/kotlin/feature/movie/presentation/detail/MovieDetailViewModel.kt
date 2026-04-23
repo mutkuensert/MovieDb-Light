@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import androidx.paging.map
-import com.github.michaelbull.result.onFailure
-import com.github.michaelbull.result.onSuccess
+import com.github.michaelbull.result.onErr
+import com.github.michaelbull.result.onOk
 import core.domain.auth.AuthStateProvider
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
@@ -81,7 +81,7 @@ class MovieDetailViewModel(
         viewModelScope.launch {
             loadingAnimator.start()
 
-            movieRepository.getMovieDetails(movieId).onSuccess { movieDetails ->
+            movieRepository.getMovieDetails(movieId).onOk { movieDetails ->
                 _uiModel.update {
                     it.copy(
                         imagePaths = movieDetails.imagePath?.let { path -> listOf(path) }
@@ -96,15 +96,15 @@ class MovieDetailViewModel(
                         cast = emptyList()
                     )
                 }
-            }.onFailure(popupHandler::showFailurePopup)
+            }.onErr(popupHandler::showFailurePopup)
 
-            movieRepository.getImagePaths(movieId).onSuccess { paths ->
+            movieRepository.getImagePaths(movieId).onOk { paths ->
                 _uiModel.update {
                     it.copy(imagePaths = it.imagePaths + paths)
                 }
             }
 
-            movieRepository.getPeople(movieId).onSuccess { people ->
+            movieRepository.getPeople(movieId).onOk { people ->
                 _uiModel.update {
                     it.copy(
                         cast = people.cast.map { person -> person.toUiModel() },
@@ -114,20 +114,20 @@ class MovieDetailViewModel(
                 }
             }
 
-            movieRepository.getProviders(movieId).onSuccess { providers ->
+            movieRepository.getProviders(movieId).onOk { providers ->
                 _uiModel.update {
                     it.copy(providerLogoPaths = providers.mapNotNull { provider -> provider.logoPath })
                 }
             }
 
-            movieRepository.getTrailerYoutubeVideoId(movieId).onSuccess { id ->
+            movieRepository.getTrailerYoutubeVideoId(movieId).onOk { id ->
                 _uiModel.update {
                     it.copy(youtubeVideoId = id)
                 }
             }
 
             if (authStateProvider.loggedIn.value) {
-                movieRepository.getAccountStates(movieId).onSuccess { accountStates ->
+                movieRepository.getAccountStates(movieId).onOk { accountStates ->
                     _uiModel.update {
                         it.copy(
                             userRate = accountStates.rate?.roundToInt()
@@ -136,7 +136,7 @@ class MovieDetailViewModel(
                             favorite = accountStates.favorite
                         )
                     }
-                }.onFailure(popupHandler::showFailurePopup)
+                }.onErr(popupHandler::showFailurePopup)
             }
 
             loadingAnimator.stop()
@@ -157,42 +157,42 @@ class MovieDetailViewModel(
 
     fun handleWatchlistClick(movieId: Int, inWatchlist: Boolean) {
         viewModelScope.launch {
-            syncMovieWatchlistStatusUseCase(movieId, inWatchlist).onSuccess {
+            syncMovieWatchlistStatusUseCase(movieId, inWatchlist).onOk {
                 _uiModel.update {
                     it.copy(inWatchlist = !uiModel.value.inWatchlist!!)
                 }
-            }.onFailure(popupHandler::showFailurePopup)
+            }.onErr(popupHandler::showFailurePopup)
         }
     }
 
     fun handleFavoriteClick() {
         viewModelScope.launch {
             syncMovieFavoriteStatusUseCase(movieId, !uiModel.value.favorite!!)
-                .onSuccess {
+                .onOk {
                     _uiModel.update {
                         it.copy(favorite = !uiModel.value.favorite!!)
                     }
-                }.onFailure(popupHandler::showFailurePopup)
+                }.onErr(popupHandler::showFailurePopup)
         }
     }
 
     fun handleRateClick(value: Int) {
         viewModelScope.launch {
-            rateMovieUseCase(movieId, value).onSuccess {
+            rateMovieUseCase(movieId, value).onOk {
                 _uiModel.update {
                     it.copy(userRate = value.toString())
                 }
-            }.onFailure(popupHandler::showFailurePopup)
+            }.onErr(popupHandler::showFailurePopup)
         }
     }
 
     fun handleRemoveRatingClick() {
         viewModelScope.launch {
-            removeRatingUseCase(movieId).onSuccess {
+            removeRatingUseCase(movieId).onOk {
                 _uiModel.update {
                     it.copy(userRate = null)
                 }
-            }.onFailure(popupHandler::showFailurePopup)
+            }.onErr(popupHandler::showFailurePopup)
         }
     }
 }

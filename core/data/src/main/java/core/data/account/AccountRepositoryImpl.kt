@@ -4,8 +4,8 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.mapBoth
-import com.github.michaelbull.result.onFailure
-import com.github.michaelbull.result.onSuccess
+import com.github.michaelbull.result.onErr
+import com.github.michaelbull.result.onOk
 import core.data.SessionManager
 import core.data.account.model.AccountDetailsResponse
 import core.data.account.model.FavoriteMovieRequest
@@ -36,8 +36,8 @@ import core.domain.account.SortBy
 import core.domain.account.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import utils.stringresource.StrResource
 import moviedblight.core.data.R
+import utils.stringresource.StrResource
 
 class AccountRepositoryImpl(
     private val accountService: AccountService,
@@ -87,15 +87,13 @@ class AccountRepositoryImpl(
                     sessionManager.requireSessionId(),
                     languagePreference.getLanguageTag(),
                     sortBy.toDto().value
-                ).onSuccess { response ->
+                ).onOk { response ->
                     endPage = response.totalPages
 
                     if (response.results.isNotEmpty()) {
                         favoriteMovies.addAll(response.results)
                     }
-                }.onFailure {
-                    break
-                }
+                }.onErr { break }
                 page++
             }
 
@@ -120,15 +118,13 @@ class AccountRepositoryImpl(
                     sessionManager.requireSessionId(),
                     languagePreference.getLanguageTag(),
                     sortBy.toDto().value
-                ).onSuccess { response ->
+                ).onOk { response ->
                     endPage = response.totalPages
 
                     if (response.results.isNotEmpty()) {
                         favoriteTvShows.addAll(response.results)
                     }
-                }.onFailure {
-                    break
-                }
+                }.onErr { break }
                 page++
             }
 
@@ -154,15 +150,13 @@ class AccountRepositoryImpl(
                     languagePreference.getLanguageTag(),
                     sortBy.toDto().value
 
-                ).onSuccess { response ->
+                ).onOk { response ->
                     endPage = response.totalPages
 
                     if (response.results.isNotEmpty()) {
                         watchlistMovies.addAll(response.results)
                     }
-                }.onFailure {
-                    break
-                }
+                }.onErr { break }
                 page++
             }
 
@@ -188,15 +182,13 @@ class AccountRepositoryImpl(
                     languagePreference.getLanguageTag(),
                     sortBy.toDto().value
 
-                ).onSuccess { response ->
+                ).onOk { response ->
                     endPage = response.totalPages
 
                     if (response.results.isNotEmpty()) {
                         watchlistTvShows.addAll(response.results)
                     }
-                }.onFailure {
-                    break
-                }
+                }.onErr { break }
                 page++
             }
 

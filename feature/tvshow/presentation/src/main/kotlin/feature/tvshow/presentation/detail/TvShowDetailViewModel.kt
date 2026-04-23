@@ -5,14 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import androidx.paging.map
-import com.github.michaelbull.result.onFailure
-import com.github.michaelbull.result.onSuccess
+import com.github.michaelbull.result.onErr
+import com.github.michaelbull.result.onOk
 import core.domain.auth.AuthStateProvider
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
-import core.ui.route.TvShowDetailRoute
 import core.ui.route.PersonDetailRoute
+import core.ui.route.TvShowDetailRoute
 import core.ui.showFailurePopup
 import feature.tvshow.domain.TvShowRepository
 import feature.tvshow.domain.usecase.RateTvShowUseCase
@@ -81,7 +81,7 @@ class TvShowDetailViewModel(
         viewModelScope.launch {
             loadingAnimator.start()
 
-            tvShowRepository.getTvShowDetails(tvShowId).onSuccess { tvShowDetails ->
+            tvShowRepository.getTvShowDetails(tvShowId).onOk { tvShowDetails ->
                 _uiModel.update {
                     it.copy(
                         imagePaths = tvShowDetails.imagePath?.let { path -> listOf(path) }
@@ -96,15 +96,15 @@ class TvShowDetailViewModel(
                         cast = emptyList()
                     )
                 }
-            }.onFailure(popupHandler::showFailurePopup)
+            }.onErr(popupHandler::showFailurePopup)
 
-            tvShowRepository.getImagePaths(tvShowId).onSuccess { paths ->
+            tvShowRepository.getImagePaths(tvShowId).onOk { paths ->
                 _uiModel.update {
                     it.copy(imagePaths = it.imagePaths + paths)
                 }
             }
 
-            tvShowRepository.getCast(tvShowId).onSuccess { cast ->
+            tvShowRepository.getCast(tvShowId).onOk { cast ->
                 _uiModel.update {
                     it.copy(
                         cast = cast.map { person -> person.toUiModel() },
@@ -112,20 +112,20 @@ class TvShowDetailViewModel(
                 }
             }
 
-            tvShowRepository.getProviders(tvShowId).onSuccess { providers ->
+            tvShowRepository.getProviders(tvShowId).onOk { providers ->
                 _uiModel.update {
                     it.copy(providerLogoPaths = providers.mapNotNull { provider -> provider.logoPath })
                 }
             }
 
-            tvShowRepository.getTrailerYoutubeVideoId(tvShowId).onSuccess { id ->
+            tvShowRepository.getTrailerYoutubeVideoId(tvShowId).onOk { id ->
                 _uiModel.update {
                     it.copy(trailerYoutubeVideoId = id)
                 }
             }
 
             if (authStateProvider.loggedIn.value) {
-                tvShowRepository.getAccountStates(tvShowId).onSuccess { accountStates ->
+                tvShowRepository.getAccountStates(tvShowId).onOk { accountStates ->
                     _uiModel.update {
                         it.copy(
                             userRate = accountStates.rate?.roundToInt()
@@ -134,7 +134,7 @@ class TvShowDetailViewModel(
                             favorite = accountStates.favorite
                         )
                     }
-                }.onFailure(popupHandler::showFailurePopup)
+                }.onErr(popupHandler::showFailurePopup)
             }
 
             loadingAnimator.stop()
@@ -155,42 +155,41 @@ class TvShowDetailViewModel(
 
     fun handleWatchlistClick(tvShowId: Int, inWatchlist: Boolean) {
         viewModelScope.launch {
-            syncTvShowWatchlistStatusUseCase(tvShowId, inWatchlist).onSuccess {
+            syncTvShowWatchlistStatusUseCase(tvShowId, inWatchlist).onOk {
                 _uiModel.update {
                     it.copy(inWatchlist = !uiModel.value.inWatchlist!!)
                 }
-            }.onFailure(popupHandler::showFailurePopup)
+            }.onErr(popupHandler::showFailurePopup)
         }
     }
 
     fun handleFavoriteClick() {
         viewModelScope.launch {
-            syncTvShowFavoriteStatusUseCase(tvShowId, !uiModel.value.favorite!!)
-                .onSuccess {
-                    _uiModel.update {
-                        it.copy(favorite = !uiModel.value.favorite!!)
-                    }
-                }.onFailure(popupHandler::showFailurePopup)
+            syncTvShowFavoriteStatusUseCase(tvShowId, !uiModel.value.favorite!!).onOk {
+                _uiModel.update {
+                    it.copy(favorite = !uiModel.value.favorite!!)
+                }
+            }.onErr(popupHandler::showFailurePopup)
         }
     }
 
     fun handleRateClick(value: Int) {
         viewModelScope.launch {
-            rateTvShowUseCase(tvShowId, value).onSuccess {
+            rateTvShowUseCase(tvShowId, value).onOk {
                 _uiModel.update {
                     it.copy(userRate = value.toString())
                 }
-            }.onFailure(popupHandler::showFailurePopup)
+            }.onErr(popupHandler::showFailurePopup)
         }
     }
 
     fun handleRemoveRatingClick() {
         viewModelScope.launch {
-            removeRatingUseCase(tvShowId).onSuccess {
+            removeRatingUseCase(tvShowId).onOk {
                 _uiModel.update {
                     it.copy(userRate = null)
                 }
-            }.onFailure(popupHandler::showFailurePopup)
+            }.onErr(popupHandler::showFailurePopup)
         }
     }
 }
