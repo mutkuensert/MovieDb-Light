@@ -1,25 +1,8 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
+    id("moviedblight.android.application")
 }
 
 android {
-    namespace = ProjectConfigs.applicationId
-    compileSdk = ProjectConfigs.compileSdk
-
-    defaultConfig {
-        applicationId = ProjectConfigs.applicationId
-        minSdk = ProjectConfigs.minSdk
-        targetSdk = ProjectConfigs.targetSdk
-        versionCode = ProjectConfigs.versionCode
-        versionName = ProjectConfigs.versionName
-
-        vectorDrawables {
-            useSupportLibrary = true
-        }
-    }
-
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
@@ -27,31 +10,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = ProjectConfigs.sourceCompatibility
-        targetCompatibility = ProjectConfigs.targetCompatibility
-    }
-
-    kotlin {
-        compilerOptions {
-            jvmTarget = ProjectConfigs.jvmTarget
-        }
-    }
-
-    buildFeatures {
-        compose = true
-        aidl = false
-        buildConfig = true
-        renderScript = false
-        shaders = false
-    }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 }
@@ -73,8 +31,5 @@ dependencies {
     implementation(projects.feature.person.presentation)
     implementation(projects.feature.person.injection)
     implementation(projects.libraries)
-    base()
-    baseAndroid()
-    compose()
     implementation(libs.androidx.core.splashscreen)
 }

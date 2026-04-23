@@ -23,7 +23,6 @@ abstract class CoreModuleCreatorTask : DefaultTask() {
     @Optional
     var moduleName: String? = null
 
-
     @TaskAction
     fun createModule() {
         val moduleName = this.moduleName ?: defaultModuleName
@@ -39,14 +38,14 @@ abstract class CoreModuleCreatorTask : DefaultTask() {
         val namespace = "core.$moduleName"
 
         val buildScript = """
-                    plugins {
-                        id("base-library")
-                    }
+            plugins {
+                id("base-library")
+            }
 
-                    android {
-                        namespace = "$namespace"
-                    }
-                """.trimIndent()
+            android {
+                namespace = "$namespace"
+            }
+        """.trimIndent()
 
         buildFile.writeText(buildScript)
         settingsFile.appendText("\ninclude(\":core:$moduleName\")")

@@ -1,7 +1,9 @@
+package buildlogic
+
 import org.gradle.api.JavaVersion
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-object ProjectConfigs {
+internal object ProjectConfigs {
     const val applicationId = "com.mutkuensert.moviedblight"
     const val compileSdk = 36
     const val minSdk = 24

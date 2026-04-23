@@ -14,7 +14,7 @@ room {
 }
 
 dependencies {
-    unitTest()
+    testImplementation(libs.junit)
     implementation(libs.kotlinx.serialization)
     implementation(libs.retrofit.kotlinx.serialization.converter)
     implementation(libs.androidx.security)

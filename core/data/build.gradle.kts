@@ -26,7 +26,7 @@ android {
 dependencies {
     api(projects.core.database)
     implementation(projects.core.domain)
-    unitTest()
+    testImplementation(libs.junit)
     implementation(libs.retrofit)
     implementation(libs.kotlinx.serialization)
     implementation(libs.retrofit.kotlinx.serialization.converter)

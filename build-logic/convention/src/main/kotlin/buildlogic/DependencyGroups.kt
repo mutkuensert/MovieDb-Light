@@ -1,6 +1,8 @@
+package buildlogic
+
 import org.gradle.api.Project
 
-fun Project.compose() {
+internal fun Project.composeDependencies() {
     implementation(dependencies.platform(getLibrary("androidx.compose.bom")))
     implementation(getLibrary("androidx.activity.compose"))
     implementation(getLibrary("androidx.compose.runtime"))
@@ -17,32 +19,26 @@ fun Project.compose() {
     implementation(getLibrary("koin.compose"))
 }
 
-fun Project.baseAndroid() {
+internal fun Project.baseAndroidDependencies() {
     implementation(getLibrary("koin.android"))
     implementation(getLibrary("androidx.core.ktx"))
     implementation(getLibrary("androidx.lifecycle.runtime.ktx"))
     implementation(getLibrary("androidx.lifecycle.viewmodel.ktx"))
 }
 
-fun Project.base() {
-    coroutines()
+internal fun Project.baseDependencies() {
+    coroutinesDependencies()
     implementation(getLibrary("koin.android"))
     testImplementation(getLibrary("koin.test"))
     implementation(getLibrary("timber"))
     implementation(getLibrary("kotlin.result"))
 }
 
-fun Project.androidTest() {
-    androidTestImplementation(getLibrary("androidx.test.ext.junit"))
-    androidTestImplementation(getLibrary("androidx.test.runner"))
-    androidTestImplementation(getLibrary("androidx.test.core"))
-}
-
-fun Project.unitTest() {
+internal fun Project.unitTestDependencies() {
     testImplementation(getLibrary("junit"))
 }
 
-private fun Project.coroutines() {
+private fun Project.coroutinesDependencies() {
     implementation(getLibrary("kotlinx.coroutines.android"))
     testImplementation(getLibrary("kotlinx.coroutines.test"))
 }
