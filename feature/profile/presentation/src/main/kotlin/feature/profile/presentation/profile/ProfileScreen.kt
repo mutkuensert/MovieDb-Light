@@ -54,8 +54,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -67,6 +65,7 @@ import core.ui.MoviedbLightTheme
 import core.ui.StatusBarColorHandler
 import core.ui.TmdbImage
 import core.ui.component.InteractivePoster
+import core.ui.component.OneTimeEffect
 import core.ui.darkenBy
 import feature.profile.presentation.R
 import kotlinx.coroutines.delay
@@ -102,7 +101,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
         viewModel::handleProfilePictureClick,
     )
 
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.initScreen() }
+    OneTimeEffect { viewModel.initScreen() }
     StatusBarColorHandler(MaterialTheme.colorScheme.background)
 }
 

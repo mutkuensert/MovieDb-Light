@@ -14,8 +14,8 @@ import core.ui.route.MovieDetailRoute
 import core.ui.route.SettingsRoute
 import core.ui.route.TvShowDetailRoute
 import core.ui.showFailurePopup
-import feature.profile.domain.usecase.LogoutUseCase
 import feature.profile.domain.ProfileRepository
+import feature.profile.domain.usecase.LogoutUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -118,8 +118,7 @@ class ProfileViewModel(
     fun logout() {
         viewModelScope.launch {
             logoutUseCase().onSuccess {
-                navigator.navigateBack()
-                navigator.navigateToRoute(LoginRoute())
+                navigator.popUpToRoute(LoginRoute())
             }.onFailure(popupHandler::showFailurePopup)
         }
     }
