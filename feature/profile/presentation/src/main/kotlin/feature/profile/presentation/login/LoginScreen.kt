@@ -46,7 +46,7 @@ fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
 
     OneTimeEffect {
         if (loggedIn) {
-            viewModel.navigateToProfile()
+            viewModel.popUpToProfile()
         }
     }
     if (!loggedIn) {

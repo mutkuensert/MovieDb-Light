@@ -3,6 +3,7 @@ package feature.tvshow.presentation.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import core.ui.navigation.Navigator
 import core.ui.route.TvShowDetailRoute
@@ -20,10 +21,14 @@ class TvShowsViewModel(
     private val syncTvShowWatchlistStatusUseCase: SyncTvShowWatchlistStatusUseCase,
     private val navigator: Navigator,
 ) : ViewModel() {
-    val popularTvShows = repository.getPopularTvShows(null).asUiModelFlow()
-    val tvShowsAiringToday = repository.getTvShowsAiringToday(null).asUiModelFlow()
-    val topRatedTvShows = repository.getTopRatedTvShows(null).asUiModelFlow()
-    val upcomingTvShows = repository.getUpcomingTvShows(null).asUiModelFlow()
+    val popularTvShows = repository.getPopularTvShows(null)
+        .cachedIn(viewModelScope).asUiModelFlow()
+    val tvShowsAiringToday = repository.getTvShowsAiringToday(null)
+        .cachedIn(viewModelScope).asUiModelFlow()
+    val topRatedTvShows = repository.getTopRatedTvShows(null)
+        .cachedIn(viewModelScope).asUiModelFlow()
+    val upcomingTvShows = repository.getUpcomingTvShows(null)
+        .cachedIn(viewModelScope).asUiModelFlow()
 
     private fun Flow<PagingData<TvShow>>.asUiModelFlow(): Flow<PagingData<TvShowUiModel>> {
         return map { pagingData ->

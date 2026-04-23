@@ -37,7 +37,7 @@ class LoginViewModel(
     var requestToken: String? = null
         private set
 
-    fun navigateToProfile() {
+    fun popUpToProfile() {
         navigator.popUpToRoute(ProfileRoute)
     }
 
@@ -56,8 +56,7 @@ class LoginViewModel(
     private fun startSession() {
         viewModelScope.launch {
             startSessionUseCase().onSuccess {
-                navigator.navigateBack()
-                navigator.navigateToRoute(ProfileRoute)
+                popUpToProfile()
             }.onFailure(popupHandler::showFailurePopup)
         }
     }

@@ -45,7 +45,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import kotlin.random.Random
 
 @Composable
 fun MoviesScreen(
@@ -80,9 +79,7 @@ private fun Movies(
     onClickWatchlist: (MovieUiModel) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = {
-        4
-    })
+    val pagerState = rememberPagerState(pageCount = { MovieTab.entries.size })
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     LaunchedEffect(pagerState.currentPage) {
         selectedTabIndex = pagerState.currentPage
@@ -185,11 +182,7 @@ private fun Movies(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             columns = GridCells.Fixed(2)
         ) {
-            items(
-                movies.itemCount,
-                key = { index ->
-                    movies[index]?.id ?: Random(seed = index).nextInt()
-                }) { index ->
+            items(movies.itemCount) { index ->
                 val movie = movies[index]
                 if (movie != null) {
                     InteractivePoster(

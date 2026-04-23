@@ -3,6 +3,7 @@ package feature.movie.presentation.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
@@ -20,10 +21,14 @@ class MoviesViewModel(
     private val syncMovieWatchlistStatusUseCase: SyncMovieWatchlistStatusUseCase,
     private val navigator: Navigator,
 ) : ViewModel() {
-    val popularMovies = repository.getPopularMovies(null).asUiModelFlow()
-    val moviesNowPlaying = repository.getMoviesNowPlaying(null).asUiModelFlow()
-    val topRatedMovies = repository.getTopRatedMovies(null).asUiModelFlow()
-    val upcomingMovies = repository.getUpcomingMovies(null).asUiModelFlow()
+    val popularMovies = repository.getPopularMovies(null)
+        .cachedIn(viewModelScope).asUiModelFlow()
+    val moviesNowPlaying = repository.getMoviesNowPlaying(null)
+        .cachedIn(viewModelScope).asUiModelFlow()
+    val topRatedMovies = repository.getTopRatedMovies(null)
+        .cachedIn(viewModelScope).asUiModelFlow()
+    val upcomingMovies = repository.getUpcomingMovies(null)
+        .cachedIn(viewModelScope).asUiModelFlow()
 
     private fun Flow<PagingData<Movie>>.asUiModelFlow(): Flow<PagingData<MovieUiModel>> {
         return map { pagingData ->

@@ -45,7 +45,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import kotlin.random.Random
 
 @Composable
 fun TvShowsScreen(
@@ -80,9 +79,7 @@ private fun TvShows(
     onClickWatchlist: (TvShowUiModel) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = {
-        4
-    })
+    val pagerState = rememberPagerState(pageCount = { TvShowTab.entries.size })
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     LaunchedEffect(pagerState.currentPage) {
         selectedTabIndex = pagerState.currentPage
@@ -185,11 +182,7 @@ private fun TvShows(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             columns = GridCells.Fixed(2)
         ) {
-            items(
-                count = tvShows.itemCount,
-                key = { index ->
-                    tvShows[index]?.id ?: Random(seed = index).nextInt()
-                }) { index ->
+            items(tvShows.itemCount) { index ->
                 val tvShow = tvShows[index]
                 if (tvShow != null) {
                     InteractivePoster(

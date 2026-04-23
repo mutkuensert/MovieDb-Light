@@ -22,8 +22,12 @@ class Navigator {
                     is NavCommand.ToTab -> navController.navigateToTab(it.tab, it.reselected)
                     is NavCommand.ToRoute -> navController.navigate(it.route)
                     is NavCommand.PopUpToRoute -> {
-                        navController.popBackStack()
-                        navController.navigate(it.route)
+                        navController.navigate(it.route) {
+                            val startDestination = navController.graph.findStartDestination()
+                            popUpTo(startDestination.id) {
+                                inclusive = it.inclusive
+                            }
+                        }
                     }
 
                     is NavCommand.Back -> navController.popBackStack()
@@ -40,8 +44,8 @@ class Navigator {
         commands.tryEmit(NavCommand.ToRoute(route))
     }
 
-    fun popUpToRoute(route: Any) {
-        commands.tryEmit(NavCommand.PopUpToRoute(route))
+    fun popUpToRoute(route: Any, inclusive: Boolean = false) {
+        commands.tryEmit(NavCommand.PopUpToRoute(route, inclusive))
     }
 
     fun navigateBack() {
@@ -62,7 +66,7 @@ class Navigator {
 
 private sealed interface NavCommand {
     class ToRoute(val route: Any) : NavCommand
-    class PopUpToRoute(val route: Any) : NavCommand
+    class PopUpToRoute(val route: Any, val inclusive: Boolean = false) : NavCommand
     class ToTab(val tab: Any, val reselected: Boolean) : NavCommand
     object Back : NavCommand
 }
