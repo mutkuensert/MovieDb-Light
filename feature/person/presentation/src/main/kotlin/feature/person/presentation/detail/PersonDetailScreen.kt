@@ -37,9 +37,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import core.ui.AppColors
+import core.ui.MoviedbLightTheme
 import core.ui.StatusBarColorHandler
 import core.ui.component.ImageType
 import core.ui.component.OneTimeEffect
@@ -132,16 +134,7 @@ private fun Header(
                 fontWeight = FontWeight.Bold
             )
 
-            if (uiModel.knownForDepartment.isNotBlank()) {
-                Text(
-                    text = uiModel.knownForDepartment,
-                    modifier = Modifier.padding(top = 4.dp),
-                    color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-
-            PersonInfo(uiModel, Modifier.padding(top = 12.dp))
+            PersonInfo(uiModel, Modifier.padding(top = 2.dp))
         }
     }
 }
@@ -151,7 +144,15 @@ private fun PersonInfo(
     uiModel: PersonDetailUiModel,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        if (uiModel.knownForDepartment.isNotBlank()) {
+            Text(
+                text = uiModel.knownForDepartment,
+                color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
         if (uiModel.birthday.isNotBlank()) {
             Text(
                 text = stringResource(R.string.born, uiModel.birthday),
@@ -224,7 +225,7 @@ private fun Movies(
 
     Column(modifier) {
         Text(
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp),
+            modifier = Modifier.padding(start = 16.dp),
             text = title,
             color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.titleMedium
@@ -233,12 +234,16 @@ private fun Movies(
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(360.dp),
-            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(top = 10.dp)
+                .height(320.dp),
+            contentPadding = PaddingValues(horizontal = 4.dp),
         ) {
             items(movies.size) { index ->
-                Movie(movies[index], onClickMovie)
+                Movie(
+                    movies[index],
+                    onClickMovie,
+                    Modifier.padding(horizontal = 4.dp)
+                )
             }
         }
     }
@@ -252,7 +257,6 @@ private fun Movie(
 ) {
     Column(
         modifier = modifier
-            .width(140.dp)
             .clickable { onClickMovie(movie.id) },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -262,16 +266,6 @@ private fun Movie(
         )
 
         Spacer(Modifier.height(6.dp))
-
-        Text(
-            text = movie.title,
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Bold,
-            maxLines = 2,
-            textAlign = TextAlign.Center,
-            overflow = TextOverflow.Ellipsis
-        )
 
         if (movie.year.isNotBlank() || movie.voteAverage != null) {
             MovieMetadata(movie, Modifier.padding(top = 2.dp))
@@ -286,10 +280,11 @@ private fun Movie(
         if (creditText != null) {
             Text(
                 text = creditText,
-                modifier = Modifier.padding(top = 2.dp),
+                modifier = Modifier
+                    .width(120.dp)
+                    .padding(top = 2.dp),
                 color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 2,
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 overflow = TextOverflow.Ellipsis
             )
@@ -311,7 +306,7 @@ private fun MovieMetadata(
             Text(
                 text = movie.year,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodyMedium
             )
         }
 
@@ -332,4 +327,72 @@ private fun MovieMetadata(
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun PersonDetailPreview() {
+    MoviedbLightTheme {
+        val movies = listOf(
+            MovieUiModel(
+                id = 1,
+                title = "Movie",
+                imagePath = null,
+                voteAverage = "10",
+                year = "2000",
+                character = "character",
+                job = "job"
+            ),
+            MovieUiModel(
+                id = 2,
+                title = "Movie",
+                imagePath = null,
+                voteAverage = "10",
+                year = "2000",
+                character = "character",
+                job = "job"
+            ),
+            MovieUiModel(
+                id = 3,
+                title = "Movie",
+                imagePath = null,
+                voteAverage = "10",
+                year = "2000",
+                character = "character",
+                job = "job"
+            ),
+            MovieUiModel(
+                id = 4,
+                title = "Movie",
+                imagePath = null,
+                voteAverage = "10",
+                year = "2000",
+                character = "character",
+                job = "job"
+            ),
+            MovieUiModel(
+                id = 5,
+                title = "Movie",
+                imagePath = null,
+                voteAverage = "10",
+                year = "2000",
+                character = "character",
+                job = "job"
+            ),
+        )
+        val uiModel = PersonDetailUiModel(
+            id = 0,
+            imagePath = null,
+            name = "Harry Potter",
+            knownForDepartment = "Student",
+            birthday = "1995",
+            deathday = "-",
+            placeOfBirth = "England",
+            biography = "",
+            castMovies = movies,
+            crewMovies = movies
+        )
+        PersonDetail(uiModel, onClickMovie = {})
+    }
+
 }

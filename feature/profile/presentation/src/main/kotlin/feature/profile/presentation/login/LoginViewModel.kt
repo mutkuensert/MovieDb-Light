@@ -38,8 +38,7 @@ class LoginViewModel(
         private set
 
     fun navigateToProfile() {
-        navigator.navigateBack()
-        navigator.navigateToRoute(ProfileRoute)
+        navigator.popUpToRoute(ProfileRoute)
     }
 
     fun initScreen() {

@@ -862,22 +862,27 @@ fun RateBottomSheet(
                 horizontalArrangement = Arrangement.Center
             ) {
                 (1..10).forEach { value ->
-                    Icon(
-                        modifier = Modifier
-                            .padding(start = 12.dp)
-                            .size(24.dp)
-                            .clickable {
-                                onClickRate(value)
-                                onDismiss()
+                    Column(
+                        modifier = Modifier.padding(start = 12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    onClickRate(value)
+                                    onDismiss()
+                                },
+                            imageVector = if (rate != null && value <= rate) Icons.Filled.Star else Icons.Filled.StarBorder,
+                            tint = if (rate != null && value <= rate) {
+                                AppColors.star
+                            } else {
+                                MaterialTheme.colorScheme.onPrimary
                             },
-                        imageVector = if (rate != null && value <= rate) Icons.Filled.Star else Icons.Filled.StarBorder,
-                        tint = if (rate != null && value <= rate) {
-                            AppColors.star
-                        } else {
-                            MaterialTheme.colorScheme.onPrimary
-                        },
-                        contentDescription = stringResource(R.string.rate_button)
-                    )
+                            contentDescription = stringResource(R.string.rate_button)
+                        )
+                        Text(text = value.toString())
+                    }
                 }
             }
 

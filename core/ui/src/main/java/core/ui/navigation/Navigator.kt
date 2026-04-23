@@ -21,6 +21,11 @@ class Navigator {
                 when (it) {
                     is NavCommand.ToTab -> navController.navigateToTab(it.tab, it.reselected)
                     is NavCommand.ToRoute -> navController.navigate(it.route)
+                    is NavCommand.PopUpToRoute -> {
+                        navController.popBackStack()
+                        navController.navigate(it.route)
+                    }
+
                     is NavCommand.Back -> navController.popBackStack()
                 }
             }
@@ -33,6 +38,10 @@ class Navigator {
 
     fun navigateToRoute(route: Any) {
         commands.tryEmit(NavCommand.ToRoute(route))
+    }
+
+    fun popUpToRoute(route: Any) {
+        commands.tryEmit(NavCommand.PopUpToRoute(route))
     }
 
     fun navigateBack() {
@@ -53,6 +62,7 @@ class Navigator {
 
 private sealed interface NavCommand {
     class ToRoute(val route: Any) : NavCommand
+    class PopUpToRoute(val route: Any) : NavCommand
     class ToTab(val tab: Any, val reselected: Boolean) : NavCommand
     object Back : NavCommand
 }
