@@ -322,17 +322,15 @@ private fun ActionButtons(
 
         Spacer(Modifier.height(8.dp))
 
-        if (uiModel.showRateButton || uiModel.showFavoriteButton || uiModel.showWatchlistButton) {
-            FloatingActionButton(
-                onClick = { extended = !extended },
-                containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(
-                    if (extended) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowUp,
-                    "Small floating action button."
-                )
-            }
+        FloatingActionButton(
+            onClick = { extended = !extended },
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.primary
+        ) {
+            Icon(
+                if (extended) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowUp,
+                "Small floating action button."
+            )
         }
     }
 }
