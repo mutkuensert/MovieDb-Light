@@ -19,7 +19,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":app")
 include(":core:data")
-include(":libraries")
+include(":utils")
 include(":core:database")
 include(":core:ui")
 include(":feature:movie:data")

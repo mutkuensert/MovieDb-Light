@@ -27,7 +27,7 @@ features. The application is divided into the following main module types:
 graph TD
 
     App[app]
-    Libraries[libraries]
+    Utils[utils]
 
     subgraph Core[Core]
         C1[core-database]
@@ -44,9 +44,9 @@ graph TD
     end
 
 %% Libraries module dependencies
-    Feature --> Libraries
-    Core --> Libraries
-    App --> Libraries
+    Feature --> Utils
+    Core --> Utils
+    App --> Utils
 
 %% Core module dependencies
     C2 --> C1
@@ -249,7 +249,7 @@ The adapter handles different types of errors:
 - Parsing errors
 
 Each error is transformed into a user-friendly message using
-the [StrResource](./libraries/src/main/kotlin/libraries/StrResource.kt).
+the [StrResource](./libraries/src/main/kotlin/utils/StrResource.kt).
 
 #### Creating and Using a Service
 

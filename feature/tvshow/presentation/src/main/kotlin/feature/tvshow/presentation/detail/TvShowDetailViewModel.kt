@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import libraries.stringresource.StrResource
+import utils.stringresource.StrResource
 import kotlin.math.roundToInt
 
 class TvShowDetailViewModel(

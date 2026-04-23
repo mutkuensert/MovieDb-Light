@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import libraries.LocalizationHelper
+import utils.LocalizationHelper
 
 @OptIn(
     ExperimentalPagingApi::class,

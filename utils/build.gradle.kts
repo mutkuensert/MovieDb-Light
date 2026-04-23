@@ -3,5 +3,5 @@ plugins {
 }
 
 android {
-    namespace = "libraries"
+    namespace = "utils"
 }

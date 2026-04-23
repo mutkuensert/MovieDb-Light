@@ -11,7 +11,7 @@ import feature.profile.profileModule
 import feature.search.searchModule
 import feature.settings.settingsModule
 import tvshow.injection.tvShowModule
-import libraries.librariesModule
+import utils.utilsModule
 import movie.injection.movieModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -37,7 +37,7 @@ class MovieDbLightApplication : Application() {
                 profileModule,
                 searchModule,
                 settingsModule,
-                librariesModule
+                utilsModule
             )
         }
     }

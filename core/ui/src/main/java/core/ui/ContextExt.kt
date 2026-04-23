@@ -10,16 +10,32 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.palette.graphics.Palette
 
-fun Context.asActivity(): Activity? {
+fun Context.findActivity(): Activity? {
     return when (this) {
         is Activity -> this
-        is ContextWrapper -> this.baseContext.asActivity()
+        is ContextWrapper -> this.baseContext.findActivity()
         else -> null
     }
 }
 
+fun Context.setStatusBarContentDark() {
+    val activity = findActivity() ?: return
+
+    val insetsController =
+        WindowCompat.getInsetsController(activity.window, activity.window.decorView)
+    insetsController.isAppearanceLightStatusBars = true
+}
+
+fun Context.setStatusBarContentLight() {
+    val activity = findActivity() ?: return
+
+    val insetsController =
+        WindowCompat.getInsetsController(activity.window, activity.window.decorView)
+    insetsController.isAppearanceLightStatusBars = false
+}
+
 fun Context.getInsetsController(): WindowInsetsControllerCompat? {
-    val activity = asActivity() ?: return null
+    val activity = findActivity() ?: return null
     return WindowCompat.getInsetsController(
         activity.window,
         activity.window.decorView

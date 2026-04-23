@@ -2,7 +2,7 @@ package feature.settings.data
 
 import core.database.LanguagePreference
 import feature.settings.domain.SettingsRepository
-import libraries.LocalizationHelper
+import utils.LocalizationHelper
 
 class SettingsRepositoryImpl(
     private val languagePreference: LanguagePreference,

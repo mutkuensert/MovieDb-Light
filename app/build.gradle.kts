@@ -30,6 +30,6 @@ dependencies {
     implementation(projects.feature.search.injection)
     implementation(projects.feature.person.presentation)
     implementation(projects.feature.person.injection)
-    implementation(projects.libraries)
+    implementation(projects.utils)
     implementation(libs.androidx.core.splashscreen)
 }

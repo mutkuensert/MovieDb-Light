@@ -1,7 +1,7 @@
 package core.database
 
 import android.content.Context
-import libraries.LocalizationHelper
+import utils.LocalizationHelper
 import timber.log.Timber
 
 private const val KEY_LANGUAGE_TAG = "language-tag"

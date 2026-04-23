@@ -8,7 +8,7 @@ class BaseLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             apply(plugin = "base-plugin")
-            implementation(project(":libraries"))
+            implementation(project(":utils"))
         }
     }
 }

@@ -4,7 +4,7 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import kotlinx.serialization.json.Json
-import libraries.stringresource.StrResource
+import utils.stringresource.StrResource
 import moviedblight.core.data.R
 import okhttp3.Request
 import okio.Timeout

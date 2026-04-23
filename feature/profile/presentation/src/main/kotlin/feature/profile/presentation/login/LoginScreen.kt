@@ -33,8 +33,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import core.ui.StatusBarColorHandler
 import core.ui.component.OneTimeEffect
 import core.ui.component.PrimaryButton
-import libraries.Constants.APP_DEEP_LINK
-import libraries.R
+import utils.Constants.APP_DEEP_LINK
+import utils.R
 import org.koin.androidx.compose.koinViewModel
 
 const val LoginDeeplink = "${APP_DEEP_LINK}/login"

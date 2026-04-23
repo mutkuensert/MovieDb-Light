@@ -28,7 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import core.ui.component.OneTimeEffect
-import libraries.LocalizationHelper
+import utils.LocalizationHelper
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

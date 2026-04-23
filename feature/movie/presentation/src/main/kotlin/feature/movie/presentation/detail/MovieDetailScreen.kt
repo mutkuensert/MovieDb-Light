@@ -580,7 +580,7 @@ private fun Providers(
             providerLogoPaths.forEachIndexed { index, logoPath ->
                 AsyncImage(
                     model = TmdbImage(logoPath).originalSizedUrl,
-                    error = debugPlaceholder(libraries.R.drawable.tmdb_logo_blue_square),
+                    error = debugPlaceholder(utils.R.drawable.tmdb_logo_blue_square),
                     modifier = Modifier
                         .height(36.dp)
                         .clip(MaterialTheme.shapes.extraSmall),

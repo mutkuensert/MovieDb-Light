@@ -1,4 +1,4 @@
-package libraries.stringresource
+package utils.stringresource
 
 import android.content.Context
 import androidx.annotation.StringRes

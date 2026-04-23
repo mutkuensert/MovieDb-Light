@@ -36,7 +36,7 @@ import core.domain.account.SortBy
 import core.domain.account.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import libraries.stringresource.StrResource
+import utils.stringresource.StrResource
 import moviedblight.core.data.R
 
 class AccountRepositoryImpl(
