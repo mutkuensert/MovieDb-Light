@@ -120,9 +120,9 @@ class MovieDetailViewModel(
                 }
             }
 
-            movieRepository.getTrailerUrl(movieId).onSuccess { url ->
+            movieRepository.getTrailerYoutubeVideoId(movieId).onSuccess { id ->
                 _uiModel.update {
-                    it.copy(trailerUrl = url)
+                    it.copy(youtubeVideoId = id)
                 }
             }
 

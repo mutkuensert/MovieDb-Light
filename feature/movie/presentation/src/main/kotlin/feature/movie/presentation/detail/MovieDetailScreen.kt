@@ -1,7 +1,6 @@
 package feature.movie.presentation.detail
 
 import android.annotation.SuppressLint
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -83,7 +82,6 @@ import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -103,7 +101,7 @@ import core.ui.component.InteractivePoster
 import core.ui.component.OneTimeEffect
 import core.ui.component.Poster
 import core.ui.component.PosterHeight
-import core.ui.component.PrimaryButton
+import core.ui.component.YoutubeVideoPlayer
 import core.ui.darkenBy
 import feature.movie.presentation.R
 import feature.movie.presentation.detail.model.CrewPersonUiModel
@@ -194,10 +192,10 @@ private fun MovieDetail(
                     Overview(uiModel.overview, Modifier.padding(top = 8.dp))
                 }
 
-                if (uiModel.trailerUrl != null) {
-                    TrailerButton(
-                        uiModel.trailerUrl,
-                        Modifier.padding(top = 8.dp)
+                if (uiModel.youtubeVideoId != null) {
+                    YoutubeVideoPlayer(
+                        uiModel.youtubeVideoId,
+                        Modifier.padding(top = 4.dp)
                     )
                 }
 
@@ -326,35 +324,6 @@ private fun ActionButtons(
                 )
             }
         }
-    }
-}
-
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-private fun TrailerButton(
-    trailerUrl: String,
-    modifier: Modifier = Modifier
-) {
-    TooltipBox(
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-            TooltipAnchorPosition.Above
-        ),
-        tooltip = {
-            PlainTooltip { Text(trailerUrl) }
-        },
-        state = rememberTooltipState()
-    ) {
-        val context = LocalContext.current
-        PrimaryButton(
-            {
-                val intent = CustomTabsIntent.Builder()
-                    .setShareState(CustomTabsIntent.SHARE_STATE_ON)
-                    .build()
-                intent.launchUrl(context, trailerUrl.toUri())
-            },
-            stringResource(R.string.trailer),
-            modifier
-        )
     }
 }
 
@@ -1039,7 +1008,7 @@ private fun MovieDetailPreview() {
                 genres = "Comedy, Action",
                 overview = LoremIpsum(20).values.joinToString(" "),
                 providerLogoPaths = listOf("path", "path2"),
-                trailerUrl = "123",
+                youtubeVideoId = "123",
                 cast = cast,
                 directors = crew,
                 writers = crew,

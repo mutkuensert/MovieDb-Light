@@ -15,7 +15,7 @@ data class TvShowDetailUiModel(
     val year: String,
     val genres: String,
     val overview: String,
-    val trailerUrl: String?,
+    val trailerYoutubeVideoId: String?,
     val providerLogoPaths: List<String>,
     val cast: List<PersonUiModel>,
 ) {
@@ -36,7 +36,7 @@ data class TvShowDetailUiModel(
                 year = "",
                 genres = "",
                 overview = "",
-                trailerUrl = null,
+                trailerYoutubeVideoId = null,
                 providerLogoPaths = emptyList(),
                 cast = emptyList(),
             )

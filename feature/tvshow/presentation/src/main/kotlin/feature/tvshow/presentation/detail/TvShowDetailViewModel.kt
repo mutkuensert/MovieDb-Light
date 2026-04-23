@@ -118,9 +118,9 @@ class TvShowDetailViewModel(
                 }
             }
 
-            tvShowRepository.getTrailerUrl(tvShowId).onSuccess { url ->
+            tvShowRepository.getTrailerYoutubeVideoId(tvShowId).onSuccess { id ->
                 _uiModel.update {
-                    it.copy(trailerUrl = url)
+                    it.copy(trailerYoutubeVideoId = id)
                 }
             }
 

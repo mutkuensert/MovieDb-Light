@@ -19,7 +19,7 @@ interface TvShowRepository {
     suspend fun getTvShowDetails(tvShowId: Int): Result<TvShowDetails, Failure>
     suspend fun getCast(tvShowId: Int): Result<List<Person>, Failure>
     suspend fun getProviders(tvShowId: Int): Result<List<Provider>, Failure>
-    suspend fun getTrailerUrl(tvShowId: Int): Result<String?, Failure>
+    suspend fun getTrailerYoutubeVideoId(tvShowId: Int): Result<String?, Failure>
     suspend fun getAccountStates(tvShowId: Int): Result<AccountStates, Failure>
     suspend fun rateTvShow(tvShowId: Int, rating: Int): Result<Unit, Failure>
     suspend fun removeRating(tvShowId: Int): Result<Unit, Failure>

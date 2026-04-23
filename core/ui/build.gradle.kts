@@ -18,4 +18,5 @@ dependencies {
     api(libs.coil.compose)
     api(libs.coil.network.okhttp)
     api(libs.androidx.browser)
+    implementation(libs.youtube.player)
 }

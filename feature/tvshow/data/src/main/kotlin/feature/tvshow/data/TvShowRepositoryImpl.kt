@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import libraries.LocalizationHelper
-import libraries.getYoutubeUrlByKey
 
 @OptIn(
     ExperimentalPagingApi::class,
@@ -241,12 +240,11 @@ class TvShowRepositoryImpl(
         }
     }
 
-    override suspend fun getTrailerUrl(tvShowId: Int): Result<String?, Failure> {
+    override suspend fun getTrailerYoutubeVideoId(tvShowId: Int): Result<String?, Failure> {
         return tvShowService.getVideos(tvShowId, languagePreference.getLanguageTag()).mapToDomain {
-            val key = it.results.find { video ->
+            it.results.find { video ->
                 (video.official && video.type == "Trailer" || video.type == "Trailer") && video.site.lowercase() == "youtube"
             }?.key
-            key?.let { getYoutubeUrlByKey(key) }
         }
     }
 
