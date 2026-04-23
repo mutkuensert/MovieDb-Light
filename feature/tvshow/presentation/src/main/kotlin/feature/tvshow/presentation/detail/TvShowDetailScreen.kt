@@ -1,6 +1,8 @@
 package feature.tvshow.presentation.detail
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -36,6 +38,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.CircularProgressIndicator
@@ -227,6 +230,8 @@ private fun ActionButtons(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             if (extended) {
+                ShareButton(uiModel.id)
+
                 if (uiModel.showFavoriteButton && uiModel.favorite != null) {
                     FavoriteButton(
                         uiModel.favorite,
@@ -722,6 +727,42 @@ private fun Person(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+private fun ShareButton(tvShowId: Int, modifier: Modifier = Modifier) {
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            PlainTooltip { Text(stringResource(R.string.share_tv_show_url)) }
+        },
+        state = rememberTooltipState()
+    ) {
+        val activity = LocalActivity.current
+        FloatingActionButton(
+            {
+                val intent = Intent()
+                intent.action = Intent.ACTION_SEND
+                intent.putExtra(
+                    Intent.EXTRA_TEXT,
+                    "https://www.themoviedb.org/tv/$tvShowId"
+                )
+                intent.type = "text/plain"
+
+                val shareIntent = Intent.createChooser(intent, null)
+                activity?.startActivity(shareIntent)
+            },
+            modifier,
+            containerColor = MaterialTheme.colorScheme.surface
+        ) {
+            Icon(
+                modifier = Modifier.size(28.dp),
+                imageVector = Icons.Filled.Share,
+                contentDescription = stringResource(R.string.share_tv_show_url)
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 private fun WatchlistButton(
     inWatchlist: Boolean,
     onClick: () -> Unit,
@@ -733,7 +774,6 @@ private fun WatchlistButton(
         Color(0xFFE1E1E1)
     }
     TooltipBox(
-        modifier = modifier,
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
         tooltip = {
             PlainTooltip { Text(stringResource(R.string.add_to_or_remove_from_watchlist_button)) }
@@ -742,6 +782,7 @@ private fun WatchlistButton(
     ) {
         FloatingActionButton(
             onClick,
+            modifier,
             containerColor = MaterialTheme.colorScheme.surface
         ) {
             Icon(
@@ -767,7 +808,6 @@ private fun FavoriteButton(
         Color(0xFFE1E1E1)
     }
     TooltipBox(
-        modifier = modifier,
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
         tooltip = {
             PlainTooltip { Text(stringResource(R.string.add_to_or_remove_from_favorites_button)) }
@@ -776,6 +816,7 @@ private fun FavoriteButton(
     ) {
         FloatingActionButton(
             onClick,
+            modifier,
             containerColor = MaterialTheme.colorScheme.surface
         ) {
             Icon(

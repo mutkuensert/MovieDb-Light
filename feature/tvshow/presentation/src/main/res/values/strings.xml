@@ -16,6 +16,7 @@
     <string name="add_to_or_remove_from_watchlist_button">Add to or remove from watchlist button</string>
     <string name="rate_button">Rate button</string>
     <string name="add_to_or_remove_from_favorites_button">Add to or remove from favorites button</string>
+    <string name="share_tv_show_url">Share tv show url</string>
     <string name="rate">%s/10</string>
     <string name="rate_the_tv_show">Rate the TV show</string>
     <string name="remove_your_rating">Remove your rating</string>

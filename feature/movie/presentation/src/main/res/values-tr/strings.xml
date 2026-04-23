@@ -16,6 +16,7 @@
     <string name="add_to_or_remove_from_watchlist_button">İzleme listesine ekle veya çıkar butonu</string>
     <string name="rate_button">Puan verme butonu</string>
     <string name="add_to_or_remove_from_favorites_button">Favoriye ekle veya çıkar butonu</string>
+    <string name="share_movie_url">Film linkini paylaş</string>
     <string name="rate">%s/10</string>
     <string name="rate_the_movie">Filme puan verin</string>
     <string name="remove_your_rating">Verdiğiniz puanı silin</string>
