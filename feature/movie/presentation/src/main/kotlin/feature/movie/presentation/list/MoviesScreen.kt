@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import kotlin.random.Random
 
 @Composable
 fun MoviesScreen(
@@ -184,7 +185,11 @@ private fun Movies(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             columns = GridCells.Fixed(2)
         ) {
-            items(count = movies.itemCount) { index ->
+            items(
+                movies.itemCount,
+                key = { index ->
+                    movies[index]?.id ?: Random(seed = index).nextInt()
+                }) { index ->
                 val movie = movies[index]
                 if (movie != null) {
                     InteractivePoster(

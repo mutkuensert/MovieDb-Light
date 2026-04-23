@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import kotlin.random.Random
 
 @Composable
 fun TvShowsScreen(
@@ -184,7 +185,11 @@ private fun TvShows(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             columns = GridCells.Fixed(2)
         ) {
-            items(count = tvShows.itemCount) { index ->
+            items(
+                count = tvShows.itemCount,
+                key = { index ->
+                    tvShows[index]?.id ?: Random(seed = index).nextInt()
+                }) { index ->
                 val tvShow = tvShows[index]
                 if (tvShow != null) {
                     InteractivePoster(
