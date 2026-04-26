@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,7 +11,6 @@ import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -20,17 +18,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Beenhere
@@ -66,10 +61,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -83,9 +76,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.times
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -97,6 +88,7 @@ import core.ui.TmdbImage
 import core.ui.coil.debugPlaceholder
 import core.ui.component.ImageType
 import core.ui.component.OneTimeEffect
+import core.ui.component.PageIndicator
 import core.ui.component.Poster
 import core.ui.component.PosterHeight
 import core.ui.component.YoutubeVideoPlayer
@@ -348,78 +340,11 @@ private fun TvShowPosters(
         }
 
         if (pagerState.currentPage != 0 && imagePaths.size > 2) {
-            PageIndicator(pagerState)
-        }
-    }
-}
-
-@Composable
-fun BoxScope.PageIndicator(
-    pagerState: PagerState,
-    modifier: Modifier = Modifier,
-    activeColor: Color = Color.White,
-    inactiveColor: Color = Color.White,
-    indicatorSize: Dp = 16.dp,
-    spacing: Dp = 6.dp,
-    visibleDotsCount: Int = 5
-) {
-    val totalItemWidth = indicatorSize + spacing
-    val boxWidth = (visibleDotsCount * (indicatorSize + spacing)) - spacing
-    var targetOffset by remember { mutableStateOf(0.dp) }
-    val offset = animateDpAsState(targetOffset)
-
-    LaunchedEffect(pagerState.currentPage) {
-        val currentPage = pagerState.currentPage
-        if (currentPage < visibleDotsCount - 2) {
-            targetOffset = 0.dp
-            return@LaunchedEffect
-        }
-        var offsetDiff = if (pagerState.lastScrolledForward) {
-            totalItemWidth * -1
-        } else {
-            totalItemWidth
-        }
-
-        if (currentPage == pagerState.pageCount - 1) {
-            offsetDiff -= spacing
-        }
-        targetOffset += offsetDiff
-    }
-
-    Box(
-        modifier = modifier
-            .width(boxWidth)
-            .height(indicatorSize)
-            .clipToBounds()
-            .align(Alignment.BottomCenter),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        Row(
-            modifier = Modifier
-                .wrapContentWidth(align = Alignment.Start, unbounded = true)
-                .offset(offset = {
-                    IntOffset(x = offset.value.toPx().toInt(), y = 0)
-                }),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(spacing)
-        ) {
-            repeat(pagerState.pageCount) { iteration ->
-                val color = if (pagerState.currentPage == iteration) activeColor else inactiveColor
-
-                Box(
-                    modifier = Modifier
-                        .size(indicatorSize)
-                        .graphicsLayer {
-                            val currentPage = pagerState.currentPage
-                            if (currentPage != iteration) {
-                                scaleX = 0.5f
-                                scaleY = 0.5f
-                            }
-                        }
-                        .clip(CircleShape)
-                        .background(color)
-                )
-            }
+            PageIndicator(
+                pagerState.currentPage,
+                pagerState.pageCount,
+                Modifier.align(Alignment.BottomCenter)
+            )
         }
     }
 }
