@@ -12,7 +12,6 @@ import core.data.util.withDecimals
 import core.database.LanguagePreference
 import core.database.feature.tvshows.airingtoday.TvShowsAiringTodayDao
 import core.database.feature.tvshows.popular.PopularTvShowDao
-import core.database.feature.tvshows.similar.SimilarTvShowDao
 import core.database.feature.tvshows.toprated.TopRatedTvShowDao
 import core.database.feature.tvshows.upcoming.UpcomingTvShowDao
 import core.domain.Failure
@@ -42,7 +41,6 @@ class TvShowRepositoryImpl(
     private val tvShowAiringTodayDao: TvShowsAiringTodayDao,
     private val upcomingTvShowDao: UpcomingTvShowDao,
     private val topRatedTvShowDao: TopRatedTvShowDao,
-    private val similarTvShowDao: SimilarTvShowDao,
     private val sessionManager: SessionManager,
     private val languagePreference: LanguagePreference,
 ) : TvShowRepository {
@@ -151,34 +149,6 @@ class TvShowRepositoryImpl(
                     topRatedTvShowDao
                 ),
                 pagingSourceFactory = { topRatedTvShowDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
-                    TvShow(
-                        id = entity.tvShow.id,
-                        title = entity.tvShow.title,
-                        imagePath = entity.tvShow.posterPath,
-                        voteAverage = entity.tvShow.voteAverage?.withDecimals(1),
-                        inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
-                    )
-                }
-            }
-        }
-    }
-
-    override fun getSimilarTvShows(tvShowId: Int): Flow<PagingData<TvShow>> {
-        return refreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = SimilarTvShowsRemoteMediator(
-                    getTvShows = { page ->
-                        tvShowService.getSimilarTvShows(
-                            tvShowId, page,
-                            languagePreference.getLanguageTag()
-                        )
-                    },
-                    similarTvShowDao
-                ),
-                pagingSourceFactory = { similarTvShowDao.getPagingSource() }
             ).flow.map { pagingData ->
                 pagingData.map { entity ->
                     TvShow(

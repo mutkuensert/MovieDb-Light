@@ -3,8 +3,6 @@ package feature.tvshow.presentation.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.cachedIn
-import androidx.paging.map
 import com.github.michaelbull.result.onErr
 import com.github.michaelbull.result.onOk
 import core.domain.auth.AuthStateProvider
@@ -12,7 +10,6 @@ import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.PersonDetailRoute
-import core.ui.route.TvShowDetailRoute
 import core.ui.showFailurePopup
 import feature.tvshow.domain.TvShowRepository
 import feature.tvshow.domain.usecase.RateTvShowUseCase
@@ -21,12 +18,10 @@ import feature.tvshow.domain.usecase.SyncTvShowFavoriteStatusUseCase
 import feature.tvshow.domain.usecase.SyncTvShowWatchlistStatusUseCase
 import feature.tvshow.presentation.R
 import feature.tvshow.presentation.detail.model.TvShowDetailUiModel
-import feature.tvshow.presentation.detail.model.TvShowUiModel
 import feature.tvshow.presentation.detail.model.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import utils.stringresource.StrResource
@@ -50,18 +45,6 @@ class TvShowDetailViewModel(
     }
     private val _uiModel = MutableStateFlow(TvShowDetailUiModel.initial(tvShowId))
     val uiModel = _uiModel.asStateFlow()
-
-    val similarTvShows = tvShowRepository.getSimilarTvShows(tvShowId).map {
-        it.map { tvShow ->
-            TvShowUiModel(
-                tvShow.id,
-                tvShow.title,
-                tvShow.imagePath,
-                tvShow.voteAverage?.toString(),
-                tvShow.inWatchlist
-            )
-        }
-    }.cachedIn(viewModelScope)
 
     init {
         viewModelScope.launch {
@@ -143,10 +126,6 @@ class TvShowDetailViewModel(
 
     fun handleStreamServicesInfoButton() {
         popupHandler.showSimpleMessage(strResource.get(R.string.streaming_services_information_are_provided_by_justwatch))
-    }
-
-    fun handleTvShowClick(tvShowId: Int) {
-        navigator.navigateToRoute(TvShowDetailRoute(tvShowId))
     }
 
     fun handlePersonClick(personId: Int) {

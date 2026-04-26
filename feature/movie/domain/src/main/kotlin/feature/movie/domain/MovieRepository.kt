@@ -15,7 +15,6 @@ interface MovieRepository {
     fun getMoviesNowPlaying(countryCode: String? = null): Flow<PagingData<Movie>>
     fun getUpcomingMovies(countryCode: String? = null): Flow<PagingData<Movie>>
     fun getTopRatedMovies(countryCode: String? = null): Flow<PagingData<Movie>>
-    fun getSimilarMovies(movieId: Int): Flow<PagingData<Movie>>
     suspend fun getMovieDetails(movieId: Int): Result<MovieDetails, Failure>
     suspend fun getPeople(movieId: Int): Result<People, Failure>
     suspend fun getProviders(movieId: Int): Result<List<Provider>, Failure>

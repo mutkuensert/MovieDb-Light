@@ -3,15 +3,12 @@ package feature.movie.presentation.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.cachedIn
-import androidx.paging.map
 import com.github.michaelbull.result.onErr
 import com.github.michaelbull.result.onOk
 import core.domain.auth.AuthStateProvider
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
-import core.ui.route.MovieDetailRoute
 import core.ui.route.PersonDetailRoute
 import core.ui.showFailurePopup
 import feature.movie.domain.MovieRepository
@@ -21,12 +18,10 @@ import feature.movie.domain.usecase.SyncMovieFavoriteStatusUseCase
 import feature.movie.domain.usecase.SyncMovieWatchlistStatusUseCase
 import feature.movie.presentation.R
 import feature.movie.presentation.detail.model.MovieDetailUiModel
-import feature.movie.presentation.detail.model.MovieUiModel
 import feature.movie.presentation.detail.model.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import utils.stringresource.StrResource
@@ -50,18 +45,6 @@ class MovieDetailViewModel(
     }
     private val _uiModel = MutableStateFlow(MovieDetailUiModel.initial(movieId))
     val uiModel = _uiModel.asStateFlow()
-
-    val similarMovies = movieRepository.getSimilarMovies(movieId).map {
-        it.map { movie ->
-            MovieUiModel(
-                movie.id,
-                movie.title,
-                movie.imagePath,
-                movie.voteAverage?.toString(),
-                movie.inWatchlist
-            )
-        }
-    }.cachedIn(viewModelScope)
 
     init {
         viewModelScope.launch {
@@ -145,10 +128,6 @@ class MovieDetailViewModel(
 
     fun handleStreamServicesInfoButton() {
         popupHandler.showSimpleMessage(strResource.get(R.string.streaming_services_information_are_provided_by_justwatch))
-    }
-
-    fun handleMovieClick(movieId: Int) {
-        navigator.navigateToRoute(MovieDetailRoute(movieId))
     }
 
     fun handlePersonClick(personId: Int) {

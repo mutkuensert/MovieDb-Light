@@ -12,7 +12,6 @@ import core.data.util.withDecimals
 import core.database.LanguagePreference
 import core.database.feature.movies.nowplaying.NowPlayingMovieDao
 import core.database.feature.movies.popular.PopularMovieDao
-import core.database.feature.movies.similar.SimilarMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.domain.Failure
@@ -45,7 +44,6 @@ class MovieRepositoryImpl(
     private val nowPlayingMovieDao: NowPlayingMovieDao,
     private val upcomingMovieDao: UpcomingMovieDao,
     private val topRatedMovieDao: TopRatedMovieDao,
-    private val similarMovieDao: SimilarMovieDao,
     private val sessionManager: SessionManager,
     private val languagePreference: LanguagePreference,
 ) : MovieRepository {
@@ -154,34 +152,6 @@ class MovieRepositoryImpl(
                     topRatedMovieDao
                 ),
                 pagingSourceFactory = { topRatedMovieDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
-                    Movie(
-                        id = entity.movie.id,
-                        title = entity.movie.title,
-                        imagePath = entity.movie.posterPath,
-                        voteAverage = entity.movie.voteAverage?.withDecimals(1),
-                        inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
-                    )
-                }
-            }
-        }
-    }
-
-    override fun getSimilarMovies(movieId: Int): Flow<PagingData<Movie>> {
-        return refreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = SimilarMoviesRemoteMediator(
-                    getMovies = { page ->
-                        movieService.getSimilarMovies(
-                            movieId, page,
-                            languagePreference.getLanguageTag()
-                        )
-                    },
-                    similarMovieDao
-                ),
-                pagingSourceFactory = { similarMovieDao.getPagingSource() }
             ).flow.map { pagingData ->
                 pagingData.map { entity ->
                     Movie(

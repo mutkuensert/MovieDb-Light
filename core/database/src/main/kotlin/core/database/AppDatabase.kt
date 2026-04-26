@@ -3,6 +3,7 @@ package core.database
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.DeleteColumn
+import androidx.room.DeleteTable
 import androidx.room.RenameTable
 import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
@@ -28,18 +29,14 @@ import core.database.feature.movies.nowplaying.NowPlayingMovieDao
 import core.database.feature.movies.nowplaying.NowPlayingMovieEntity
 import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.popular.PopularMovieEntity
-import core.database.feature.movies.similar.SimilarMovieDao
-import core.database.feature.movies.similar.SimilarMovieEntity
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieEntity
 import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieEntity
-import core.database.feature.tvshows.airingtoday.TvShowsAiringTodayDao
 import core.database.feature.tvshows.airingtoday.TvShowAiringTodayEntity
+import core.database.feature.tvshows.airingtoday.TvShowsAiringTodayDao
 import core.database.feature.tvshows.popular.PopularTvShowDao
 import core.database.feature.tvshows.popular.PopularTvShowEntity
-import core.database.feature.tvshows.similar.SimilarTvShowDao
-import core.database.feature.tvshows.similar.SimilarTvShowEntity
 import core.database.feature.tvshows.toprated.TopRatedTvShowDao
 import core.database.feature.tvshows.toprated.TopRatedTvShowEntity
 import core.database.feature.tvshows.upcoming.UpcomingTvShowDao
@@ -50,7 +47,6 @@ import core.database.feature.tvshows.upcoming.UpcomingTvShowEntity
         NowPlayingMovieEntity::class,
         TopRatedMovieEntity::class,
         UpcomingMovieEntity::class,
-        SimilarMovieEntity::class,
         WatchlistMovieEntity::class,
         WatchlistMovieIdEntity::class,
         FavoriteMovieEntity::class,
@@ -64,9 +60,8 @@ import core.database.feature.tvshows.upcoming.UpcomingTvShowEntity
         TvShowAiringTodayEntity::class,
         TopRatedTvShowEntity::class,
         UpcomingTvShowEntity::class,
-        SimilarTvShowEntity::class,
         RatedTvShowEntity::class],
-    version = 5,
+    version = 6,
     autoMigrations = [
         AutoMigration(
             from = 1,
@@ -78,6 +73,11 @@ import core.database.feature.tvshows.upcoming.UpcomingTvShowEntity
             to = 4,
             spec = DatabaseMigrations.Schema3To4::class
         ),
+        AutoMigration(
+            from = 5,
+            to = 6,
+            spec = DatabaseMigrations.Schema5To6::class
+        ),
     ]
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -85,7 +85,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getNowPlayingMovieDao(): NowPlayingMovieDao
     abstract fun getTopRateMovieDao(): TopRatedMovieDao
     abstract fun getUpcomingMovieDao(): UpcomingMovieDao
-    abstract fun getSimilarMovieDao(): SimilarMovieDao
     abstract fun getFavoriteMovieDao(): FavoriteMovieDao
     abstract fun getWatchlistMovieDao(): WatchlistMovieDao
     abstract fun getRatedMovieDao(): RatedMovieDao
@@ -96,7 +95,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getTvShowAiringTodayDao(): TvShowsAiringTodayDao
     abstract fun getTopRatedTvShowDao(): TopRatedTvShowDao
     abstract fun getUpcomingTvShowDao(): UpcomingTvShowDao
-    abstract fun getSimilarTvShowDao(): SimilarTvShowDao
 }
 
 
@@ -107,6 +105,10 @@ internal object DatabaseMigrations {
 
     @DeleteColumn(tableName = "RatedMovieEntity", columnName = "rate")
     class Schema3To4 : AutoMigrationSpec
+
+    @DeleteTable(tableName = "SimilarMovieEntity")
+    @DeleteTable(tableName = "SimilarTvShowEntity")
+    class Schema5To6 : AutoMigrationSpec
 }
 
 val MIGRATION_2_3 = object : Migration(2, 3) {

@@ -27,7 +27,6 @@ val tvShowModule = module {
             get(),
             get(),
             get(),
-            get()
         )
     }
     viewModelOf(::TvShowsViewModel)

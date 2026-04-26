@@ -5,9 +5,9 @@ import com.github.michaelbull.result.Result
 import core.domain.Failure
 import core.domain.common.model.Provider
 import feature.tvshow.domain.model.AccountStates
+import feature.tvshow.domain.model.Person
 import feature.tvshow.domain.model.TvShow
 import feature.tvshow.domain.model.TvShowDetails
-import feature.tvshow.domain.model.Person
 import kotlinx.coroutines.flow.Flow
 
 interface TvShowRepository {
@@ -15,7 +15,6 @@ interface TvShowRepository {
     fun getTvShowsAiringToday(countryCode: String? = null): Flow<PagingData<TvShow>>
     fun getUpcomingTvShows(countryCode: String? = null): Flow<PagingData<TvShow>>
     fun getTopRatedTvShows(countryCode: String? = null): Flow<PagingData<TvShow>>
-    fun getSimilarTvShows(tvShowId: Int): Flow<PagingData<TvShow>>
     suspend fun getTvShowDetails(tvShowId: Int): Result<TvShowDetails, Failure>
     suspend fun getCast(tvShowId: Int): Result<List<Person>, Failure>
     suspend fun getProviders(tvShowId: Int): Result<List<Provider>, Failure>

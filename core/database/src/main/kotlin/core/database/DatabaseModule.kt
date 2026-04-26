@@ -16,7 +16,6 @@ val databaseModule = module {
     single { get<AppDatabase>().getNowPlayingMovieDao() }
     single { get<AppDatabase>().getUpcomingMovieDao() }
     single { get<AppDatabase>().getTopRateMovieDao() }
-    single { get<AppDatabase>().getSimilarMovieDao() }
     single { get<AppDatabase>().getFavoriteMovieDao() }
     single { get<AppDatabase>().getWatchlistMovieDao() }
     single { get<AppDatabase>().getRatedMovieDao() }
@@ -27,6 +26,5 @@ val databaseModule = module {
     single { get<AppDatabase>().getTvShowAiringTodayDao() }
     single { get<AppDatabase>().getUpcomingTvShowDao() }
     single { get<AppDatabase>().getTopRatedTvShowDao() }
-    single { get<AppDatabase>().getSimilarTvShowDao() }
     single { LanguagePreference(androidContext()) }
 }

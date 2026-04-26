@@ -86,11 +86,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
-import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
@@ -100,7 +95,6 @@ import core.ui.MoviedbLightTheme
 import core.ui.TmdbImage
 import core.ui.coil.debugPlaceholder
 import core.ui.component.ImageType
-import core.ui.component.InteractivePoster
 import core.ui.component.OneTimeEffect
 import core.ui.component.Poster
 import core.ui.component.PosterHeight
@@ -109,20 +103,15 @@ import core.ui.darkenBy
 import feature.tvshow.presentation.R
 import feature.tvshow.presentation.detail.model.PersonUiModel
 import feature.tvshow.presentation.detail.model.TvShowDetailUiModel
-import feature.tvshow.presentation.detail.model.TvShowUiModel
-import kotlinx.coroutines.flow.flowOf
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun TvShowDetailScreen(viewModel: TvShowDetailViewModel = koinViewModel()) {
     val uiModel by viewModel.uiModel.collectAsStateWithLifecycle()
-    val similarTvShows = viewModel.similarTvShows.collectAsLazyPagingItems()
 
     TvShowDetail(
         uiModel,
         viewModel::handleStreamServicesInfoButton,
-        similarTvShows,
-        viewModel::handleTvShowClick,
         viewModel::handlePersonClick,
         viewModel::handleWatchlistClick,
         viewModel::handleFavoriteClick,
@@ -141,8 +130,6 @@ fun TvShowDetailScreen(viewModel: TvShowDetailViewModel = koinViewModel()) {
 private fun TvShowDetail(
     uiModel: TvShowDetailUiModel,
     onClickStreamingServicesInfoButton: () -> Unit,
-    similarTvShows: LazyPagingItems<TvShowUiModel>,
-    onClickTvShow: (id: Int) -> Unit,
     onClickPerson: (id: Int) -> Unit,
     onClickWatchlist: (id: Int, inWatchlist: Boolean) -> Unit,
     onClickFavorite: () -> Unit,
@@ -205,8 +192,6 @@ private fun TvShowDetail(
             Spacer(Modifier.height(16.dp))
 
             Cast(uiModel, onClickPerson)
-
-            SimilarTvShows(similarTvShows, onClickTvShow, onClickWatchlist)
         }
     }
 }
@@ -575,72 +560,6 @@ private fun Cast(
 }
 
 @Composable
-private fun SimilarTvShows(
-    similarTvShows: LazyPagingItems<TvShowUiModel>,
-    onClickTvShow: (tvShowId: Int) -> Unit,
-    onClickWatchlist: (id: Int, inWatchlist: Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier) {
-        if (similarTvShows.itemCount != 0) {
-            Text(
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-                text = stringResource(R.string.similar),
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-
-        LazyRow(
-            modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            item {
-                if (similarTvShows.loadState.refresh == LoadState.Loading) {
-                    Box(
-                        modifier = Modifier
-                            .height(PosterHeight.large)
-                            .fillParentMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) { CircularProgressIndicator() }
-                }
-            }
-
-            items(
-                count = similarTvShows.itemCount,
-                key = similarTvShows.itemKey { it.id }
-            ) { index ->
-                val tvShow = similarTvShows[index]
-
-                if (tvShow != null) {
-                    InteractivePoster(
-                        modifier = Modifier
-                            .height(PosterHeight.large)
-                            .padding(horizontal = 6.dp, vertical = 10.dp)
-                            .then(
-                                when (index) {
-                                    0 -> Modifier.padding(start = 10.dp)
-                                    similarTvShows.itemCount - 1 if similarTvShows.loadState != LoadState.Loading -> {
-                                        Modifier.padding(end = 10.dp)
-                                    }
-
-                                    else -> Modifier
-                                }
-                            ),
-                        imagePath = tvShow.imagePath,
-                        title = tvShow.title,
-                        vote = tvShow.voteAverage,
-                        onPosterClick = { onClickTvShow(tvShow.id) },
-                        inWatchlist = tvShow.inWatchlist,
-                        onWatchlistClick = { onClickWatchlist(tvShow.id, !tvShow.inWatchlist!!) }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun YearVoteRuntimeText(
     modifier: Modifier = Modifier,
     year: String,
@@ -942,9 +861,6 @@ fun RateBottomSheet(
 @Composable
 private fun TvShowDetailPreview() {
     MoviedbLightTheme {
-        val emptyPagingData =
-            flowOf(PagingData.from<TvShowUiModel>(emptyList())).collectAsLazyPagingItems()
-
         val cast = listOf(
             PersonUiModel(
                 id = 2723,
@@ -998,8 +914,6 @@ private fun TvShowDetailPreview() {
                 trailerYoutubeVideoId = "123",
                 cast = cast,
             ),
-            {},
-            emptyPagingData,
             {},
             {},
             { _, _ -> },

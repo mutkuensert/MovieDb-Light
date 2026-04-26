@@ -86,11 +86,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
-import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
@@ -100,7 +95,6 @@ import core.ui.MoviedbLightTheme
 import core.ui.TmdbImage
 import core.ui.coil.debugPlaceholder
 import core.ui.component.ImageType
-import core.ui.component.InteractivePoster
 import core.ui.component.OneTimeEffect
 import core.ui.component.Poster
 import core.ui.component.PosterHeight
@@ -109,21 +103,16 @@ import core.ui.darkenBy
 import feature.movie.presentation.R
 import feature.movie.presentation.detail.model.CrewPersonUiModel
 import feature.movie.presentation.detail.model.MovieDetailUiModel
-import feature.movie.presentation.detail.model.MovieUiModel
 import feature.movie.presentation.detail.model.PersonUiModel
-import kotlinx.coroutines.flow.flowOf
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
     val uiModel by viewModel.uiModel.collectAsStateWithLifecycle()
-    val similarMovies = viewModel.similarMovies.collectAsLazyPagingItems()
 
     MovieDetail(
         uiModel,
         viewModel::handleStreamServicesInfoButton,
-        similarMovies,
-        viewModel::handleMovieClick,
         viewModel::handlePersonClick,
         viewModel::handleWatchlistClick,
         viewModel::handleFavoriteClick,
@@ -142,8 +131,6 @@ fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
 private fun MovieDetail(
     uiModel: MovieDetailUiModel,
     onClickStreamingServicesInfoButton: () -> Unit,
-    similarMovies: LazyPagingItems<MovieUiModel>,
-    onClickMovie: (id: Int) -> Unit,
     onClickPerson: (id: Int) -> Unit,
     onClickWatchlist: (id: Int, inWatchlist: Boolean) -> Unit,
     onClickFavorite: () -> Unit,
@@ -228,8 +215,6 @@ private fun MovieDetail(
             Spacer(Modifier.height(16.dp))
 
             Cast(uiModel, onClickPerson)
-
-            SimilarMovies(similarMovies, onClickMovie, onClickWatchlist)
         }
     }
 }
@@ -673,72 +658,6 @@ private fun Cast(
 }
 
 @Composable
-private fun SimilarMovies(
-    similarMovies: LazyPagingItems<MovieUiModel>,
-    onClickMovie: (movieId: Int) -> Unit,
-    onClickWatchlist: (id: Int, inWatchlist: Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier) {
-        if (similarMovies.itemCount != 0) {
-            Text(
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp),
-                text = stringResource(R.string.similar),
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-
-        LazyRow(
-            modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            item {
-                if (similarMovies.loadState.refresh == LoadState.Loading) {
-                    Box(
-                        modifier = Modifier
-                            .height(PosterHeight.large)
-                            .fillParentMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) { CircularProgressIndicator() }
-                }
-            }
-
-            items(
-                count = similarMovies.itemCount,
-                key = similarMovies.itemKey { it.id }
-            ) { index ->
-                val movie = similarMovies[index]
-
-                if (movie != null) {
-                    InteractivePoster(
-                        modifier = Modifier
-                            .height(PosterHeight.large)
-                            .padding(horizontal = 6.dp, vertical = 10.dp)
-                            .then(
-                                when (index) {
-                                    0 -> Modifier.padding(start = 10.dp)
-                                    similarMovies.itemCount - 1 if similarMovies.loadState != LoadState.Loading -> {
-                                        Modifier.padding(end = 10.dp)
-                                    }
-
-                                    else -> Modifier
-                                }
-                            ),
-                        imagePath = movie.imagePath,
-                        title = movie.title,
-                        vote = movie.voteAverage,
-                        onPosterClick = { onClickMovie(movie.id) },
-                        inWatchlist = movie.inWatchlist,
-                        onWatchlistClick = { onClickWatchlist(movie.id, !movie.inWatchlist!!) }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun YearVoteRuntimeText(
     modifier: Modifier = Modifier,
     year: String,
@@ -1005,9 +924,6 @@ fun RateBottomSheet(
 @Composable
 private fun MovieDetailPreview() {
     MoviedbLightTheme {
-        val emptyPagingData =
-            flowOf(PagingData.from<MovieUiModel>(emptyList())).collectAsLazyPagingItems()
-
         val cast = listOf(
             PersonUiModel(
                 id = 2723,
@@ -1063,8 +979,6 @@ private fun MovieDetailPreview() {
                 directors = crew,
                 writers = crew,
             ),
-            {},
-            emptyPagingData,
             {},
             {},
             { _, _ -> },
