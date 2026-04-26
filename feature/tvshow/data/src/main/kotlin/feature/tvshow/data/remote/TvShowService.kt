@@ -3,6 +3,7 @@ package feature.tvshow.data.remote
 import core.data.DEFAULT_REMOTE_CONTENT_LANGUAGE
 import core.data.common.model.AccountStatesResponse
 import core.data.common.model.GenericStatusResponse
+import core.data.common.model.ReviewsResponse
 import core.data.common.model.TvShowsResponse
 import core.data.network.NetworkResult
 import feature.tvshow.data.remote.response.ImagesResponse
@@ -84,6 +85,13 @@ interface TvShowService {
         @Path("tv_id") tvShowId: Int,
         @Query("language") language: String = DEFAULT_REMOTE_CONTENT_LANGUAGE,
     ): NetworkResult<TvShowVideosResponse>
+
+    @GET("tv/{tv_id}/reviews")
+    suspend fun getReviews(
+        @Path("tv_id") tvShowId: Int,
+        @Query("language") language: String = DEFAULT_REMOTE_CONTENT_LANGUAGE,
+        @Query("page") page: Int = 1,
+    ): NetworkResult<ReviewsResponse>
 
     @GET("tv/{tv_id}/account_states")
     suspend fun getAccountStates(

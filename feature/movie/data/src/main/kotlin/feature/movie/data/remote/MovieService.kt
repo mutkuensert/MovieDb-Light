@@ -4,6 +4,7 @@ import core.data.DEFAULT_REMOTE_CONTENT_LANGUAGE
 import core.data.common.model.AccountStatesResponse
 import core.data.common.model.GenericStatusResponse
 import core.data.common.model.MoviesResponse
+import core.data.common.model.ReviewsResponse
 import core.data.network.NetworkResult
 import feature.movie.data.remote.response.ImagesResponse
 import feature.movie.data.remote.response.MovieCreditsResponse
@@ -84,6 +85,13 @@ interface MovieService {
         @Path("movie_id") movieId: Int,
         @Query("language") language: String = DEFAULT_REMOTE_CONTENT_LANGUAGE,
     ): NetworkResult<MovieVideosResponse>
+
+    @GET("movie/{movie_id}/reviews")
+    suspend fun getReviews(
+        @Path("movie_id") movieId: Int,
+        @Query("language") language: String = DEFAULT_REMOTE_CONTENT_LANGUAGE,
+        @Query("page") page: Int = 1,
+    ): NetworkResult<ReviewsResponse>
 
     @GET("movie/{movie_id}/account_states")
     suspend fun getAccountStates(

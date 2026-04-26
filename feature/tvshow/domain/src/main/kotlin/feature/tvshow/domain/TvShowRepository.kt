@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import com.github.michaelbull.result.Result
 import core.domain.Failure
 import core.domain.common.model.Provider
+import core.domain.common.model.Review
 import feature.tvshow.domain.model.AccountStates
 import feature.tvshow.domain.model.Person
 import feature.tvshow.domain.model.TvShow
@@ -19,6 +20,7 @@ interface TvShowRepository {
     suspend fun getCast(tvShowId: Int): Result<List<Person>, Failure>
     suspend fun getProviders(tvShowId: Int): Result<List<Provider>, Failure>
     suspend fun getTrailerYoutubeVideoId(tvShowId: Int): Result<String?, Failure>
+    suspend fun getReviews(tvShowId: Int): Result<List<Review>, Failure>
     suspend fun getAccountStates(tvShowId: Int): Result<AccountStates, Failure>
     suspend fun rateTvShow(tvShowId: Int, rating: Int): Result<Unit, Failure>
     suspend fun removeRating(tvShowId: Int): Result<Unit, Failure>

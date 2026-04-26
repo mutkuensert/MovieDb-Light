@@ -109,6 +109,12 @@ class MovieDetailViewModel(
                 }
             }
 
+            movieRepository.getReviews(movieId).onOk { reviews ->
+                _uiModel.update {
+                    it.copy(reviews = reviews.map { review -> review.toUiModel() })
+                }
+            }
+
             if (authStateProvider.loggedIn.value) {
                 movieRepository.getAccountStates(movieId).onOk { accountStates ->
                     _uiModel.update {

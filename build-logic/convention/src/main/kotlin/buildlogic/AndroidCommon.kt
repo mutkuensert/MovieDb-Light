@@ -26,6 +26,7 @@ internal fun Project.configureAndroidApplication(extension: ApplicationExtension
         compileOptions {
             sourceCompatibility = ProjectConfigs.sourceCompatibility
             targetCompatibility = ProjectConfigs.targetCompatibility
+            compileOptions.isCoreLibraryDesugaringEnabled = true
         }
 
         buildFeatures {
@@ -59,6 +60,7 @@ internal fun Project.configureAndroidLibrary(extension: LibraryExtension) {
         compileOptions {
             sourceCompatibility = ProjectConfigs.sourceCompatibility
             targetCompatibility = ProjectConfigs.targetCompatibility
+            compileOptions.isCoreLibraryDesugaringEnabled = true
         }
 
         buildFeatures {

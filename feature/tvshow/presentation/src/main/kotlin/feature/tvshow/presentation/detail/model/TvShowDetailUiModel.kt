@@ -1,5 +1,9 @@
 package feature.tvshow.presentation.detail.model
 
+import core.domain.common.model.Review
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+
 data class TvShowDetailUiModel(
     val id: Int,
     val imagePaths: List<String>,
@@ -18,6 +22,7 @@ data class TvShowDetailUiModel(
     val trailerYoutubeVideoId: String?,
     val providerLogoPaths: List<String>,
     val cast: List<PersonUiModel>,
+    val reviews: List<ReviewUiModel>,
 ) {
     companion object {
         fun initial(id: Int): TvShowDetailUiModel {
@@ -39,7 +44,31 @@ data class TvShowDetailUiModel(
                 trailerYoutubeVideoId = null,
                 providerLogoPaths = emptyList(),
                 cast = emptyList(),
+                reviews = emptyList(),
             )
         }
     }
+}
+
+data class ReviewUiModel(
+    val id: String,
+    val author: String,
+    val content: String,
+    val editedAt: String,
+    val rating: String?,
+)
+
+fun Review.toUiModel(): ReviewUiModel {
+    val dateTime = DateTimeFormatter
+        .ofPattern("dd.MM.yyyy HH:mm")
+        .withZone(ZoneOffset.UTC)
+        .format(editedAt ?: createdAt)
+
+    return ReviewUiModel(
+        id = id,
+        author = author,
+        content = content,
+        editedAt = dateTime,
+        rating = rating?.toString(),
+    )
 }

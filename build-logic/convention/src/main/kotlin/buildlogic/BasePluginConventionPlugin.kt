@@ -10,11 +10,10 @@ class BasePluginConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             apply(plugin = "com.android.library")
-
             extensions.configure<LibraryExtension> {
                 configureAndroidLibrary(this)
             }
-
+            coreLibraryDesugaring(getLibrary("desugar.jdk"))
             baseDependencies()
         }
     }

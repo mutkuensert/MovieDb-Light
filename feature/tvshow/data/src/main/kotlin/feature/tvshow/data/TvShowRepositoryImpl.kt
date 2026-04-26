@@ -16,6 +16,7 @@ import core.database.feature.tvshows.toprated.TopRatedTvShowDao
 import core.database.feature.tvshows.upcoming.UpcomingTvShowDao
 import core.domain.Failure
 import core.domain.common.model.Provider
+import core.domain.common.model.Review
 import feature.tvshow.data.remote.TvShowService
 import feature.tvshow.data.remote.response.PostTvShowRatingRequest
 import feature.tvshow.domain.TvShowRepository
@@ -216,6 +217,31 @@ class TvShowRepositoryImpl(
                 (video.official && video.type == "Trailer" || video.type == "Trailer") && video.site.lowercase() == "youtube"
             }?.key
         }
+    }
+
+    override suspend fun getReviews(tvShowId: Int): Result<List<Review>, Failure> {
+        return tvShowService.getReviews(tvShowId, languagePreference.getLanguageTag())
+            .mapToDomain { response ->
+                response.results.orEmpty()
+                    .filter {
+                        !it.content.isNullOrBlank()
+                                && (!it.author.isNullOrBlank()
+                                || !it.authorDetails?.name.isNullOrBlank()
+                                || !it.authorDetails?.username.isNullOrBlank())
+                                && it.createdAt != null
+                    }
+                    .map { review ->
+                        Review(
+                            id = review.id,
+                            author = review.author ?: review.authorDetails?.name
+                            ?: review.authorDetails?.username ?: "",
+                            content = review.content!!,
+                            createdAt = review.createdAt!!,
+                            editedAt = review.updatedAt,
+                            rating = review.authorDetails?.rating,
+                        )
+                    }
+            }
     }
 
     override suspend fun getAccountStates(tvShowId: Int): Result<AccountStates, Failure> {

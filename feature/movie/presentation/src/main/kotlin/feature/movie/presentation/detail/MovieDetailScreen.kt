@@ -97,6 +97,7 @@ import feature.movie.presentation.R
 import feature.movie.presentation.detail.model.CrewPersonUiModel
 import feature.movie.presentation.detail.model.MovieDetailUiModel
 import feature.movie.presentation.detail.model.PersonUiModel
+import feature.movie.presentation.detail.model.ReviewUiModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -210,6 +211,127 @@ private fun MovieDetail(
             if (uiModel.cast.isNotEmpty()) {
                 Cast(uiModel, onClickPerson)
             }
+
+            if (uiModel.reviews.isNotEmpty()) {
+                Reviews(
+                    reviews = uiModel.reviews,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun Reviews(
+    reviews: List<ReviewUiModel>,
+    modifier: Modifier = Modifier,
+) {
+    val pagerState = rememberPagerState(pageCount = { reviews.size })
+
+    Column(modifier) {
+        Text(
+            text = stringResource(R.string.reviews),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            pageSpacing = 8.dp,
+            key = { page -> reviews[page].id },
+        ) { page ->
+            ReviewCard(reviews[page])
+        }
+
+        if (reviews.size > 1) {
+            PageIndicator(
+                currentIndex = pagerState.currentPage,
+                totalCount = pagerState.pageCount,
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .align(Alignment.CenterHorizontally),
+                activeColor = MaterialTheme.colorScheme.primary,
+                inactiveColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.35f),
+                indicatorSize = 8.dp,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ReviewCard(review: ReviewUiModel, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(220.dp)
+            .background(
+                MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
+                MaterialTheme.shapes.medium
+            )
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = review.author,
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            if (review.rating != null) {
+                Row(
+                    modifier = Modifier.padding(start = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        imageVector = Icons.Filled.Star,
+                        tint = AppColors.star,
+                        contentDescription = stringResource(core.ui.R.string.vote_icon)
+                    )
+
+                    Text(
+                        text = review.rating,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+            }
+        }
+
+        if (review.editedAt.isNotBlank()) {
+            Text(
+                text = review.editedAt,
+                modifier = Modifier.padding(top = 2.dp),
+                color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+
+        Column(
+            Modifier
+                .padding(top = 10.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(
+                text = review.content,
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.bodyMedium,
+            )
         }
     }
 }
@@ -908,6 +1030,15 @@ private fun MovieDetailPreview() {
                 cast = cast,
                 directors = crew,
                 writers = crew,
+                reviews = listOf(
+                    ReviewUiModel(
+                        id = "review",
+                        author = "Some Reviewer",
+                        content = LoremIpsum(40).values.joinToString(" "),
+                        editedAt = "2024-01-01",
+                        rating = "8.0",
+                    )
+                ),
             ),
             {},
             {},

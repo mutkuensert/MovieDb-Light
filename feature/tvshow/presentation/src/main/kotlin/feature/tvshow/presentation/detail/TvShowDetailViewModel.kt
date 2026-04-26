@@ -107,6 +107,12 @@ class TvShowDetailViewModel(
                 }
             }
 
+            tvShowRepository.getReviews(tvShowId).onOk { reviews ->
+                _uiModel.update {
+                    it.copy(reviews = reviews.map { review -> review.toUiModel() })
+                }
+            }
+
             if (authStateProvider.loggedIn.value) {
                 tvShowRepository.getAccountStates(tvShowId).onOk { accountStates ->
                     _uiModel.update {

@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import com.github.michaelbull.result.Result
 import core.domain.Failure
 import core.domain.common.model.Provider
+import core.domain.common.model.Review
 import feature.movie.domain.model.AccountStates
 import feature.movie.domain.model.Movie
 import feature.movie.domain.model.MovieDetails
@@ -19,6 +20,7 @@ interface MovieRepository {
     suspend fun getPeople(movieId: Int): Result<People, Failure>
     suspend fun getProviders(movieId: Int): Result<List<Provider>, Failure>
     suspend fun getTrailerYoutubeVideoId(movieId: Int): Result<String?, Failure>
+    suspend fun getReviews(movieId: Int): Result<List<Review>, Failure>
     suspend fun getAccountStates(movieId: Int): Result<AccountStates, Failure>
     suspend fun rateMovie(movieId: Int, rating: Int): Result<Unit, Failure>
     suspend fun removeRating(movieId: Int): Result<Unit, Failure>

@@ -37,3 +37,7 @@ internal fun Project.androidTestImplementation(dependency: Any) {
 internal fun Project.testImplementation(dependency: Any) {
     dependencies.add("testImplementation", dependency)
 }
+
+internal fun Project.coreLibraryDesugaring(dependency: Any) {
+    dependencies.add("coreLibraryDesugaring", dependency)
+}

@@ -16,6 +16,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 configureAndroidApplication(this)
             }
 
+            coreLibraryDesugaring(getLibrary("desugar.jdk"))
             baseDependencies()
             baseAndroidDependencies()
             composeDependencies()

@@ -16,6 +16,7 @@ import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.domain.Failure
 import core.domain.common.model.Provider
+import core.domain.common.model.Review
 import feature.movie.data.remote.MovieService
 import feature.movie.data.remote.response.PostMovieRatingRequest
 import feature.movie.domain.MovieRepository
@@ -229,6 +230,31 @@ class MovieRepositoryImpl(
                 (video.official && video.type == "Trailer" || video.type == "Trailer") && video.site.lowercase() == "youtube"
             }?.key
         }
+    }
+
+    override suspend fun getReviews(movieId: Int): Result<List<Review>, Failure> {
+        return movieService.getReviews(movieId, languagePreference.getLanguageTag())
+            .mapToDomain { response ->
+                response.results.orEmpty()
+                    .filter {
+                        !it.content.isNullOrBlank()
+                                && (!it.author.isNullOrBlank()
+                                || !it.authorDetails?.name.isNullOrBlank()
+                                || !it.authorDetails?.username.isNullOrBlank())
+                                && it.createdAt != null
+                    }
+                    .map { review ->
+                        Review(
+                            id = review.id,
+                            author = review.author ?: review.authorDetails?.name
+                            ?: review.authorDetails?.username ?: "",
+                            content = review.content!!,
+                            createdAt = review.createdAt!!,
+                            editedAt = review.updatedAt,
+                            rating = review.authorDetails?.rating,
+                        )
+                    }
+            }
     }
 
     override suspend fun getAccountStates(movieId: Int): Result<AccountStates, Failure> {

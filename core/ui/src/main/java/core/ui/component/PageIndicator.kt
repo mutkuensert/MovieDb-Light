@@ -51,7 +51,7 @@ fun PageIndicator(
             targetOffset = 0.dp
             return@LaunchedEffect
         }
-        var offsetDiff = if (currentIndex > previousIndex) {
+        var offsetDiff = if (currentIndex >= previousIndex) {
             totalItemWidth * -1
         } else {
             totalItemWidth
