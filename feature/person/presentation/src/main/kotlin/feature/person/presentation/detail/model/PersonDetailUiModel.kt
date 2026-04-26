@@ -9,8 +9,10 @@ data class PersonDetailUiModel(
     val deathday: String,
     val placeOfBirth: String,
     val biography: String,
-    val castMovies: List<MovieUiModel>,
-    val crewMovies: List<MovieUiModel>,
+    val castMovies: List<ProductionUiModel>,
+    val crewMovies: List<ProductionUiModel>,
+    val castTvShows: List<ProductionUiModel>,
+    val crewTvShows: List<ProductionUiModel>,
 ) {
     companion object {
         fun initial(id: Int): PersonDetailUiModel {
@@ -24,7 +26,9 @@ data class PersonDetailUiModel(
                 placeOfBirth = "",
                 biography = "",
                 castMovies = emptyList(),
-                crewMovies = emptyList()
+                crewMovies = emptyList(),
+                castTvShows = emptyList(),
+                crewTvShows = emptyList(),
             )
         }
     }

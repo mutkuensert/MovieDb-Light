@@ -4,6 +4,8 @@
     <string name="died">Ölüm: %s</string>
     <string name="place_of_birth">Doğum yeri: %s</string>
     <string name="acted_movies">Rol Aldığı Filmler</string>
+    <string name="acted_tv_shows">Rol Aldığı Diziler</string>
     <string name="crew_movies">Ekip Olarak Yer Aldığı Filmler</string>
+    <string name="crew_tv_shows">Ekip Olarak Yer Aldığı Diziler</string>
     <string name="as_character">%s rolünde</string>
 </resources>

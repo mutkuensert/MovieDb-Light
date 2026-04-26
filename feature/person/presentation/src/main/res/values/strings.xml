@@ -4,6 +4,8 @@
     <string name="died">Died: %s</string>
     <string name="place_of_birth">Place of birth: %s</string>
     <string name="acted_movies">Acted Movies</string>
+    <string name="acted_tv_shows">Acted Tv Shows</string>
     <string name="crew_movies">Crew Movies</string>
+    <string name="crew_tv_shows">Crew Tv Shows</string>
     <string name="as_character">as %s</string>
 </resources>

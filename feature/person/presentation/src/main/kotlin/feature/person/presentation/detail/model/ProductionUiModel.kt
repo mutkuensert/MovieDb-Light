@@ -2,8 +2,9 @@ package feature.person.presentation.detail.model
 
 import core.ui.TmdbImage
 import feature.person.domain.model.PersonMovieCredit
+import feature.person.domain.model.PersonTvCredit
 
-data class MovieUiModel(
+data class ProductionUiModel(
     val id: Int,
     val title: String,
     val imagePath: String?,
@@ -13,8 +14,20 @@ data class MovieUiModel(
     val job: String,
 )
 
-fun PersonMovieCredit.toUiModel(): MovieUiModel {
-    return MovieUiModel(
+fun PersonMovieCredit.toUiModel(): ProductionUiModel {
+    return ProductionUiModel(
+        id = id,
+        title = title,
+        imagePath = imagePath?.let { TmdbImage(it) }?.poster?.w500Url,
+        voteAverage = voteAverage?.toString(),
+        year = releaseDate?.split("-")?.firstOrNull() ?: "",
+        character = character ?: "",
+        job = job ?: ""
+    )
+}
+
+fun PersonTvCredit.toUiModel(): ProductionUiModel {
+    return ProductionUiModel(
         id = id,
         title = title,
         imagePath = imagePath?.let { TmdbImage(it) }?.poster?.w500Url,

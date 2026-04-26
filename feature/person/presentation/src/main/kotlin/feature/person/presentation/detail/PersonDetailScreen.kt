@@ -49,8 +49,8 @@ import core.ui.component.Poster
 import core.ui.component.PosterHeight
 import core.ui.darkenBy
 import feature.person.presentation.R
-import feature.person.presentation.detail.model.MovieUiModel
 import feature.person.presentation.detail.model.PersonDetailUiModel
+import feature.person.presentation.detail.model.ProductionUiModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -59,7 +59,8 @@ fun PersonDetailScreen(viewModel: PersonDetailViewModel = koinViewModel()) {
 
     PersonDetail(
         uiModel,
-        viewModel::handleMovieClick
+        viewModel::handleMovieClick,
+        viewModel::handleTvShowClick,
     )
 
     StatusBarColorHandler(MaterialTheme.colorScheme.background)
@@ -73,6 +74,7 @@ fun PersonDetailScreen(viewModel: PersonDetailViewModel = koinViewModel()) {
 private fun PersonDetail(
     uiModel: PersonDetailUiModel,
     onClickMovie: (id: Int) -> Unit,
+    onClickTvShow: (id: Int) -> Unit,
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
@@ -93,16 +95,28 @@ private fun PersonDetail(
 
             Spacer(Modifier.height(16.dp))
 
-            Movies(
+            Productions(
                 title = stringResource(R.string.acted_movies),
-                movies = uiModel.castMovies,
-                onClickMovie = onClickMovie
+                productions = uiModel.castMovies,
+                onClickProduction = onClickMovie
             )
 
-            Movies(
+            Productions(
                 title = stringResource(R.string.crew_movies),
-                movies = uiModel.crewMovies,
-                onClickMovie = onClickMovie
+                productions = uiModel.crewMovies,
+                onClickProduction = onClickMovie
+            )
+
+            Productions(
+                title = stringResource(R.string.acted_tv_shows),
+                productions = uiModel.castTvShows,
+                onClickProduction = onClickTvShow
+            )
+
+            Productions(
+                title = stringResource(R.string.crew_tv_shows),
+                productions = uiModel.crewTvShows,
+                onClickProduction = onClickTvShow
             )
         }
     }
@@ -213,13 +227,13 @@ private fun Biography(biography: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun Movies(
+private fun Productions(
     title: String,
-    movies: List<MovieUiModel>,
-    onClickMovie: (movieId: Int) -> Unit,
+    productions: List<ProductionUiModel>,
+    onClickProduction: (id: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (movies.isEmpty()) {
+    if (productions.isEmpty()) {
         return
     }
 
@@ -238,10 +252,10 @@ private fun Movies(
                 .height(320.dp),
             contentPadding = PaddingValues(horizontal = 4.dp),
         ) {
-            items(movies.size) { index ->
-                Movie(
-                    movies[index],
-                    onClickMovie,
+            items(productions.size) { index ->
+                Production(
+                    productions[index],
+                    onClickProduction,
                     Modifier.padding(horizontal = 4.dp)
                 )
             }
@@ -250,30 +264,34 @@ private fun Movies(
 }
 
 @Composable
-private fun Movie(
-    movie: MovieUiModel,
-    onClickMovie: (movieId: Int) -> Unit,
+private fun Production(
+    production: ProductionUiModel,
+    onClickProduction: (id: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
-            .clickable { onClickMovie(movie.id) },
+            .clickable { onClickProduction(production.id) },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Poster(
             modifier = Modifier.height(PosterHeight.large),
-            imagePath = movie.imagePath
+            imagePath = production.imagePath
         )
 
         Spacer(Modifier.height(6.dp))
 
-        if (movie.year.isNotBlank() || movie.voteAverage != null) {
-            MovieMetadata(movie, Modifier.padding(top = 2.dp))
+        if (production.year.isNotBlank() || production.voteAverage != null) {
+            Metadata(production, Modifier.padding(top = 2.dp))
         }
 
         val creditText = when {
-            movie.character.isNotBlank() -> stringResource(R.string.as_character, movie.character)
-            movie.job.isNotBlank() -> movie.job
+            production.character.isNotBlank() -> stringResource(
+                R.string.as_character,
+                production.character
+            )
+
+            production.job.isNotBlank() -> production.job
             else -> null
         }
 
@@ -293,8 +311,8 @@ private fun Movie(
 }
 
 @Composable
-private fun MovieMetadata(
-    movie: MovieUiModel,
+private fun Metadata(
+    prodution: ProductionUiModel,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -302,16 +320,16 @@ private fun MovieMetadata(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        if (movie.year.isNotBlank()) {
+        if (prodution.year.isNotBlank()) {
             Text(
-                text = movie.year,
+                text = prodution.year,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
                 style = MaterialTheme.typography.bodyMedium
             )
         }
 
-        if (movie.voteAverage != null) {
-            if (movie.year.isNotBlank()) {
+        if (prodution.voteAverage != null) {
+            if (prodution.year.isNotBlank()) {
                 Spacer(Modifier.width(8.dp))
             }
             Icon(
@@ -321,7 +339,7 @@ private fun MovieMetadata(
                 contentDescription = stringResource(core.ui.R.string.vote_icon)
             )
             Text(
-                text = movie.voteAverage,
+                text = prodution.voteAverage,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
                 style = MaterialTheme.typography.bodySmall
             )
@@ -333,8 +351,8 @@ private fun MovieMetadata(
 @Composable
 private fun PersonDetailPreview() {
     MoviedbLightTheme {
-        val movies = listOf(
-            MovieUiModel(
+        val productions = listOf(
+            ProductionUiModel(
                 id = 1,
                 title = "Movie",
                 imagePath = null,
@@ -343,7 +361,7 @@ private fun PersonDetailPreview() {
                 character = "character",
                 job = "job"
             ),
-            MovieUiModel(
+            ProductionUiModel(
                 id = 2,
                 title = "Movie",
                 imagePath = null,
@@ -352,7 +370,7 @@ private fun PersonDetailPreview() {
                 character = "character",
                 job = "job"
             ),
-            MovieUiModel(
+            ProductionUiModel(
                 id = 3,
                 title = "Movie",
                 imagePath = null,
@@ -361,7 +379,7 @@ private fun PersonDetailPreview() {
                 character = "character",
                 job = "job"
             ),
-            MovieUiModel(
+            ProductionUiModel(
                 id = 4,
                 title = "Movie",
                 imagePath = null,
@@ -370,7 +388,7 @@ private fun PersonDetailPreview() {
                 character = "character",
                 job = "job"
             ),
-            MovieUiModel(
+            ProductionUiModel(
                 id = 5,
                 title = "Movie",
                 imagePath = null,
@@ -389,10 +407,11 @@ private fun PersonDetailPreview() {
             deathday = "-",
             placeOfBirth = "England",
             biography = "",
-            castMovies = movies,
-            crewMovies = movies
+            castMovies = productions,
+            crewMovies = productions,
+            castTvShows = productions,
+            crewTvShows = productions,
         )
-        PersonDetail(uiModel, onClickMovie = {})
+        PersonDetail(uiModel, onClickMovie = {}, onClickTvShow = {})
     }
-
 }

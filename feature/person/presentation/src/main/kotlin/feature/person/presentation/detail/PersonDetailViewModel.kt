@@ -9,6 +9,7 @@ import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
+import core.ui.route.TvShowDetailRoute
 import core.ui.showFailurePopup
 import feature.person.domain.PersonRepository
 import feature.person.presentation.detail.model.PersonDetailUiModel
@@ -56,7 +57,16 @@ class PersonDetailViewModel(
                         crewMovies = credits.crew.map { movie -> movie.toUiModel() }
                     )
                 }
-            }.onErr(popupHandler::showFailurePopup)
+            }
+
+            personRepository.getPersonTvCredits(personId).onOk { credits ->
+                _uiModel.update {
+                    it.copy(
+                        castTvShows = credits.cast.map { tvShow -> tvShow.toUiModel() },
+                        crewTvShows = credits.crew.map { movie -> movie.toUiModel() }
+                    )
+                }
+            }
 
             loadingAnimator.stop()
         }
@@ -64,5 +74,9 @@ class PersonDetailViewModel(
 
     fun handleMovieClick(movieId: Int) {
         navigator.navigateToRoute(MovieDetailRoute(movieId))
+    }
+
+    fun handleTvShowClick(tvShowId: Int) {
+        navigator.navigateToRoute(TvShowDetailRoute(tvShowId))
     }
 }
