@@ -72,9 +72,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -83,6 +83,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -269,7 +270,7 @@ private fun TvShowPosters(
     val pagerState = rememberPagerState(pageCount = {
         imagePaths.size
     })
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val screenWidth = LocalWindowInfo.current.containerDpSize.width
     var firstImageHeight: Dp? by remember { mutableStateOf(null) }
     val density = LocalDensity.current
 
@@ -396,7 +397,9 @@ fun BoxScope.PageIndicator(
         Row(
             modifier = Modifier
                 .wrapContentWidth(align = Alignment.Start, unbounded = true)
-                .offset(x = offset.value),
+                .offset(offset = {
+                    IntOffset(x = offset.value.toPx().toInt(), y = 0)
+                }),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(spacing)
         ) {
