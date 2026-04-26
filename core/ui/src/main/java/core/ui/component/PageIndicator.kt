@@ -12,12 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +22,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 fun PageIndicator(
@@ -40,29 +36,15 @@ fun PageIndicator(
     spacing: Dp = 6.dp,
     visibleDotsCount: Int = 5
 ) {
+    val fraction = 0.5f
     val totalItemWidth = indicatorSize + spacing
-    val boxWidth = (visibleDotsCount * (indicatorSize + spacing)) - spacing
-    var targetOffset by remember { mutableStateOf(0.dp) }
+    val displayedDotsCount = min(totalCount, visibleDotsCount)
+    val boxWidth = (displayedDotsCount * totalItemWidth) - spacing + indicatorSize * fraction
+    val centeredIndex = visibleDotsCount / 2
+    val maxScrollableSteps = max(totalCount - visibleDotsCount, 0)
+    val scrollSteps = (currentIndex - centeredIndex).coerceIn(0, maxScrollableSteps)
+    val targetOffset = -(totalItemWidth * scrollSteps)
     val offset = animateDpAsState(targetOffset)
-    var previousIndex by remember { mutableIntStateOf(0) }
-
-    LaunchedEffect(currentIndex) {
-        if (currentIndex < visibleDotsCount - 2) {
-            targetOffset = 0.dp
-            return@LaunchedEffect
-        }
-        var offsetDiff = if (currentIndex >= previousIndex) {
-            totalItemWidth * -1
-        } else {
-            totalItemWidth
-        }
-
-        if (currentIndex == totalCount - 1) {
-            offsetDiff -= spacing
-        }
-        targetOffset += offsetDiff
-        previousIndex = currentIndex
-    }
 
     Box(modifier) {
         Box(
@@ -89,8 +71,8 @@ fun PageIndicator(
                             .size(indicatorSize)
                             .graphicsLayer {
                                 if (currentIndex != iterationIndex) {
-                                    scaleX = 0.5f
-                                    scaleY = 0.5f
+                                    scaleX = fraction
+                                    scaleY = fraction
                                 }
                             }
                             .clip(CircleShape)

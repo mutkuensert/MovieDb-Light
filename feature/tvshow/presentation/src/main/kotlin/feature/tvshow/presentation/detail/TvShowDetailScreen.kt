@@ -234,8 +234,6 @@ private fun Reviews(
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .align(Alignment.CenterHorizontally),
-                activeColor = MaterialTheme.colorScheme.primary,
-                inactiveColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.35f),
                 indicatorSize = 8.dp,
             )
         }
