@@ -207,7 +207,9 @@ private fun MovieDetail(
 
             Spacer(Modifier.height(16.dp))
 
-            Cast(uiModel, onClickPerson)
+            if (uiModel.cast.isNotEmpty()) {
+                Cast(uiModel, onClickPerson)
+            }
         }
     }
 }
