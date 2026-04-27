@@ -9,7 +9,7 @@ Android applications.
 - [Architecture Overview](#architecture-overview)
 - [Module Structure](#module-structure)
 - [Custom Gradle Tasks](#custom-gradle-tasks)
-- [Precompiled Script Plugins](#precompiled-script-plugins)
+- [Build Logic](#build-logic)
 - [Dependency Management](#dependency-management)
 - [Network Layer](#network-layer)
 - [Getting Started](#getting-started)
@@ -143,12 +143,11 @@ If no feature name is specified, it defaults to "newfeature":
 ./gradlew createFeatureModule
 ```
 
-## Precompiled Script Plugins
+## Build Logic
 
-The project uses precompiled script plugins in the buildSrc directory to share common build
-configurations across modules.
+The project uses build-logic to share common build configurations across modules.
 
-### [base-library.gradle.kts](./buildSrc/src/main/kotlin/base-library.gradle.kts)
+### [BasePluginConventionPlugin.kt](build-logic/convention/src/main/kotlin/buildlogic/BasePluginConventionPlugin.kt)
 
 This plugin configures basic Android library modules:
 
@@ -158,7 +157,7 @@ plugins {
 }
 ```
 
-### [base-presentation.gradle.kts](./buildSrc/src/main/kotlin/base-presentation.gradle.kts)
+### [BasePresentationConventionPlugin.kt](build-logic/convention/src/main/kotlin/buildlogic/BasePresentationConventionPlugin.kt)
 
 ```kotlin
 plugins {
@@ -166,7 +165,7 @@ plugins {
 }
 ```
 
-### [base-data.gradle.kts](./buildSrc/src/main/kotlin/base-data.gradle.kts)
+### [BaseDataConventionPlugin.kt](build-logic/convention/src/main/kotlin/buildlogic/BaseDataConventionPlugin.kt)
 
 ```kotlin
 plugins {
@@ -174,7 +173,7 @@ plugins {
 }
 ```
 
-### [base-domain.gradle.kts](./buildSrc/src/main/kotlin/base-domain.gradle.kts)
+### [BaseDomainConventionPlugin.kt](build-logic/convention/src/main/kotlin/buildlogic/BaseDomainConventionPlugin.kt)
 
 ```kotlin
 plugins {
