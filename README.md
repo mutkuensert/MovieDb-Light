@@ -147,7 +147,7 @@ If no feature name is specified, it defaults to "newfeature":
 
 The project uses build-logic to share common build configurations across modules.
 
-### [BasePluginConventionPlugin.kt](build-logic/convention/src/main/kotlin/buildlogic/BasePluginConventionPlugin.kt)
+### [BaseLibraryConventionPlugin.kt](build-logic/convention/src/main/kotlin/buildlogic/BaseLibraryConventionPlugin.kt)
 
 This plugin configures basic Android library modules:
 
