@@ -204,27 +204,20 @@ The project defines dependency groups that can be applied together:
 ```kotlin
 // Apply all base dependencies
 dependencies {
-    base()
+    baseDependencies()
 }
 
 // Apply Android-specific dependencies
 dependencies {
-    baseAndroid()
+    baseAndroidDependencies()
 }
 
 // Apply Compose-related dependencies
 dependencies {
-    compose()
+    composeDependencies()
 }
 //etc....
 ```
-
-For example, the `base()` function
-in [DependencyGroups.kt](./buildSrc/src/main/kotlin/DependencyGroups.kt) adds:
-
-- Koin for dependency injection
-- Timber for logging
-- Kotlin Result for functional error handling
 
 ## Network Layer
 
