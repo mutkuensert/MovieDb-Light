@@ -26,6 +26,22 @@ features. The application is divided into the following main module types:
 - **Feature**: Feature-specific modules divided into data, domain, and presentation layers
 
 ```mermaid
+flowchart TB
+  subgraph "feature/presentation, feature/data"
+    direction TB
+    subgraph "core/data, core/ui"
+        direction TB
+        subgraph "feature/domain"
+            direction TB
+            subgraph "core/domain"
+                direction TB
+            end
+        end
+    end
+  end
+```
+
+```mermaid
 graph TD
 
     App[app]
