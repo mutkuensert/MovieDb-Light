@@ -243,7 +243,7 @@ The adapter handles different types of errors:
 - Parsing errors
 
 Each error is transformed into a user-friendly message using
-the [StrResource](./libraries/src/main/kotlin/utils/StrResource.kt).
+the [StringResource](./utils/src/main/kotlin/utils/StringResource.kt).
 
 #### Creating and Using a Service
 
