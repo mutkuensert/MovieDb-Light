@@ -41,7 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import core.ui.AppColors
-import core.ui.MoviedbLightTheme
+import core.ui.FilmCanTheme
 import core.ui.StatusBarColorHandler
 import core.ui.component.ImageType
 import core.ui.component.OneTimeEffect
@@ -350,7 +350,7 @@ private fun Metadata(
 @Preview
 @Composable
 private fun PersonDetailPreview() {
-    MoviedbLightTheme {
+    FilmCanTheme {
         val productions = listOf(
             ProductionUiModel(
                 id = 1,

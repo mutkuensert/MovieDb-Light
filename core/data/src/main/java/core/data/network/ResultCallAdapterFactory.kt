@@ -4,8 +4,7 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import kotlinx.serialization.json.Json
-import utils.stringresource.StrResource
-import moviedblight.core.data.R
+import filmcan.core.data.R
 import okhttp3.Request
 import okio.Timeout
 import retrofit2.Call
@@ -14,13 +13,14 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import timber.log.Timber
+import utils.stringresource.StringResource
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import javax.net.ssl.SSLPeerUnverifiedException
 
 internal class ResultCallAdapterFactory(
     private val json: Json,
-    private val strResource: StrResource,
+    private val stringResource: StringResource,
 ) : CallAdapter.Factory() {
 
     override fun get(
@@ -36,14 +36,14 @@ internal class ResultCallAdapterFactory(
         if (getRawType(type) != Result::class.java) return null
 
         val responseType = getParameterUpperBound(0, type)
-        return ResultCallAdapter<Any>(responseType, json, strResource)
+        return ResultCallAdapter<Any>(responseType, json, stringResource)
     }
 }
 
 private class ResultCallAdapter<T>(
     private val type: Type,
     private val json: Json,
-    private val strResource: StrResource
+    private val stringResource: StringResource
 ) : CallAdapter<T, Call<Result<T, NetworkError>>> {
 
     override fun responseType(): Type {
@@ -51,7 +51,7 @@ private class ResultCallAdapter<T>(
     }
 
     override fun adapt(call: Call<T>): Call<Result<T, NetworkError>> {
-        return ResultCall(call, type, json, strResource)
+        return ResultCall(call, type, json, stringResource)
     }
 }
 
@@ -59,7 +59,7 @@ private class ResultCall<T>(
     private val call: Call<T>,
     private val successType: Type,
     private val json: Json,
-    private val strResource: StrResource,
+    private val stringResource: StringResource,
 ) : Call<Result<T, NetworkError>> {
 
     override fun enqueue(callback: Callback<Result<T, NetworkError>>) {
@@ -83,17 +83,7 @@ private class ResultCall<T>(
                             NetworkError(
                                 httpCode = sslCertificateError,
                                 statusCode = null,
-                                message = strResource.get(R.string.something_is_wrong)
-                            )
-                        )
-                    }
-
-                    is ProviderInstallerException -> {
-                        Err(
-                            NetworkError(
-                                httpCode = null,
-                                statusCode = null,
-                                message = strResource.get(R.string.update_your_device)
+                                message = stringResource.get(R.string.something_is_wrong)
                             )
                         )
                     }
@@ -103,7 +93,7 @@ private class ResultCall<T>(
                             NetworkError(
                                 httpCode = null,
                                 statusCode = null,
-                                strResource.get(R.string.unknown_request_error)
+                                stringResource.get(R.string.unknown_request_error)
                             )
                         )
                     }
@@ -132,7 +122,7 @@ private class ResultCall<T>(
                 )
             }
 
-            val userFriendlyMessage = HttpErrorCodeMessageProvider(strResource)
+            val userFriendlyMessage = HttpErrorCodeMessageProvider(stringResource)
                 .getUserFriendlyMessage(code())
             return Err(
                 NetworkError(
@@ -154,7 +144,7 @@ private class ResultCall<T>(
     }
 
     override fun clone(): Call<Result<T, NetworkError>> =
-        ResultCall(call.clone(), successType, json, strResource)
+        ResultCall(call.clone(), successType, json, stringResource)
 
     override fun execute(): Response<Result<T, NetworkError>> =
         throw UnsupportedOperationException()

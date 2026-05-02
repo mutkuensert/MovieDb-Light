@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "moviedblight.core.data"
+    namespace = "filmcan.core.data"
 
     defaultConfig {
         val localProperties = Properties()
@@ -35,5 +35,4 @@ dependencies {
     debugImplementation(libs.chucker)
     releaseImplementation(libs.chucker.no.op)
     implementation(libs.androidx.paging.runtime)
-    implementation(libs.play.services.base)
 }

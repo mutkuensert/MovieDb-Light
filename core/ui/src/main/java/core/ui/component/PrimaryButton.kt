@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import core.ui.MoviedbLightTheme
+import core.ui.FilmCanTheme
 
 @Composable
 fun PrimaryButton(
@@ -52,11 +52,11 @@ fun PrimaryButton(
 @Preview
 @Composable
 private fun PrimaryButtonPreview() {
-    MoviedbLightTheme { PrimaryButton(onClick = {}, text = "button text") }
+    FilmCanTheme { PrimaryButton(onClick = {}, text = "button text") }
 }
 
 @Preview
 @Composable
 private fun DisabledPrimaryButtonPreview() {
-    MoviedbLightTheme { PrimaryButton(onClick = {}, text = "button text", enabled = false) }
+    FilmCanTheme { PrimaryButton(onClick = {}, text = "button text", enabled = false) }
 }

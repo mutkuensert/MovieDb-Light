@@ -1,5 +1,6 @@
 package core.ui.navigation
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -16,6 +17,7 @@ class Navigator {
 
     @Composable
     fun NavigationExecutor(navController: NavHostController) {
+        val activity = LocalActivity.current
         LaunchedEffect(navController) {
             commands.collect {
                 when (it) {
@@ -23,14 +25,27 @@ class Navigator {
                     is NavCommand.ToRoute -> navController.navigate(it.route)
                     is NavCommand.PopUpToRoute -> {
                         navController.navigate(it.route) {
-                            val startDestination = navController.graph.findStartDestination()
-                            popUpTo(startDestination.id) {
-                                inclusive = it.inclusive
+                            if (navController.isInBackStack(it.route)) {
+                                popUpTo(it.route) {
+                                    inclusive = it.inclusive
+                                }
+                            } else {
+                                val startDestination = navController.graph.findStartDestination()
+                                popUpTo(
+                                    navController
+                                        .currentBackStackEntry
+                                        ?.destination
+                                        ?.parent //Current tab
+                                        ?.id ?: startDestination.id
+                                ) {
+                                    inclusive = true
+                                }
                             }
                         }
                     }
 
                     is NavCommand.Back -> navController.popBackStack()
+                    NavCommand.CloseApp -> activity?.finish()
                 }
             }
         }
@@ -52,6 +67,10 @@ class Navigator {
         commands.tryEmit(NavCommand.Back)
     }
 
+    fun closeApp() {
+        commands.tryEmit(NavCommand.CloseApp)
+    }
+
     private fun NavHostController.navigateToTab(route: Any, reselected: Boolean) {
         navigate(route) {
             val startDestination = graph.findStartDestination()
@@ -69,4 +88,6 @@ private sealed interface NavCommand {
     class PopUpToRoute(val route: Any, val inclusive: Boolean = false) : NavCommand
     class ToTab(val tab: Any, val reselected: Boolean) : NavCommand
     object Back : NavCommand
+
+    object CloseApp : NavCommand
 }

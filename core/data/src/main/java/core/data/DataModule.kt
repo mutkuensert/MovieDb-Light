@@ -8,16 +8,13 @@ import core.data.auth.AuthenticationRepositoryImpl
 import core.data.auth.AuthenticationService
 import core.data.network.Configs
 import core.data.network.ResultCallAdapterFactory
-import core.data.network.SecurityProviderStateManager
 import core.data.network.interceptor.AccountIdInterceptor
 import core.data.network.interceptor.ApiKeyInterceptor
-import core.data.network.interceptor.SecurityProviderInterceptor
 import core.database.user.UserManager
 import core.domain.account.AccountRepository
 import core.domain.auth.AuthStateProvider
 import core.domain.auth.AuthenticationRepository
 import kotlinx.serialization.json.Json
-import utils.stringresource.StrResource
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -26,14 +23,15 @@ import org.koin.dsl.binds
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import utils.stringresource.StringResource
 
 val dataModule = module {
     single { getJson() }
     single { UserManager(androidContext(), get()) }
     single {
         Retrofit.Builder()
-            .client(getClient(get(), get(), get()))
-            .addCallAdapterFactory(ResultCallAdapterFactory(get<Json>(), get<StrResource>()))
+            .client(getClient(get(), get()))
+            .addCallAdapterFactory(ResultCallAdapterFactory(get<Json>(), get<StringResource>()))
             .baseUrl(Configs.BASE_URL)
             .addConverterFactory(get<Json>().asConverterFactory("application/json; charset=UTF8".toMediaType()))
             .build()
@@ -59,7 +57,6 @@ val dataModule = module {
             get(),
         )
     }
-    single { SecurityProviderStateManager() }
 }
 
 private fun getJson(): Json {
@@ -75,11 +72,9 @@ private fun getJson(): Json {
 private fun getClient(
     context: Context,
     userManager: UserManager,
-    securityProviderStateManager: SecurityProviderStateManager
 ): OkHttpClient {
     return OkHttpClient()
         .newBuilder()
-        .addInterceptor(SecurityProviderInterceptor(context, securityProviderStateManager))
         .addInterceptor(ApiKeyInterceptor())
         .addInterceptor(AccountIdInterceptor(userManager))
         .addInterceptor(HttpLoggingInterceptor().apply {

@@ -10,14 +10,14 @@ import core.data.network.toFailure
 import core.domain.Failure
 import core.domain.UndefinedFailure
 import core.domain.auth.AuthenticationRepository
-import moviedblight.core.data.R
+import filmcan.core.data.R
 import timber.log.Timber
-import utils.stringresource.StrResource
+import utils.stringresource.StringResource
 
 class AuthenticationRepositoryImpl(
     private val authenticationService: AuthenticationService,
     private val sessionManager: SessionManager,
-    private val strResource: StrResource,
+    private val stringResource: StringResource,
 ) : AuthenticationRepository {
 
     override suspend fun getRequestToken(): Result<String, Failure> {
@@ -34,7 +34,7 @@ class AuthenticationRepositoryImpl(
 
     override suspend fun startSession(): Result<Unit, Failure> {
         val requestToken = sessionManager.getRequestToken()
-            ?: return Err(UndefinedFailure(strResource.get(R.string.something_is_wrong)))
+            ?: return Err(UndefinedFailure(stringResource.get(R.string.something_is_wrong)))
 
         return authenticationService.startSession(NewSessionRequest(requestToken))
             .mapBoth(success = {
@@ -60,7 +60,7 @@ class AuthenticationRepositoryImpl(
                     if (response.success) {
                         Ok(Unit)
                     } else {
-                        Err(UndefinedFailure(strResource.get(R.string.logout_attempt_has_failed)))
+                        Err(UndefinedFailure(stringResource.get(R.string.logout_attempt_has_failed)))
                     }
                 },
                 failure = { networkError ->

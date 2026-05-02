@@ -36,7 +36,7 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import core.ui.MoviedbLightTheme
+import core.ui.FilmCanTheme
 import core.ui.StatusBarColorHandler
 import core.ui.component.InteractivePoster
 import feature.movie.presentation.R
@@ -203,7 +203,7 @@ private fun Movies(
 @Preview
 @Composable
 private fun MoviesScreenPreview() {
-    MoviedbLightTheme {
+    FilmCanTheme {
         val fakeMovies = listOf(
             MovieUiModel(
                 id = 1,

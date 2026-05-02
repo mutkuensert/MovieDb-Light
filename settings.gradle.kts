@@ -13,7 +13,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "MovieDb-Light"
+rootProject.name = "FilmCan"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 

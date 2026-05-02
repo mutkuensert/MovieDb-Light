@@ -1,4 +1,4 @@
-package moviedblight.ui.home
+package filmcan.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -55,6 +55,7 @@ import core.ui.route.MovieDetailRoute
 import core.ui.route.MoviesRoute
 import core.ui.route.PersonDetailRoute
 import core.ui.route.SettingsRoute
+import core.ui.route.SplashRoute
 import core.ui.route.TvShowDetailRoute
 import core.ui.route.TvShowsRoute
 import feature.movie.presentation.R
@@ -70,6 +71,7 @@ import feature.search.presentation.SearchScreen
 import feature.settings.presentation.SettingsScreen
 import feature.tvshow.presentation.detail.TvShowDetailScreen
 import feature.tvshow.presentation.list.TvShowsScreen
+import filmcan.ui.splash.SplashScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -167,22 +169,31 @@ fun MainNavigation(
     onNavigateToSearch: (reselected: Boolean) -> Unit,
     onNavigateToProfile: (reselected: Boolean) -> Unit,
 ) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val shouldShowBottomBar = navBackStackEntry?.destination?.hasRoute(SplashRoute::class) == false
+
     Scaffold(
         bottomBar = {
-            BottomNavBar(
-                navController,
-                onNavigateToMovies,
-                onNavigateToTvShows,
-                onNavigateToSearch,
-                onNavigateToProfile
-            )
+            if (shouldShowBottomBar) {
+                BottomNavBar(
+                    navController,
+                    onNavigateToMovies,
+                    onNavigateToTvShows,
+                    onNavigateToSearch,
+                    onNavigateToProfile
+                )
+            }
         }
     ) { padding ->
         NavHost(
             modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
             navController = navController,
-            startDestination = NavTab.MovieTab
+            startDestination = SplashRoute
         ) {
+            composable<SplashRoute> {
+                SplashScreen()
+            }
+
             navigation<NavTab.MovieTab>(MoviesRoute) {
                 composable<MoviesRoute> {
                     MoviesScreen()

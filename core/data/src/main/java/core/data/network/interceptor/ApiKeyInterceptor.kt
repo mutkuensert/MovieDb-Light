@@ -1,6 +1,6 @@
 package core.data.network.interceptor
 
-import moviedblight.core.data.BuildConfig
+import filmcan.core.data.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.Response
 

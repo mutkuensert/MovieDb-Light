@@ -61,7 +61,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
 import core.ui.LightGreen
-import core.ui.MoviedbLightTheme
+import core.ui.FilmCanTheme
 import core.ui.StatusBarColorHandler
 import core.ui.TmdbImage
 import core.ui.component.InteractivePoster
@@ -554,7 +554,7 @@ private fun Filter(
 @Preview
 @Composable
 private fun FilterPreview() {
-    MoviedbLightTheme {
+    FilmCanTheme {
         Filter(sortBy = SortByUiModel.ASCENDING) { }
     }
 }
@@ -615,7 +615,7 @@ private fun TopBar(
 private fun ProfilePreview() {
     val emptyLazyPagingItems =
         flowOf(PagingData.empty<MovieUiModel>())
-    MoviedbLightTheme {
+    FilmCanTheme {
         Profile(
             ProfileUiModel(
                 null,

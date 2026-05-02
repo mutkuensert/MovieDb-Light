@@ -5,6 +5,7 @@
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#ff0d253f</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
 
         <!--
         https://developer.android.com/develop/ui/views/launch/splash-screen

@@ -2,8 +2,8 @@ package utils.stringresource
 
 import androidx.annotation.StringRes
 
-interface StrResource {
-    fun get(@StringRes id: Int): String
+interface StringResource {
+    fun get(@StringRes resId: Int): String
 
     fun get(@StringRes resId: Int, vararg formatArgs: Any?): String
 }

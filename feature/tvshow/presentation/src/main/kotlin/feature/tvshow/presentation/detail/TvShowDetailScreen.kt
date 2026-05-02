@@ -83,7 +83,7 @@ import coil3.request.ImageRequest
 import coil3.request.allowHardware
 import coil3.request.crossfade
 import core.ui.AppColors
-import core.ui.MoviedbLightTheme
+import core.ui.FilmCanTheme
 import core.ui.TmdbImage
 import core.ui.coil.debugPlaceholder
 import core.ui.component.ImageType
@@ -910,7 +910,7 @@ fun RateBottomSheet(
 @Preview(showSystemUi = false)
 @Composable
 private fun TvShowDetailPreview() {
-    MoviedbLightTheme {
+    FilmCanTheme {
         val cast = listOf(
             PersonUiModel(
                 id = 2723,

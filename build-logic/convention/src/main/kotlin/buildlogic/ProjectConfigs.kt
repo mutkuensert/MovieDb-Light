@@ -4,7 +4,7 @@ import org.gradle.api.JavaVersion
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 internal object ProjectConfigs {
-    const val applicationId = "com.mutkuensert.moviedblight"
+    const val applicationId = "com.mutkuensert.filmcan"
     const val compileSdk = 36
     const val minSdk = 24
     const val targetSdk = 36

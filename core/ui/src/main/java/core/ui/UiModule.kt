@@ -7,5 +7,5 @@ val uiModule = module {
     single { Navigator() }
     single { StatusBarBackgroundColorHandler() }
     single { LoadingAnimator() }
-    single { PopupHandler() }
+    single { PopupHandler(get()) }
 }

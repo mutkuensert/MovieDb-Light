@@ -4,7 +4,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "com.mutkuensert.moviedblight.buildlogic"
+group = "com.mutkuensert.filmcan.buildlogic"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -28,7 +28,7 @@ dependencies {
 gradlePlugin {
     plugins {
         register("androidApplication") {
-            id = "moviedblight.android.application"
+            id = "filmcan.android.application"
             implementationClass = "buildlogic.AndroidApplicationConventionPlugin"
         }
         register("basePlugin") {
@@ -56,7 +56,7 @@ gradlePlugin {
             implementationClass = "buildlogic.BasePresentationConventionPlugin"
         }
         register("root") {
-            id = "moviedblight.root"
+            id = "filmcan.root"
             implementationClass = "buildlogic.RootConventionPlugin"
         }
     }

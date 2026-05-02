@@ -36,8 +36,8 @@ import core.domain.account.SortBy
 import core.domain.account.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import moviedblight.core.data.R
-import utils.stringresource.StrResource
+import filmcan.core.data.R
+import utils.stringresource.StringResource
 
 class AccountRepositoryImpl(
     private val accountService: AccountService,
@@ -50,7 +50,7 @@ class AccountRepositoryImpl(
     private val watchlistTvShowDao: WatchlistTvShowDao,
     private val ratedTvShowDao: RatedTvShowDao,
     private val languagePreference: LanguagePreference,
-    private val strResource: StrResource,
+    private val stringResource: StringResource,
 ) : AccountRepository {
 
     override suspend fun fetchAccountDetails(): Result<User, Failure> {
@@ -210,7 +210,7 @@ class AccountRepositoryImpl(
             } else {
                 favoriteMovieDao.deleteIds(FavoriteMovieIdEntity(movieId))
             }
-            val somethingIsWrongMessage = strResource.get(R.string.something_is_wrong)
+            val somethingIsWrongMessage = stringResource.get(R.string.something_is_wrong)
             val sessionId = sessionManager.getSessionId()
                 ?: return@withContext Err(AuthFailure(somethingIsWrongMessage))
 
@@ -281,7 +281,7 @@ class AccountRepositoryImpl(
                 favoriteTvShowDao.deleteIds(FavoriteTvShowIdEntity(tvShowId))
             }
             val sessionId = sessionManager.getSessionId()
-                ?: return@withContext Err(AuthFailure(strResource.get(R.string.something_is_wrong)))
+                ?: return@withContext Err(AuthFailure(stringResource.get(R.string.something_is_wrong)))
 
             return@withContext accountService.postFavoriteTvShow(
                 FavoriteTvShowDto(

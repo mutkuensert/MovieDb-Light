@@ -1,5 +1,5 @@
 plugins {
-    id("moviedblight.android.application")
+    id("filmcan.android.application")
 }
 
 android {
@@ -32,4 +32,5 @@ dependencies {
     implementation(projects.feature.person.injection)
     implementation(projects.utils)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.play.services.base)
 }

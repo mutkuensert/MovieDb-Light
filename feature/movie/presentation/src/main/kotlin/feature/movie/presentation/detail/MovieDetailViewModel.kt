@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import utils.stringresource.StrResource
+import utils.stringresource.StringResource
 import kotlin.math.roundToInt
 
 class MovieDetailViewModel(
@@ -37,7 +37,7 @@ class MovieDetailViewModel(
     private val popupHandler: PopupHandler,
     private val navigator: Navigator,
     private val authStateProvider: AuthStateProvider,
-    private val strResource: StrResource,
+    private val stringResource: StringResource,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var movieId: Int = requireNotNull(savedStateHandle["id"]) {
@@ -133,7 +133,7 @@ class MovieDetailViewModel(
     }
 
     fun handleStreamServicesInfoButton() {
-        popupHandler.showSimpleMessage(strResource.get(R.string.streaming_services_information_are_provided_by_justwatch))
+        popupHandler.showSimpleMessage(stringResource.get(R.string.streaming_services_information_are_provided_by_justwatch))
     }
 
     fun handlePersonClick(personId: Int) {

@@ -5,4 +5,6 @@
     <string name="info">Bilgi</string>
     <string name="no_image_icon">Görsel yok ikonu</string>
     <string name="watchlist_button">İzleme listesi butonu</string>
+    <string name="ok">Tamam</string>
+    <string name="cancel">İptal</string>
 </resources>

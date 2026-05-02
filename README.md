@@ -1,4 +1,4 @@
-# Moviedb Light
+# FilmCan
 
 A modern Android application following a clean architecture approach with a structured multimodule
 organization. This project provides a solid foundation for building scalable and maintainable

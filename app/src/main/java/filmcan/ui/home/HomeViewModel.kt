@@ -1,4 +1,4 @@
-package moviedblight.ui.home
+package filmcan.ui.home
 
 import androidx.lifecycle.ViewModel
 import core.ui.LoadingAnimator
