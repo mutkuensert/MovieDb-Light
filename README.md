@@ -4,6 +4,8 @@ A modern Android application following a clean architecture approach with a stru
 organization. This project provides a solid foundation for building scalable and maintainable
 Android applications.
 
+Meaning of project name: https://en.wikipedia.org/wiki/Film_can
+
 ## Table of Contents
 
 - [Architecture Overview](#architecture-overview)

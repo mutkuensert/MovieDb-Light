@@ -32,8 +32,8 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.security.ProviderInstaller
 import com.mutkuensert.filmcan.R
-import core.ui.LightBlue
 import core.ui.FilmCanTheme
+import core.ui.LightBlue
 import core.ui.StatusBarColorHandler
 import filmcan.ui.SECURITY_PROVIDER_UPDATE_REQUEST_CODE
 import org.koin.androidx.compose.koinViewModel
@@ -111,7 +111,7 @@ private fun Splash() {
             Spacer(Modifier.size(32.dp))
 
             Image(
-                painter = painterResource(id = R.drawable.app_icon),
+                painter = painterResource(id = utils.R.drawable.app_icon),
                 contentDescription = stringResource(R.string.app_icon),
                 Modifier
                     .size(192.dp)

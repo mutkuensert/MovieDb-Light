@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ButtonDefaults
@@ -33,9 +34,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import core.ui.StatusBarColorHandler
 import core.ui.component.OneTimeEffect
 import core.ui.component.PrimaryButton
+import org.koin.androidx.compose.koinViewModel
 import utils.Constants.APP_DEEP_LINK
 import utils.R
-import org.koin.androidx.compose.koinViewModel
 
 const val LoginDeeplink = "${APP_DEEP_LINK}/login"
 
@@ -78,8 +79,8 @@ private fun Login(
         TopBar(onClickSettings)
 
         Image(
-            modifier = Modifier.weight(1f),
-            painter = painterResource(R.drawable.tmdb_logo_blue_square),
+            modifier = Modifier.weight(1f).size(192.dp),
+            painter = painterResource(R.drawable.app_icon),
             contentDescription = null
         )
 
