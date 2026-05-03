@@ -1,3 +1,5 @@
+
+
 # FilmCan
 
 A modern Android application following a clean architecture approach with a structured multimodule
@@ -5,6 +7,8 @@ organization. This project provides a solid foundation for building scalable and
 Android applications.
 
 Meaning of project name: https://en.wikipedia.org/wiki/Film_can
+
+https://github.com/user-attachments/assets/7051be9f-eea3-448f-933e-7dc669888991
 
 ## Table of Contents
 
