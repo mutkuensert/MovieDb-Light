@@ -16,7 +16,7 @@ data class MovieDetailUiModel(
     val inWatchlist: Boolean?,
     val favorite: Boolean?,
     val runtime: String,
-    val year: String,
+    val releaseDate: String,
     val genres: String,
     val overview: String,
     val youtubeVideoId: String?,
@@ -24,7 +24,7 @@ data class MovieDetailUiModel(
     val cast: List<PersonUiModel>,
     val directors: List<CrewPersonUiModel>,
     val writers: List<CrewPersonUiModel>,
-    val reviews: List<ReviewUiModel>,
+    val review: ReviewUiModel?,
 ) {
     companion object {
         fun initial(id: Int): MovieDetailUiModel {
@@ -40,7 +40,7 @@ data class MovieDetailUiModel(
                 inWatchlist = null,
                 favorite = null,
                 runtime = "",
-                year = "",
+                releaseDate = "",
                 genres = "",
                 overview = "",
                 youtubeVideoId = null,
@@ -48,7 +48,7 @@ data class MovieDetailUiModel(
                 cast = emptyList(),
                 directors = emptyList(),
                 writers = emptyList(),
-                reviews = emptyList(),
+                review = null,
             )
         }
     }

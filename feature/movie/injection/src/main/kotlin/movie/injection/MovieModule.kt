@@ -11,6 +11,7 @@ import feature.movie.domain.usecase.SyncMovieFavoriteStatusUseCase
 import feature.movie.domain.usecase.SyncMovieWatchlistStatusUseCase
 import feature.movie.presentation.detail.MovieDetailViewModel
 import feature.movie.presentation.list.MoviesViewModel
+import feature.movie.presentation.reviews.MovieReviewsViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -31,6 +32,7 @@ val movieModule = module {
     }
     viewModelOf(::MoviesViewModel)
     viewModelOf(::MovieDetailViewModel)
+    viewModelOf(::MovieReviewsViewModel)
     factory { RateMovieUseCase(get(), get()) }
     factory { RemoveRatingUseCase(get(), get()) }
     factory { SyncMovieFavoriteStatusUseCase(get(), get()) }

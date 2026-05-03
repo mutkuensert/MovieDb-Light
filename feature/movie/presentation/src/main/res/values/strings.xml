@@ -23,5 +23,9 @@
     <string name="streaming_services_information_are_provided_by_justwatch">Streaming services information are provided by JustWatch.</string>
     <string name="directors">Directors</string>
     <string name="writers">Writers</string>
-    <string name="reviews">Reviews</string>
+    <string name="read_more_reviews">Read more reviews</string>
+    <string name="no_reviews">No reviews yet.</string>
+    <string name="reviews_could_not_be_loaded">Reviews could not be loaded.</string>
+    <string name="retry">Retry</string>
+    <string name="movie_icon_description">Icon that indicates you\'re in movie detail screen.</string>
 </resources>

@@ -52,15 +52,18 @@ import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
 import core.ui.route.LoginRoute
 import core.ui.route.MovieDetailRoute
+import core.ui.route.MovieReviewsRoute
 import core.ui.route.MoviesRoute
 import core.ui.route.PersonDetailRoute
 import core.ui.route.SettingsRoute
 import core.ui.route.SplashRoute
 import core.ui.route.TvShowDetailRoute
+import core.ui.route.TvShowReviewsRoute
 import core.ui.route.TvShowsRoute
 import feature.movie.presentation.R
 import feature.movie.presentation.detail.MovieDetailScreen
 import feature.movie.presentation.list.MoviesScreen
+import feature.movie.presentation.reviews.MovieReviewsScreen
 import feature.person.presentation.detail.PersonDetailScreen
 import feature.profile.presentation.login.LoginDeeplink
 import feature.profile.presentation.login.LoginScreen
@@ -71,6 +74,7 @@ import feature.search.presentation.SearchScreen
 import feature.settings.presentation.SettingsScreen
 import feature.tvshow.presentation.detail.TvShowDetailScreen
 import feature.tvshow.presentation.list.TvShowsScreen
+import feature.tvshow.presentation.reviews.TvShowReviewsScreen
 import filmcan.ui.splash.SplashScreen
 import org.koin.androidx.compose.koinViewModel
 
@@ -203,6 +207,10 @@ fun MainNavigation(
                     MovieDetailScreen()
                 }
 
+                composable<MovieReviewsRoute> {
+                    MovieReviewsScreen()
+                }
+
                 composable<PersonDetailRoute> {
                     PersonDetailScreen()
                 }
@@ -215,6 +223,10 @@ fun MainNavigation(
 
                 composable<TvShowDetailRoute> {
                     TvShowDetailScreen()
+                }
+
+                composable<TvShowReviewsRoute> {
+                    TvShowReviewsScreen()
                 }
 
                 composable<PersonDetailRoute> {
@@ -231,12 +243,20 @@ fun MainNavigation(
                     MovieDetailScreen()
                 }
 
+                composable<MovieReviewsRoute> {
+                    MovieReviewsScreen()
+                }
+
                 composable<PersonDetailRoute> {
                     PersonDetailScreen()
                 }
 
                 composable<TvShowDetailRoute> {
                     TvShowDetailScreen()
+                }
+
+                composable<TvShowReviewsRoute> {
+                    TvShowReviewsScreen()
                 }
             }
 
@@ -261,12 +281,20 @@ fun MainNavigation(
                     MovieDetailScreen()
                 }
 
+                composable<MovieReviewsRoute> {
+                    MovieReviewsScreen()
+                }
+
                 composable<PersonDetailRoute> {
                     PersonDetailScreen()
                 }
 
                 composable<TvShowDetailRoute> {
                     TvShowDetailScreen()
+                }
+
+                composable<TvShowReviewsRoute> {
+                    TvShowReviewsScreen()
                 }
             }
         }

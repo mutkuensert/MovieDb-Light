@@ -24,4 +24,9 @@
     <string name="directors">Directors</string>
     <string name="writers">Writers</string>
     <string name="reviews">Reviews</string>
+    <string name="no_reviews">No reviews yet.</string>
+    <string name="reviews_could_not_be_loaded">Reviews could not be loaded.</string>
+    <string name="retry">Retry</string>
+    <string name="read_more_reviews">Read more reviews</string>
+    <string name="tv_icon_description">Icon that indicates you\'re in tv show detail screen.</string>
 </resources>

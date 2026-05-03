@@ -11,6 +11,7 @@ import feature.tvshow.domain.usecase.SyncTvShowFavoriteStatusUseCase
 import feature.tvshow.domain.usecase.SyncTvShowWatchlistStatusUseCase
 import feature.tvshow.presentation.detail.TvShowDetailViewModel
 import feature.tvshow.presentation.list.TvShowsViewModel
+import feature.tvshow.presentation.reviews.TvShowReviewsViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -31,6 +32,7 @@ val tvShowModule = module {
     }
     viewModelOf(::TvShowsViewModel)
     viewModelOf(::TvShowDetailViewModel)
+    viewModelOf(::TvShowReviewsViewModel)
     factory { RateTvShowUseCase(get(), get()) }
     factory { RemoveRatingUseCase(get(), get()) }
     factory { SyncTvShowFavoriteStatusUseCase(get(), get()) }

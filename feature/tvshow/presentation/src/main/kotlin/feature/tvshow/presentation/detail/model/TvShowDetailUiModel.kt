@@ -16,13 +16,13 @@ data class TvShowDetailUiModel(
     val inWatchlist: Boolean?,
     val favorite: Boolean?,
     val runtime: String,
-    val year: String,
+    val releaseDate: String,
     val genres: String,
     val overview: String,
     val trailerYoutubeVideoId: String?,
     val providerLogoPaths: List<String>,
     val cast: List<PersonUiModel>,
-    val reviews: List<ReviewUiModel>,
+    val review: ReviewUiModel?,
 ) {
     companion object {
         fun initial(id: Int): TvShowDetailUiModel {
@@ -38,13 +38,13 @@ data class TvShowDetailUiModel(
                 inWatchlist = null,
                 favorite = null,
                 runtime = "",
-                year = "",
+                releaseDate = "",
                 genres = "",
                 overview = "",
                 trailerYoutubeVideoId = null,
                 providerLogoPaths = emptyList(),
                 cast = emptyList(),
-                reviews = emptyList(),
+                review = null,
             )
         }
     }

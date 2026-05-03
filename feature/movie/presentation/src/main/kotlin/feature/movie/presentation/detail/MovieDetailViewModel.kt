@@ -9,6 +9,7 @@ import core.domain.auth.AuthStateProvider
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
+import core.ui.route.MovieReviewsRoute
 import core.ui.route.PersonDetailRoute
 import core.ui.showFailurePopup
 import feature.movie.domain.MovieRepository
@@ -72,8 +73,7 @@ class MovieDetailViewModel(
                         title = movieDetails.title ?: "",
                         vote = movieDetails.voteAverage?.toString() ?: "",
                         runtime = movieDetails.runtime?.toString() ?: "",
-                        year = movieDetails.releaseDate?.split("-")
-                            ?.firstOrNull() ?: "",
+                        releaseDate = movieDetails.releaseDate?.replace("-", ".") ?: "",
                         genres = movieDetails.genres.joinToString(", "),
                         overview = movieDetails.overview ?: "",
                         cast = emptyList()
@@ -109,9 +109,9 @@ class MovieDetailViewModel(
                 }
             }
 
-            movieRepository.getReviews(movieId).onOk { reviews ->
+            movieRepository.getFirstReview(movieId).onOk { review ->
                 _uiModel.update {
-                    it.copy(reviews = reviews.map { review -> review.toUiModel() })
+                    it.copy(review = review?.toUiModel())
                 }
             }
 
@@ -138,6 +138,10 @@ class MovieDetailViewModel(
 
     fun handlePersonClick(personId: Int) {
         navigator.navigateToRoute(PersonDetailRoute(personId))
+    }
+
+    fun handleReviewsClick() {
+        navigator.navigateToRoute(MovieReviewsRoute(movieId))
     }
 
     fun handleWatchlistClick(movieId: Int, inWatchlist: Boolean) {

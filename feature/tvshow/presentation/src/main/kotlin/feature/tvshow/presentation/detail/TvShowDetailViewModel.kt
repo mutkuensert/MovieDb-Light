@@ -10,6 +10,7 @@ import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.PersonDetailRoute
+import core.ui.route.TvShowReviewsRoute
 import core.ui.showFailurePopup
 import feature.tvshow.domain.TvShowRepository
 import feature.tvshow.domain.usecase.RateTvShowUseCase
@@ -72,8 +73,7 @@ class TvShowDetailViewModel(
                         title = tvShowDetails.title ?: "",
                         vote = tvShowDetails.voteAverage?.toString() ?: "",
                         runtime = tvShowDetails.runtime?.toString() ?: "",
-                        year = tvShowDetails.releaseDate?.split("-")
-                            ?.firstOrNull() ?: "",
+                        releaseDate = tvShowDetails.releaseDate?.replace("-", ".") ?: "",
                         genres = tvShowDetails.genres.joinToString(", "),
                         overview = tvShowDetails.overview ?: "",
                         cast = emptyList()
@@ -107,9 +107,9 @@ class TvShowDetailViewModel(
                 }
             }
 
-            tvShowRepository.getReviews(tvShowId).onOk { reviews ->
+            tvShowRepository.getFirstReview(tvShowId).onOk { review ->
                 _uiModel.update {
-                    it.copy(reviews = reviews.map { review -> review.toUiModel() })
+                    it.copy(review = review?.toUiModel())
                 }
             }
 
@@ -136,6 +136,10 @@ class TvShowDetailViewModel(
 
     fun handlePersonClick(personId: Int) {
         navigator.navigateToRoute(PersonDetailRoute(personId))
+    }
+
+    fun handleReviewsClick() {
+        navigator.navigateToRoute(TvShowReviewsRoute(tvShowId))
     }
 
     fun handleWatchlistClick(tvShowId: Int, inWatchlist: Boolean) {

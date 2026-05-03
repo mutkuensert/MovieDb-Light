@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
@@ -84,6 +85,7 @@ import coil3.request.allowHardware
 import coil3.request.crossfade
 import core.ui.AppColors
 import core.ui.FilmCanTheme
+import core.ui.StatusBarColorHandler
 import core.ui.TmdbImage
 import core.ui.coil.debugPlaceholder
 import core.ui.component.ImageType
@@ -112,11 +114,14 @@ fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
         viewModel::handleFavoriteClick,
         viewModel::handleRateClick,
         viewModel::handleRemoveRatingClick,
+        viewModel::handleReviewsClick,
     )
 
     OneTimeEffect {
         viewModel.getDetails()
     }
+
+    StatusBarColorHandler()
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -130,6 +135,7 @@ private fun MovieDetail(
     onClickFavorite: () -> Unit,
     onRateClick: (value: Int) -> Unit,
     onRemoveRatingClick: () -> Unit,
+    onClickReviews: () -> Unit,
 ) {
     Scaffold(
         floatingActionButton = {
@@ -151,7 +157,7 @@ private fun MovieDetail(
         ) {
             MoviePosters(
                 uiModel.imagePaths,
-                uiModel.year,
+                uiModel.releaseDate,
                 uiModel.vote,
                 uiModel.runtime
             )
@@ -212,53 +218,18 @@ private fun MovieDetail(
                 Cast(uiModel, onClickPerson)
             }
 
-            if (uiModel.reviews.isNotEmpty()) {
-                Reviews(
-                    reviews = uiModel.reviews,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
+            if (uiModel.review != null) {
+                ReviewCard(
+                    uiModel.review, Modifier
+                        .padding(top = 8.dp)
+                        .padding(horizontal = 16.dp)
+                )
+
+                ReviewsButton(
+                    onClick = onClickReviews,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun Reviews(
-    reviews: List<ReviewUiModel>,
-    modifier: Modifier = Modifier,
-) {
-    val pagerState = rememberPagerState(pageCount = { reviews.size })
-
-    Column(modifier) {
-        Text(
-            text = stringResource(R.string.reviews),
-            modifier = Modifier.padding(horizontal = 16.dp),
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            pageSpacing = 8.dp,
-            key = { page -> reviews[page].id },
-        ) { page ->
-            ReviewCard(reviews[page])
-        }
-
-        if (reviews.size > 1) {
-            PageIndicator(
-                currentIndex = pagerState.currentPage,
-                totalCount = pagerState.pageCount,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .align(Alignment.CenterHorizontally),
-                indicatorSize = 8.dp,
-            )
         }
     }
 }
@@ -268,7 +239,6 @@ private fun ReviewCard(review: ReviewUiModel, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(220.dp)
             .background(
                 MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
                 MaterialTheme.shapes.medium
@@ -320,17 +290,27 @@ private fun ReviewCard(review: ReviewUiModel, modifier: Modifier = Modifier) {
             )
         }
 
-        Column(
-            Modifier
-                .padding(top = 10.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            Text(
-                text = review.content,
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
+        Text(
+            text = review.content,
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+@Composable
+private fun ReviewsButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Text(
+            stringResource(R.string.read_more_reviews),
+            textDecoration = TextDecoration.Underline
+        )
     }
 }
 
@@ -474,7 +454,7 @@ private fun ShareButton(movieId: Int, modifier: Modifier = Modifier) {
 @Composable
 private fun MoviePosters(
     imagePaths: List<String>,
-    year: String,
+    releaseDate: String,
     vote: String,
     runtime: String,
     modifier: Modifier = Modifier,
@@ -547,14 +527,25 @@ private fun MoviePosters(
                 if (page == 0) {
                     BottomGradient(Modifier.align(Alignment.BottomCenter))
 
-                    YearVoteRuntimeText(
+                    Row(
                         Modifier
                             .align(Alignment.BottomStart)
                             .padding(start = 16.dp, bottom = 2.dp),
-                        year,
-                        vote,
-                        runtime
-                    )
+                        horizontalArrangement = Arrangement.spacedBy(2.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        YearVoteRuntimeText(
+                            releaseDate,
+                            vote,
+                            runtime
+                        )
+
+                        Icon(
+                            imageVector = Icons.Filled.Movie,
+                            contentDescription = stringResource(R.string.movie_icon_description),
+                            Modifier.height(height = 16.dp)
+                        )
+                    }
                 }
             }
         }
@@ -709,10 +700,10 @@ private fun Cast(
 
 @Composable
 private fun YearVoteRuntimeText(
-    modifier: Modifier = Modifier,
-    year: String,
+    releaseDate: String,
     vote: String,
-    runtime: String
+    runtime: String,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
@@ -720,7 +711,7 @@ private fun YearVoteRuntimeText(
     ) {
         Text(
             modifier = Modifier.padding(end = 8.dp),
-            text = year,
+            text = releaseDate,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
         )
 
@@ -1020,7 +1011,7 @@ private fun MovieDetailPreview() {
                 inWatchlist = true,
                 favorite = true,
                 runtime = "120",
-                year = "2010",
+                releaseDate = "01.01.2010",
                 genres = "Comedy, Action",
                 overview = LoremIpsum(20).values.joinToString(" "),
                 providerLogoPaths = listOf("path", "path2"),
@@ -1028,19 +1019,18 @@ private fun MovieDetailPreview() {
                 cast = cast,
                 directors = crew,
                 writers = crew,
-                reviews = listOf(
-                    ReviewUiModel(
-                        id = "review",
-                        author = "Some Reviewer",
-                        content = LoremIpsum(40).values.joinToString(" "),
-                        editedAt = "2024-01-01",
-                        rating = "8.0",
-                    )
-                ),
+                review = ReviewUiModel(
+                    id = "1",
+                    author = "Severus Snape",
+                    content = LoremIpsum(20).values.joinToString(" "),
+                    editedAt = "02.04.2025",
+                    rating = "10"
+                )
             ),
             {},
             {},
             { _, _ -> },
+            {},
             {},
             {},
             {}

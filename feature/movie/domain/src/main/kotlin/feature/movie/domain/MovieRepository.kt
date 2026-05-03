@@ -20,10 +20,11 @@ interface MovieRepository {
     suspend fun getPeople(movieId: Int): Result<People, Failure>
     suspend fun getProviders(movieId: Int): Result<List<Provider>, Failure>
     suspend fun getTrailerYoutubeVideoId(movieId: Int): Result<String?, Failure>
-    suspend fun getReviews(movieId: Int): Result<List<Review>, Failure>
+    fun getReviewsPagingFlow(movieId: Int): Flow<PagingData<Review>>
     suspend fun getAccountStates(movieId: Int): Result<AccountStates, Failure>
     suspend fun rateMovie(movieId: Int, rating: Int): Result<Unit, Failure>
     suspend fun removeRating(movieId: Int): Result<Unit, Failure>
     fun updateLanguageRelatedData()
     suspend fun getImagePaths(movieId: Int): Result<List<String>, Failure>
+    suspend fun getFirstReview(movieId: Int): Result<Review?, Failure>
 }

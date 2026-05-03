@@ -19,6 +19,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -32,6 +34,11 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFram
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.loadOrCueVideo
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import core.ui.LocalStatusBarBackgroundColorHandler
+import core.ui.StatusBarBackgroundColorHandler
+import core.ui.isDark
+import core.ui.setStatusBarContentDark
+import core.ui.setStatusBarContentLight
 
 /**
  * Add `android:configChanges="orientation|screenSize"` for owner activity in the manifest file.
@@ -58,8 +65,11 @@ fun YoutubeVideoPlayer(
     fullscreenConfig: FullscreenConfig = FullscreenConfig.default(),
     previewOverlay: @Composable (() -> Unit)? = null,
 ) {
+    val statusBarBackgroundColorHandler = LocalStatusBarBackgroundColorHandler.current
+    val previousStatusBarBackgroundColor = remember { statusBarBackgroundColorHandler.color.value }
     val activity = LocalActivity.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
     var showsPreviewOverlay by rememberSaveable { mutableStateOf(true) }
     var playerView: YouTubePlayerView? by remember { mutableStateOf(null) }
     var fullscreenView: View? by remember { mutableStateOf(null) }
@@ -80,6 +90,8 @@ fun YoutubeVideoPlayer(
         }
         fullscreenView?.removeFromParent()
         fullscreenView = null
+
+        setStatusBarColor(statusBarBackgroundColorHandler, previousStatusBarBackgroundColor, context)
     }
 
     if (fullscreenView != null) {
@@ -140,6 +152,19 @@ fun YoutubeVideoPlayer(
             playerView = null
             showsPreviewOverlay = true
         }
+    }
+}
+
+private fun setStatusBarColor(
+    statusBarBackgroundColorHandler: StatusBarBackgroundColorHandler,
+    backgroundColor: Color,
+    context: Context
+) {
+    statusBarBackgroundColorHandler.setColor(backgroundColor)
+    if (backgroundColor.isDark) {
+        context.setStatusBarContentLight()
+    } else {
+        context.setStatusBarContentDark()
     }
 }
 

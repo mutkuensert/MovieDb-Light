@@ -4,9 +4,11 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.filter
 import androidx.paging.map
 import com.github.michaelbull.result.Result
 import core.data.SessionManager
+import core.data.common.model.ReviewDto
 import core.data.network.mapToDomain
 import core.data.util.withDecimals
 import core.database.LanguagePreference
@@ -232,29 +234,27 @@ class MovieRepositoryImpl(
         }
     }
 
-    override suspend fun getReviews(movieId: Int): Result<List<Review>, Failure> {
+    override fun getReviewsPagingFlow(movieId: Int): Flow<PagingData<Review>> {
+        return Pager(PagingConfig(pageSize = 20)) {
+            MovieReviewsPagingSource(
+                getReviews = { page ->
+                    movieService.getReviews(movieId, languagePreference.getLanguageTag(), page)
+                },
+            )
+        }.flow.map { pagingData ->
+            pagingData.filter { reviewDto ->
+                !reviewDto.content.isNullOrBlank()
+                        && (!reviewDto.author.isNullOrBlank()
+                        || !reviewDto.authorDetails?.name.isNullOrBlank()
+                        || !reviewDto.authorDetails?.username.isNullOrBlank())
+                        && reviewDto.createdAt != null
+            }.map { it.toReview() }
+        }
+    }
+
+    override suspend fun getFirstReview(movieId: Int): Result<Review?, Failure> {
         return movieService.getReviews(movieId, languagePreference.getLanguageTag())
-            .mapToDomain { response ->
-                response.results.orEmpty()
-                    .filter {
-                        !it.content.isNullOrBlank()
-                                && (!it.author.isNullOrBlank()
-                                || !it.authorDetails?.name.isNullOrBlank()
-                                || !it.authorDetails?.username.isNullOrBlank())
-                                && it.createdAt != null
-                    }
-                    .map { review ->
-                        Review(
-                            id = review.id,
-                            author = review.author ?: review.authorDetails?.name
-                            ?: review.authorDetails?.username ?: "",
-                            content = review.content!!,
-                            createdAt = review.createdAt!!,
-                            editedAt = review.updatedAt,
-                            rating = review.authorDetails?.rating,
-                        )
-                    }
-            }
+            .mapToDomain { it.results?.firstOrNull()?.toReview() }
     }
 
     override suspend fun getAccountStates(movieId: Int): Result<AccountStates, Failure> {
@@ -285,5 +285,16 @@ class MovieRepositoryImpl(
             .mapToDomain { response ->
                 response.posters?.map { it.filePath } ?: emptyList()
             }
+    }
+
+    private fun ReviewDto.toReview(): Review {
+        return Review(
+            id = id,
+            author = author ?: authorDetails?.name ?: authorDetails?.username ?: "",
+            content = content!!,
+            createdAt = createdAt!!,
+            editedAt = updatedAt,
+            rating = authorDetails?.rating,
+        )
     }
 }

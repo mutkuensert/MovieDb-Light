@@ -3,12 +3,14 @@ package core.ui
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class StatusBarBackgroundColorHandler {
-    val color = MutableStateFlow(Color.White)
+    private val _color = MutableStateFlow(Color.White)
+    val color = _color.asStateFlow()
 
     fun setColor(value: Color) {
-        color.value = value
+        _color.value = value
     }
 }
 

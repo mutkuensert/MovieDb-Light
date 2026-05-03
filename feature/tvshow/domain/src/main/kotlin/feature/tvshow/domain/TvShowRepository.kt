@@ -20,10 +20,11 @@ interface TvShowRepository {
     suspend fun getCast(tvShowId: Int): Result<List<Person>, Failure>
     suspend fun getProviders(tvShowId: Int): Result<List<Provider>, Failure>
     suspend fun getTrailerYoutubeVideoId(tvShowId: Int): Result<String?, Failure>
-    suspend fun getReviews(tvShowId: Int): Result<List<Review>, Failure>
+    fun getReviews(tvShowId: Int): Flow<PagingData<Review>>
     suspend fun getAccountStates(tvShowId: Int): Result<AccountStates, Failure>
     suspend fun rateTvShow(tvShowId: Int, rating: Int): Result<Unit, Failure>
     suspend fun removeRating(tvShowId: Int): Result<Unit, Failure>
     fun updateLanguageRelatedData()
     suspend fun getImagePaths(tvShowId: Int): Result<List<String>, Failure>
+    suspend fun getFirstReview(tvShowId: Int): Result<Review?, Failure>
 }

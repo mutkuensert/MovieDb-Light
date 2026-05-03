@@ -24,4 +24,9 @@
     <string name="directors">Yönetmenler</string>
     <string name="writers">Yazarlar</string>
     <string name="reviews">Yorumlar</string>
+    <string name="no_reviews">Henüz yorum yok.</string>
+    <string name="reviews_could_not_be_loaded">Yorumlar yüklenemedi.</string>
+    <string name="retry">Tekrar dene</string>
+    <string name="read_more_reviews">İncelemelerin devamını görüntüle</string>
+    <string name="tv_icon_description">Dizi detay ekranında olduğunuzu belirten ikon.</string>
 </resources>
