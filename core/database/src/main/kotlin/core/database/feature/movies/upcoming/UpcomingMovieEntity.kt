@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import core.database.account.model.WatchlistMovieIdEntity
-import core.database.feature.movies.nowplaying.NowPlayingMovieEntity
 
 @Entity
 data class UpcomingMovieEntity(
@@ -20,7 +19,7 @@ data class UpcomingMovieEntity(
 }
 
 data class UpcomingMovie(
-    @Embedded val movie: NowPlayingMovieEntity,
+    @Embedded val movie: UpcomingMovieEntity,
     @Relation(
         parentColumn = "id",
         entityColumn = "id"
