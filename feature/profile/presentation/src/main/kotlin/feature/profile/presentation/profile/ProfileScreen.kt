@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -60,8 +61,8 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
-import core.ui.LightGreen
 import core.ui.FilmCanTheme
+import core.ui.LightGreen
 import core.ui.StatusBarColorHandler
 import core.ui.TmdbImage
 import core.ui.component.InteractivePoster
@@ -585,6 +586,7 @@ private fun TopBar(
             if (imagePath != null) {
                 AsyncImage(
                     TmdbImage(imagePath).originalSizedUrl,
+                    contentScale = ContentScale.Crop,
                     contentDescription = null
                 )
             }

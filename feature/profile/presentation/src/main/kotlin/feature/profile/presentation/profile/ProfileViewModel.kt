@@ -104,7 +104,7 @@ class ProfileViewModel(
 
     fun initScreen() {
         viewModelScope.launch {
-            accountRepository.fetchAccountDetails().onOk { user ->
+            accountRepository.getAccountDetails().onOk { user ->
                 _uiModel.update { model ->
                     model.copy(
                         profileImagePath = user.profilePicturePath,

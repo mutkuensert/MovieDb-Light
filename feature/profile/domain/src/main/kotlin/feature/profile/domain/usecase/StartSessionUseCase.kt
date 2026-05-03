@@ -15,7 +15,7 @@ class StartSessionUseCase(
 ) {
     suspend operator fun invoke(): Result<User, Failure> {
         return authenticationRepository.startSession().flatMap {
-            accountRepository.fetchAccountDetails().onOk {
+            accountRepository.getAccountDetails().onOk {
                 accountRepository.fetchWatchlistMovies(SortBy.CreatedAt.ASCENDING)
                 accountRepository.fetchWatchlistTvShows(SortBy.CreatedAt.ASCENDING)
             }

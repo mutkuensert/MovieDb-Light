@@ -27,16 +27,15 @@ import core.database.account.model.FavoriteMovieIdEntity
 import core.database.account.model.FavoriteTvShowIdEntity
 import core.database.account.model.WatchlistMovieIdEntity
 import core.database.account.model.WatchlistTvShowIdEntity
-import core.database.user.UserDetails
 import core.database.user.UserManager
 import core.domain.AuthFailure
 import core.domain.Failure
 import core.domain.account.AccountRepository
 import core.domain.account.SortBy
 import core.domain.account.User
+import filmcan.core.data.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import filmcan.core.data.R
 import utils.stringresource.StringResource
 
 class AccountRepositoryImpl(
@@ -53,11 +52,7 @@ class AccountRepositoryImpl(
     private val stringResource: StringResource,
 ) : AccountRepository {
 
-    override suspend fun fetchAccountDetails(): Result<User, Failure> {
-        val user = userManager.getUser()?.toUser()
-        if (user != null) {
-            return Ok(user)
-        }
+    override suspend fun getAccountDetails(): Result<User, Failure> {
         val sessionId = sessionManager.requireSessionId()
         return accountService.getAccountDetails(sessionId)
             .mapBoth(success = { response ->
@@ -365,16 +360,6 @@ private fun TvShowDto.toFavoriteTvShowIdEntity(): FavoriteTvShowIdEntity {
 
 private fun TvShowDto.toWatchlistTvShowIdEntity(): WatchlistTvShowIdEntity {
     return WatchlistTvShowIdEntity(id)
-}
-
-private fun UserDetails.toUser(): User {
-    return User(
-        id,
-        name,
-        userName,
-        profilePicturePath,
-        includeAdult
-    )
 }
 
 private fun AccountDetailsResponse.toUser(): User {

@@ -5,7 +5,7 @@ import core.domain.Failure
 
 interface AccountRepository {
 
-    suspend fun fetchAccountDetails(): Result<User, Failure>
+    suspend fun getAccountDetails(): Result<User, Failure>
     suspend fun fetchFavoriteMovies(sortBy: SortBy.CreatedAt = SortBy.CreatedAt.ASCENDING)
     suspend fun syncMovieFavoriteStatus(
         movieId: Int,
