@@ -52,10 +52,14 @@ class Navigator {
     }
 
     private fun NavHostController.navigateToTab(route: Any, reselected: Boolean) {
+        val currentTabGraphRoute = currentBackStackEntry?.destination?.parent?.route
+
         navigate(route) {
-            val startDestination = graph.findStartDestination()
-            popUpTo(startDestination.id) {
-                saveState = !reselected
+            if (currentTabGraphRoute != null) {
+                popUpTo(currentTabGraphRoute) {
+                    inclusive = true
+                    saveState = !reselected
+                }
             }
             restoreState = !reselected
             launchSingleTop = true
