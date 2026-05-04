@@ -23,27 +23,7 @@ class Navigator {
                 when (it) {
                     is NavCommand.ToTab -> navController.navigateToTab(it.tab, it.reselected)
                     is NavCommand.ToRoute -> navController.navigate(it.route)
-                    is NavCommand.PopUpToRoute -> {
-                        navController.navigate(it.route) {
-                            if (navController.isInBackStack(it.route)) {
-                                popUpTo(it.route) {
-                                    inclusive = it.inclusive
-                                }
-                            } else {
-                                val startDestination = navController.graph.findStartDestination()
-                                popUpTo(
-                                    navController
-                                        .currentBackStackEntry
-                                        ?.destination
-                                        ?.parent //Current tab
-                                        ?.id ?: startDestination.id
-                                ) {
-                                    inclusive = true
-                                }
-                            }
-                        }
-                    }
-
+                    is NavCommand.PopUpToRoute -> navController.popUpToRoute(it.route, it.inclusive)
                     is NavCommand.Back -> navController.popBackStack()
                     NavCommand.CloseApp -> activity?.finish()
                 }
@@ -79,6 +59,26 @@ class Navigator {
             }
             restoreState = !reselected
             launchSingleTop = true
+        }
+    }
+
+    private fun NavHostController.popUpToRoute(route: Any, inclusive: Boolean) {
+        navigate(route) {
+            if (isInBackStack(route)) {
+                popUpTo(route) {
+                    this.inclusive = inclusive
+                }
+            } else {
+                val startDestination = graph.findStartDestination()
+                popUpTo(
+                    currentBackStackEntry
+                        ?.destination
+                        ?.parent //Current tab
+                        ?.id ?: startDestination.id
+                ) {
+                    this.inclusive = true
+                }
+            }
         }
     }
 }
