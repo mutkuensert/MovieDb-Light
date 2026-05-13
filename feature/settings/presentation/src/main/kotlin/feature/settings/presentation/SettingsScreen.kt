@@ -28,8 +28,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import core.ui.component.OneTimeEffect
-import utils.LocalizationHelper
 import org.koin.androidx.compose.koinViewModel
+import utils.LocalizationHelper
 
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
@@ -129,7 +129,7 @@ private fun LanguageSelectionDialog(
                     }
                 )
 
-                LocalizationHelper.availableLanguages.forEach { language ->
+                LocalizationHelper.availableLanguages.sorted().forEach { language ->
                     LanguageItem(
                         language = language,
                         isSelected = currentLanguage == language,
