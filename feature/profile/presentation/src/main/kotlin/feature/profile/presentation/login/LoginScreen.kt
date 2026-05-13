@@ -31,7 +31,6 @@ import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import core.ui.StatusBarColorHandler
 import core.ui.component.OneTimeEffect
 import core.ui.component.PrimaryButton
 import org.koin.androidx.compose.koinViewModel
@@ -60,7 +59,6 @@ fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
     }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.initScreen() }
-    StatusBarColorHandler(MaterialTheme.colorScheme.background)
 }
 
 @Composable
@@ -79,7 +77,9 @@ private fun Login(
         TopBar(onClickSettings)
 
         Image(
-            modifier = Modifier.weight(1f).size(192.dp),
+            modifier = Modifier
+                .weight(1f)
+                .size(192.dp),
             painter = painterResource(R.drawable.app_icon),
             contentDescription = null
         )

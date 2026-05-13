@@ -63,7 +63,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
 import core.ui.FilmCanTheme
 import core.ui.LightGreen
-import core.ui.StatusBarColorHandler
 import core.ui.TmdbImage
 import core.ui.component.InteractivePoster
 import core.ui.component.OneTimeEffect
@@ -103,7 +102,6 @@ fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
     )
 
     OneTimeEffect { viewModel.initScreen() }
-    StatusBarColorHandler(MaterialTheme.colorScheme.background)
 }
 
 @Composable

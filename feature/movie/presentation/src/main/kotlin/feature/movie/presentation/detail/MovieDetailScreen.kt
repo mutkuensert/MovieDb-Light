@@ -85,7 +85,6 @@ import coil3.request.allowHardware
 import coil3.request.crossfade
 import core.ui.AppColors
 import core.ui.FilmCanTheme
-import core.ui.StatusBarColorHandler
 import core.ui.TmdbImage
 import core.ui.coil.debugPlaceholder
 import core.ui.component.ImageType
@@ -120,8 +119,6 @@ fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
     OneTimeEffect {
         viewModel.getDetails()
     }
-
-    StatusBarColorHandler()
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

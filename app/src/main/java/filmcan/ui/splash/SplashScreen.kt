@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,14 +31,12 @@ import com.google.android.gms.security.ProviderInstaller
 import com.mutkuensert.filmcan.R
 import core.ui.FilmCanTheme
 import core.ui.LightBlue
-import core.ui.StatusBarColorHandler
 import filmcan.ui.SECURITY_PROVIDER_UPDATE_REQUEST_CODE
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SplashScreen() {
     val viewModel = koinViewModel<SplashViewModel>()
-    StatusBarColorHandler(MaterialTheme.colorScheme.background)
 
     Splash()
 

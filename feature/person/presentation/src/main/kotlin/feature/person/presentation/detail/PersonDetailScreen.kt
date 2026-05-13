@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import core.ui.AppColors
 import core.ui.FilmCanTheme
-import core.ui.StatusBarColorHandler
 import core.ui.component.ImageType
 import core.ui.component.OneTimeEffect
 import core.ui.component.Poster
@@ -62,8 +61,6 @@ fun PersonDetailScreen(viewModel: PersonDetailViewModel = koinViewModel()) {
         viewModel::handleMovieClick,
         viewModel::handleTvShowClick,
     )
-
-    StatusBarColorHandler(MaterialTheme.colorScheme.background)
 
     OneTimeEffect {
         viewModel.getDetails()

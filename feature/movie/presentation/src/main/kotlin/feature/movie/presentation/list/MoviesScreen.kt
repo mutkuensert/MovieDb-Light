@@ -37,7 +37,6 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import core.ui.FilmCanTheme
-import core.ui.StatusBarColorHandler
 import core.ui.component.InteractivePoster
 import feature.movie.presentation.R
 import feature.movie.presentation.list.model.MovieUiModel
@@ -58,8 +57,6 @@ fun MoviesScreen(
         viewModel::handleMovieClick,
         viewModel::handleWatchlistClick,
     )
-
-    StatusBarColorHandler(MaterialTheme.colorScheme.background)
 }
 
 private enum class MovieTab(@param:StringRes val titleRes: Int) {

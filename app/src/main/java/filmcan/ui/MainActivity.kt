@@ -13,9 +13,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.android.gms.security.ProviderInstaller
-import core.ui.LocalStatusBarBackgroundColorHandler
 import core.ui.FilmCanTheme
+import core.ui.LocalStatusBarBackgroundColorHandler
 import core.ui.StatusBarBackgroundColorHandler
+import core.ui.StatusBarColorHandler
 import core.ui.navigation.Navigator
 import filmcan.ui.home.HomeScreen
 import org.koin.android.ext.android.inject
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
                         color = MaterialTheme.colorScheme.background
                     ) {
                         HomeScreen(navigator)
+                        StatusBarColorHandler()
                     }
                 }
             }

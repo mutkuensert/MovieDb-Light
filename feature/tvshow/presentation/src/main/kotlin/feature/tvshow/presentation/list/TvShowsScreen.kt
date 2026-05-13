@@ -37,7 +37,6 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import core.ui.FilmCanTheme
-import core.ui.StatusBarColorHandler
 import core.ui.component.InteractivePoster
 import feature.tvshow.presentation.R
 import feature.tvshow.presentation.list.model.TvShowUiModel
@@ -58,8 +57,6 @@ fun TvShowsScreen(
         viewModel::handleTvShowClick,
         viewModel::handleWatchlistClick,
     )
-
-    StatusBarColorHandler(MaterialTheme.colorScheme.background)
 }
 
 private enum class TvShowTab(@param:StringRes val titleRes: Int) {
