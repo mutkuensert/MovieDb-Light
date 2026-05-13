@@ -49,7 +49,7 @@ fun SplashScreen() {
             context,
             object : ProviderInstaller.ProviderInstallListener {
                 override fun onProviderInstalled() {
-                    viewModel.navigateInsideApp()
+                    viewModel.handleSuccessfulSecurityProviderInstallation()
                 }
 
                 override fun onProviderInstallFailed(errorCode: Int, recoveryIntent: Intent?) {

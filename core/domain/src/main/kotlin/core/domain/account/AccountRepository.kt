@@ -30,5 +30,5 @@ interface AccountRepository {
 
     suspend fun clearUserRelatedData()
     suspend fun fetchFavoriteTvShows(sortBy: SortBy.CreatedAt)
-    suspend fun fetchWatchlistTvShows(sortBy: SortBy.CreatedAt)
+    suspend fun fetchWatchlistTvShows(sortBy: SortBy.CreatedAt = SortBy.CreatedAt.ASCENDING)
 }

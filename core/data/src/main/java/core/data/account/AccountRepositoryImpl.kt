@@ -138,7 +138,7 @@ class AccountRepositoryImpl(
 
             var endPage = 2
             var page = 1
-            while (page in 0..endPage) {
+            while (page in 1..endPage) {
                 accountService.getWatchlistMovies(
                     page,
                     sessionManager.requireSessionId(),
@@ -170,7 +170,7 @@ class AccountRepositoryImpl(
 
             var endPage = 2
             var page = 1
-            while (page in 0..endPage) {
+            while (page in 1..endPage) {
                 accountService.getWatchlistTvShows(
                     page,
                     sessionManager.requireSessionId(),
