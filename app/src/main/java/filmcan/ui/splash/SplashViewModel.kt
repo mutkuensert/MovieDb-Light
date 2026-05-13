@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mutkuensert.filmcan.R
 import core.domain.account.AccountRepository
+import core.domain.auth.AuthStateProvider
 import core.ui.PopupHandler
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
@@ -14,13 +15,16 @@ class SplashViewModel(
     private val navigator: Navigator,
     private val popupHandler: PopupHandler,
     private val stringResource: StringResource,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val authStateProvider: AuthStateProvider,
 ) : ViewModel() {
 
     fun handleSuccessfulSecurityProviderInstallation() {
         viewModelScope.launch {
-            accountRepository.fetchWatchlistMovies()
-            accountRepository.fetchWatchlistTvShows()
+            if (authStateProvider.loggedIn.value) {
+                accountRepository.fetchWatchlistMovies()
+                accountRepository.fetchWatchlistTvShows()
+            }
             navigator.popUpToRoute(NavTab.MovieTab)
         }
     }
