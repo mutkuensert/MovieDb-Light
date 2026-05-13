@@ -54,6 +54,10 @@ class SearchViewModel(
         _uiModel.update { it.copy(query = query) }
     }
 
+    fun handleDeleteQueryClick() {
+        _uiModel.update { it.copy(query = "") }
+    }
+
     fun handleMovieClick(id: Int) {
         navigator.navigateToRoute(MovieDetailRoute(id))
     }

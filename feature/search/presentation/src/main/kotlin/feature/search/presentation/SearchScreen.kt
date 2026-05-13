@@ -12,9 +12,11 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -52,6 +54,7 @@ fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
         searchResults,
         trending,
         viewModel::handleQueryChange,
+        viewModel::handleDeleteQueryClick,
         viewModel::handleMovieClick,
         viewModel::handlePersonClick,
         viewModel::handleTvShowClick,
@@ -64,6 +67,7 @@ private fun Search(
     searchResults: LazyPagingItems<ResultUiModel>,
     trending: LazyPagingItems<ResultUiModel>,
     onQueryChange: (query: String) -> Unit,
+    onClickDeleteQuery: () -> Unit,
     onClickMovie: (id: Int) -> Unit,
     onClickPerson: (id: Int) -> Unit,
     onClickTvShow: (id: Int) -> Unit,
@@ -79,6 +83,15 @@ private fun Search(
                     contentDescription = stringResource(R.string.search_icon),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
+            },
+            trailingIcon = {
+                IconButton(onClick = onClickDeleteQuery) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = stringResource(R.string.delete_icon),
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
             },
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.background,
