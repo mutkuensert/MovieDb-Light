@@ -1,8 +1,8 @@
 [versions]
-androidGradlePlugin = "9.1.1"
+androidGradlePlugin = "9.2.1"
 androidxActivity = "1.13.0"
 androidxBrowser = "1.10.0"
-androidxComposeBom = "2026.04.01"
+androidxComposeBom = "2026.05.01"
 androidxCore = "1.18.0"
 androidxLifecycle = "2.10.0"
 androidxNavigation = "2.9.8"
@@ -14,16 +14,15 @@ androidxTestExt = "1.3.0"
 androidxTestRunner = "1.7.0"
 chucker = "4.3.1"
 coil = "3.4.0"
-composeCompilerGradlePlugin = "2.3.20"
-coroutines = "1.10.2"
+coroutines = "1.11.0"
 desugar = "2.1.5"
 junit = "4.13.2"
 koin = "4.2.1"
-kotlin = "2.3.20"
+kotlin = "2.3.21"
 kotlinResult = "2.3.1"
 kotlinxSerialization = "1.11.0"
 okHttp3 = "5.3.2"
-paging = "3.4.2"
+paging = "3.5.0"
 palette = "1.0.0"
 retrofit = "3.0.0"
 timber = "5.0.1"
@@ -64,7 +63,6 @@ chucker = { group = "com.github.chuckerteam.chucker", name = "library", version.
 chucker-no-op = { group = "com.github.chuckerteam.chucker", name = "library-no-op", version.ref = "chucker" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
-compose-compiler-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "composeCompilerGradlePlugin" }
 desugar-jdk = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
 junit = { module = "junit:junit", version.ref = "junit" }

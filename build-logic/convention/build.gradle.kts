@@ -21,7 +21,6 @@ kotlin {
 dependencies {
     compileOnly(libs.gradle)
     compileOnly(libs.kotlin.gradle.plugin)
-    compileOnly(libs.compose.compiler.gradle.plugin)
     compileOnly(libs.org.jetbrains.kotlin.plugin.serialization.gradle.plugin)
 }
 
