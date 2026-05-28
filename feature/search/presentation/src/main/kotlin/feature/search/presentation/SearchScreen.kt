@@ -24,8 +24,11 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -73,10 +76,13 @@ private fun Search(
     onClickTvShow: (id: Int) -> Unit,
 ) {
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+        val focusRequester = remember { FocusRequester() }
         TextField(
             uiModel.query,
             onQueryChange,
-            Modifier.fillMaxWidth(),
+            Modifier
+                .focusRequester(focusRequester)
+                .fillMaxWidth(),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Filled.Search,
@@ -85,7 +91,12 @@ private fun Search(
                 )
             },
             trailingIcon = {
-                IconButton(onClick = onClickDeleteQuery) {
+                val keyboardController = LocalSoftwareKeyboardController.current
+                IconButton(onClick = {
+                    onClickDeleteQuery.invoke()
+                    focusRequester.requestFocus()
+                    keyboardController?.show()
+                }) {
                     Icon(
                         imageVector = Icons.Filled.Close,
                         contentDescription = stringResource(R.string.delete_icon),
