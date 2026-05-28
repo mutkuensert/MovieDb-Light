@@ -87,6 +87,7 @@ import core.ui.AppColors
 import core.ui.FilmCanTheme
 import core.ui.TmdbImage
 import core.ui.coil.debugPlaceholder
+import core.ui.component.CollapsableText
 import core.ui.component.ImageType
 import core.ui.component.OneTimeEffect
 import core.ui.component.PageIndicator
@@ -181,7 +182,7 @@ private fun MovieDetail(
                 }
 
                 if (uiModel.overview.isNotBlank()) {
-                    Overview(uiModel.overview, Modifier.padding(top = 8.dp))
+                    CollapsableText(uiModel.overview, Modifier.padding(top = 8.dp))
                 }
 
                 if (uiModel.youtubeVideoId != null) {
@@ -596,39 +597,6 @@ private fun FirstPageHintEffect(pagerState: PagerState, showHint: Boolean) {
                     animationSpec = tween()
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun Overview(overview: String, modifier: Modifier = Modifier) {
-    var collapsed by remember { mutableStateOf(true) }
-
-    Box(modifier.clickable {
-        collapsed = !collapsed
-    }) {
-        Text(
-            modifier = Modifier
-                .then(if (collapsed) Modifier.height(92.dp) else Modifier),
-            text = overview,
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.bodyMedium
-        )
-        if (collapsed) {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(36.dp)
-                    .align(Alignment.BottomEnd)
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                MaterialTheme.colorScheme.background
-                            ),
-                        )
-                    )
-            )
         }
     }
 }
