@@ -167,7 +167,7 @@ class ProfileViewModel(
         }
     }
 
-    fun handleProfilePictureClick() {
+    fun handleProfileClick() {
         navigator.navigateToRoute(SettingsRoute)
     }
 }

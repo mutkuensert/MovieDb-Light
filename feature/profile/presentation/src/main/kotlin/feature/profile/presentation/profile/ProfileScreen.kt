@@ -98,7 +98,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
         viewModel::handleSortFavoriteTvShowsClick,
         viewModel::handleSortWatchlistTvShowsClick,
         viewModel::handleSortRatedTvShowsClick,
-        viewModel::handleProfilePictureClick,
+        viewModel::handleProfileClick,
     )
 
     OneTimeEffect { viewModel.initScreen() }
@@ -122,14 +122,14 @@ private fun Profile(
     onClickSortFavoriteTvShowsBy: (sortBy: SortByUiModel) -> Unit,
     onClickSortWatchlistTvShowsBy: (sortBy: SortByUiModel) -> Unit,
     onClickSortRatedTvShowsBy: (sortBy: SortByUiModel) -> Unit,
-    onClickProfilePicture: () -> Unit,
+    onClickProfile: () -> Unit,
 ) {
     Column(
         Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        TopBar(uiModel.profileImagePath, uiModel.name, onClickProfilePicture, onLogoutClick)
+        TopBar(uiModel.profileImagePath, uiModel.name, onClickProfile, onLogoutClick)
 
         val coroutineScope = rememberCoroutineScope()
         val pagerState = rememberPagerState(pageCount = { ProfileTab.entries.size })
@@ -562,7 +562,7 @@ private fun FilterPreview() {
 private fun TopBar(
     imagePath: String?,
     text: String,
-    onClickProfilePicture: () -> Unit,
+    onClickProfile: () -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -573,30 +573,34 @@ private fun TopBar(
             .height(60.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .clip(CircleShape)
-                .size(40.dp)
-                .background(Color.White)
-                .clickable { onClickProfilePicture() }
+        Row(
+            Modifier.clickable { onClickProfile() },
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            if (imagePath != null) {
-                AsyncImage(
-                    TmdbImage(imagePath).originalSizedUrl,
-                    contentScale = ContentScale.Crop,
-                    contentDescription = null
-                )
+            Box(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .clip(CircleShape)
+                    .size(40.dp)
+                    .background(Color.White)
+            ) {
+                if (imagePath != null) {
+                    AsyncImage(
+                        TmdbImage(imagePath).originalSizedUrl,
+                        contentScale = ContentScale.Crop,
+                        contentDescription = null
+                    )
+                }
             }
+
+            Spacer(Modifier.width(16.dp))
+
+            Text(
+                text = text,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Bold
+            )
         }
-
-        Spacer(Modifier.width(16.dp))
-
-        Text(
-            text = text,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.Bold
-        )
 
         Spacer(Modifier.weight(1f))
 
