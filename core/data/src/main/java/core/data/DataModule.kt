@@ -24,6 +24,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import utils.stringresource.StringResource
+import java.util.concurrent.TimeUnit
 
 val dataModule = module {
     single { getJson() }
@@ -81,5 +82,6 @@ private fun getClient(
             level = HttpLoggingInterceptor.Level.BODY
         })
         .addInterceptor(ChuckerInterceptor(context))
+        .callTimeout(30000L, TimeUnit.SECONDS)
         .build()
 }
