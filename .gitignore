@@ -48,3 +48,8 @@ reports
 *.DS_STORE
 
 .kotlin/
+
+**/google-services.json
+
+**/app-release.dm
+**/output-metadata.json

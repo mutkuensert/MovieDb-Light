@@ -54,7 +54,7 @@ internal fun Project.configureAndroidLibrary(extension: LibraryExtension) {
         defaultConfig {
             minSdk = ProjectConfigs.minSdk
             testInstrumentationRunner = ProjectConfigs.testInstrumentationRunner
-            consumerProguardFiles("consumer-rules.pro")
+            //consumerProguardFiles("consumer-rules.pro")
         }
 
         compileOptions {

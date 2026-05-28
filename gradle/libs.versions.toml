@@ -16,6 +16,9 @@ chucker = "4.3.1"
 coil = "3.4.0"
 coroutines = "1.11.0"
 desugar = "2.1.5"
+firebaseBom = "34.13.0"
+firebaseCrashlyticsPlugin = "3.0.7"
+gmsGoogleServices = "4.4.4"
 junit = "4.13.2"
 koin = "4.2.1"
 kotlin = "2.3.21"
@@ -64,6 +67,9 @@ chucker-no-op = { group = "com.github.chuckerteam.chucker", name = "library-no-o
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 desugar-jdk = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
 junit = { module = "junit:junit", version.ref = "junit" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
@@ -91,3 +97,5 @@ android-test = { id = "com.android.test", version.ref = "androidGradlePlugin" }
 androidx-room = { id = "androidx.room", version.ref = "androidxRoom" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsPlugin" }
+google-services = { id = "com.google.gms.google-services", version.ref = "gmsGoogleServices" }
