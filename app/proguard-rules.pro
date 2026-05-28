@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# NetworkResult is a Kotlin typealias for Result<T, NetworkError>; keep the
+# runtime result classes
+-keep class com.github.michaelbull.result.Result { *; }
