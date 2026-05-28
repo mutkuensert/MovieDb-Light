@@ -133,7 +133,7 @@ private fun Profile(
 
         val coroutineScope = rememberCoroutineScope()
         val pagerState = rememberPagerState(pageCount = { ProfileTab.entries.size })
-        var selectedTabIndex by remember { mutableIntStateOf(0) }
+        var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
         LaunchedEffect(pagerState.currentPage) {
             selectedTabIndex = pagerState.currentPage
         }
