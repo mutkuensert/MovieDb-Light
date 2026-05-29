@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">FilmCan</string>
     <string name="connection_is_not_secure">Connection is not secure.</string>
-    <string name="app_icon">App icon</string>
 </resources>

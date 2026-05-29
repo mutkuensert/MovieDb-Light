@@ -2,7 +2,7 @@ package filmcan
 
 import filmcan.ui.MainViewModel
 import filmcan.ui.home.HomeViewModel
-import filmcan.ui.splash.SplashViewModel
+import feature.splash.presentation.SplashViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 

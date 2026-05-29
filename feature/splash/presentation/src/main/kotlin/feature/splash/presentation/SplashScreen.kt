@@ -1,4 +1,4 @@
-package filmcan.ui.splash
+package feature.splash.presentation
 
 import android.content.Intent
 import androidx.activity.compose.LocalActivity
@@ -35,12 +35,13 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
-import com.mutkuensert.filmcan.R
 import core.ui.FilmCanTheme
 import core.ui.LightBlue
-import filmcan.ui.SECURITY_PROVIDER_UPDATE_REQUEST_CODE
 import org.koin.androidx.compose.koinViewModel
 import timber.log.Timber
+import utils.Constants
+
+const val SECURITY_PROVIDER_UPDATE_REQUEST_CODE = 5
 
 @Composable
 fun SplashScreen() {
@@ -95,29 +96,32 @@ private fun setupRemoteConfig(
 ) {
     val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
     val configSettings = remoteConfigSettings {
-        minimumFetchIntervalInSeconds = 86400
+        minimumFetchIntervalInSeconds = 36000
+        fetchTimeoutInSeconds = Constants.TIMEOUT_SEC
     }
-    remoteConfig.setConfigSettingsAsync(configSettings)
-    remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
-        if (task.isSuccessful) {
-            onSuccess.invoke(remoteConfig.getString(TMDB_API_KEY_NAME))
-        } else {
-            onFailure.invoke()
-        }
-    }
-    remoteConfig.addOnConfigUpdateListener(object : ConfigUpdateListener {
-        override fun onUpdate(configUpdate: ConfigUpdate) {
-            if (configUpdate.updatedKeys.contains(TMDB_API_KEY_NAME)) {
-                remoteConfig.activate().addOnCompleteListener {
-                    onUpdated(remoteConfig.getString(TMDB_API_KEY_NAME))
-                }
+    remoteConfig.setConfigSettingsAsync(configSettings).addOnCompleteListener {
+        remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                onSuccess.invoke(remoteConfig.getString(TMDB_API_KEY_NAME))
+            } else {
+                onFailure.invoke()
             }
         }
 
-        override fun onError(error: FirebaseRemoteConfigException) {
-            Timber.e(error)
-        }
-    })
+        remoteConfig.addOnConfigUpdateListener(object : ConfigUpdateListener {
+            override fun onUpdate(configUpdate: ConfigUpdate) {
+                if (configUpdate.updatedKeys.contains(TMDB_API_KEY_NAME)) {
+                    remoteConfig.activate().addOnCompleteListener {
+                        onUpdated(remoteConfig.getString(TMDB_API_KEY_NAME))
+                    }
+                }
+            }
+
+            override fun onError(error: FirebaseRemoteConfigException) {
+                Timber.e(error)
+            }
+        })
+    }
 }
 
 @Composable

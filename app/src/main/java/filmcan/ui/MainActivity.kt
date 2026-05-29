@@ -18,11 +18,10 @@ import core.ui.LocalStatusBarBackgroundColorHandler
 import core.ui.StatusBarBackgroundColorHandler
 import core.ui.StatusBarColorHandler
 import core.ui.navigation.Navigator
+import feature.splash.presentation.SECURITY_PROVIDER_UPDATE_REQUEST_CODE
 import filmcan.ui.home.HomeScreen
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
-internal const val SECURITY_PROVIDER_UPDATE_REQUEST_CODE = 5
 
 class MainActivity : ComponentActivity() {
     private val navigator: Navigator by inject()

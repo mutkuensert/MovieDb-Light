@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_icon">App icon</string>
+    <string name="something_is_wrong">Oops! Something went wrong. Please try again later.</string>
+    <string name="connection_is_not_secure">Connection is not secure.</string>
+</resources>

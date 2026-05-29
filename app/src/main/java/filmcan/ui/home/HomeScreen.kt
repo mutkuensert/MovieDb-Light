@@ -72,10 +72,10 @@ import feature.profile.presentation.profile.ProfileScreen
 import feature.search.presentation.SearchRoute
 import feature.search.presentation.SearchScreen
 import feature.settings.presentation.SettingsScreen
+import feature.splash.presentation.SplashScreen
 import feature.tvshow.presentation.detail.TvShowDetailScreen
 import feature.tvshow.presentation.list.TvShowsScreen
 import feature.tvshow.presentation.reviews.TvShowReviewsScreen
-import filmcan.ui.splash.SplashScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

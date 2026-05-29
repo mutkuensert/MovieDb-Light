@@ -24,6 +24,7 @@ import org.koin.dsl.binds
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import utils.Constants
 import utils.stringresource.StringResource
 import java.util.concurrent.TimeUnit
 
@@ -85,6 +86,6 @@ private fun getClient(
             level = HttpLoggingInterceptor.Level.BODY
         })
         .addInterceptor(ChuckerInterceptor(context))
-        .callTimeout(30000L, TimeUnit.SECONDS)
+        .callTimeout(Constants.TIMEOUT_SEC, TimeUnit.SECONDS)
         .build()
 }

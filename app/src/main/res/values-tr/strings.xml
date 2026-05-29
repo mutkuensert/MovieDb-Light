@@ -2,5 +2,4 @@
 <resources>
     <string name="app_name">FilmCan</string>
     <string name="connection_is_not_secure">Bağlantı güvenli değil.</string>
-    <string name="app_icon">Uygulama ikonu</string>
 </resources>

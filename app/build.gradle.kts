@@ -20,6 +20,7 @@ dependencies {
     implementation(projects.core.ui)
     implementation(projects.core.data)
     implementation(projects.core.domain)
+    implementation(projects.feature.splash.presentation)
     implementation(projects.feature.movie.presentation)
     implementation(projects.feature.movie.injection)
     implementation(projects.feature.tvshow.presentation)
@@ -38,5 +39,4 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
-    implementation(libs.firebase.remote.config)
 }
