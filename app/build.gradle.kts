@@ -4,6 +4,12 @@ plugins {
 
 android {
     buildTypes {
+        create("demo") {
+            initWith(getByName("debug"))
+            matchingFallbacks += listOf("debug")
+            versionNameSuffix = "-demo"
+        }
+
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true

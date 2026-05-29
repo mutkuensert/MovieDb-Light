@@ -28,18 +28,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.security.ProviderInstaller
-import com.google.firebase.Firebase
-import com.google.firebase.remoteconfig.ConfigUpdate
-import com.google.firebase.remoteconfig.ConfigUpdateListener
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
-import com.google.firebase.remoteconfig.remoteConfig
-import com.google.firebase.remoteconfig.remoteConfigSettings
 import core.ui.FilmCanTheme
 import core.ui.LightBlue
 import org.koin.androidx.compose.koinViewModel
-import timber.log.Timber
-import utils.Constants
 
 const val SECURITY_PROVIDER_UPDATE_REQUEST_CODE = 5
 
@@ -85,42 +76,6 @@ fun SplashScreen() {
                 }
             })
 
-    }
-}
-
-private const val TMDB_API_KEY_NAME = "TMDB_API_KEY"
-private fun setupRemoteConfig(
-    onSuccess: (tmdbApiKey: String) -> Unit,
-    onUpdated: (tmdbApiKey: String) -> Unit,
-    onFailure: () -> Unit
-) {
-    val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
-    val configSettings = remoteConfigSettings {
-        minimumFetchIntervalInSeconds = 36000
-        fetchTimeoutInSeconds = Constants.TIMEOUT_SEC
-    }
-    remoteConfig.setConfigSettingsAsync(configSettings).addOnCompleteListener {
-        remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                onSuccess.invoke(remoteConfig.getString(TMDB_API_KEY_NAME))
-            } else {
-                onFailure.invoke()
-            }
-        }
-
-        remoteConfig.addOnConfigUpdateListener(object : ConfigUpdateListener {
-            override fun onUpdate(configUpdate: ConfigUpdate) {
-                if (configUpdate.updatedKeys.contains(TMDB_API_KEY_NAME)) {
-                    remoteConfig.activate().addOnCompleteListener {
-                        onUpdated(remoteConfig.getString(TMDB_API_KEY_NAME))
-                    }
-                }
-            }
-
-            override fun onError(error: FirebaseRemoteConfigException) {
-                Timber.e(error)
-            }
-        })
     }
 }
 

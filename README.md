@@ -22,6 +22,7 @@ https://github.com/user-attachments/assets/7051be9f-eea3-448f-933e-7dc669888991
 - [Dependency Management](#dependency-management)
 - [Network Layer](#network-layer)
 - [Getting Started](#getting-started)
+  - [Demo Variant](#demo-variant)
 
 ## Architecture Overview
 
@@ -313,5 +314,11 @@ class MyRepositoryImpl(
   API_KEY_TMDB=your_api_key
   ```
 
-This structured approach ensures a clean separation of concerns and makes your codebase more
-maintainable and testable.
+### Demo Variant
+
+The app includes a `demo` build variant for people who want to try the project from the public
+repository.
+
+The demo variant has been created to avoid Firebase setup friction. Firebase Remote
+Config and others are abstracted per variant so contributors and reviewers can run the demo build without
+having to configure a Firebase project first.
