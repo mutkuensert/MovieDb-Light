@@ -57,7 +57,7 @@ fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
             viewModel::handleSettingsClick,
             viewModel::handleAboutClick,
             viewModel::login,
-            viewModel.requestToken
+            onGetRequestToken = { viewModel.requestToken }
         )
     }
 
@@ -70,7 +70,7 @@ private fun Login(
     onClickSettings: () -> Unit,
     onClickAbout: () -> Unit,
     onClickLogin: () -> Unit,
-    requestToken: String?
+    onGetRequestToken: () -> String?,
 ) {
     Column(
         modifier = Modifier
@@ -106,7 +106,7 @@ private fun Login(
     LaunchedEffect(shouldOpenLoginWebPage) {
         if (shouldOpenLoginWebPage) {
             launchLoginWebPage(
-                requireNotNull(requestToken) { "Cannot be null if should open" },
+                requireNotNull(onGetRequestToken.invoke()) { "Cannot be null if should open" },
                 context
             )
         }
