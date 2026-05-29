@@ -14,4 +14,6 @@
     <string name="ascending">Ascending</string>
     <string name="sort_by_added_time">Sort by added time</string>
     <string name="settings_button_icon">Settings button icon</string>
+    <string name="about">About</string>
+    <string name="tmdb_api_attribution">This product uses the TMDB API but is not endorsed or certified by TMDB.</string>
 </resources>

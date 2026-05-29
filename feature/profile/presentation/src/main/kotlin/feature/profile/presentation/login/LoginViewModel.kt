@@ -9,6 +9,7 @@ import core.domain.auth.AuthStateProvider
 import core.domain.auth.AuthenticationRepository
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
+import core.ui.route.AboutRoute
 import core.ui.route.SettingsRoute
 import core.ui.showFailurePopup
 import feature.profile.domain.usecase.StartSessionUseCase
@@ -72,5 +73,9 @@ class LoginViewModel(
 
     fun handleSettingsClick() {
         navigator.navigateToRoute(SettingsRoute)
+    }
+
+    fun handleAboutClick() {
+        navigator.navigateToRoute(AboutRoute)
     }
 }

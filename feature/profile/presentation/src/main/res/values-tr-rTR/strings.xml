@@ -14,4 +14,6 @@
     <string name="ascending">Artan</string>
     <string name="sort_by_added_time">Ekleme zamanına göre sırala</string>
     <string name="settings_button_icon">Ayarlar butonu ikonu</string>
+    <string name="about">Hakkında</string>
+    <string name="tmdb_api_attribution">Bu ürün TMDB API\'sini kullanır ancak TMDB tarafından desteklenmez veya onaylanmaz.</string>
 </resources>

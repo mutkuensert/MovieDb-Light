@@ -18,6 +18,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,6 +55,7 @@ fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
         Login(
             shouldOpenLoginWebPage,
             viewModel::handleSettingsClick,
+            viewModel::handleAboutClick,
             viewModel::login,
             viewModel.requestToken
         )
@@ -65,6 +68,7 @@ fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
 private fun Login(
     shouldOpenLoginWebPage: Boolean,
     onClickSettings: () -> Unit,
+    onClickAbout: () -> Unit,
     onClickLogin: () -> Unit,
     requestToken: String?
 ) {
@@ -74,7 +78,10 @@ private fun Login(
             .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TopBar(onClickSettings)
+        TopBar(
+            onClickSettings = onClickSettings,
+            onClickAbout = onClickAbout
+        )
 
         Image(
             modifier = Modifier
@@ -107,7 +114,11 @@ private fun Login(
 }
 
 @Composable
-private fun TopBar(onClickSettings: () -> Unit, modifier: Modifier = Modifier) {
+private fun TopBar(
+    onClickSettings: () -> Unit,
+    onClickAbout: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
@@ -116,6 +127,12 @@ private fun TopBar(onClickSettings: () -> Unit, modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(Modifier.weight(1f))
+        TextButton(onClick = onClickAbout) {
+            Text(
+                text = stringResource(feature.profile.presentation.R.string.about),
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
         IconButton(onClick = onClickSettings, Modifier.padding(end = 16.dp)) {
             Icon(
                 imageVector = Icons.Filled.Settings,
