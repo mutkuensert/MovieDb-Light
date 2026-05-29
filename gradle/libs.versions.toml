@@ -70,6 +70,7 @@ desugar-jdk = { group = "com.android.tools", name = "desugar_jdk_libs", version.
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+firebase-remote-config = { group = "com.google.firebase", name = "firebase-config" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
 junit = { module = "junit:junit", version.ref = "junit" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }

@@ -11,6 +11,7 @@ import core.data.network.ResultCallAdapterFactory
 import core.data.network.interceptor.AccountIdInterceptor
 import core.data.network.interceptor.ApiKeyInterceptor
 import core.database.user.UserManager
+import core.domain.ApiKeyManager
 import core.domain.account.AccountRepository
 import core.domain.auth.AuthStateProvider
 import core.domain.auth.AuthenticationRepository
@@ -31,7 +32,7 @@ val dataModule = module {
     single { UserManager(androidContext(), get()) }
     single {
         Retrofit.Builder()
-            .client(getClient(get(), get()))
+            .client(getClient(get(), get(), get()))
             .addCallAdapterFactory(ResultCallAdapterFactory(get<Json>(), get<StringResource>()))
             .baseUrl(Configs.BASE_URL)
             .addConverterFactory(get<Json>().asConverterFactory("application/json; charset=UTF8".toMediaType()))
@@ -58,6 +59,7 @@ val dataModule = module {
             get(),
         )
     }
+    single<ApiKeyManager> { ApiKeyManagerImpl() }
 }
 
 private fun getJson(): Json {
@@ -73,10 +75,11 @@ private fun getJson(): Json {
 private fun getClient(
     context: Context,
     userManager: UserManager,
+    apiKeyManager: ApiKeyManager,
 ): OkHttpClient {
     return OkHttpClient()
         .newBuilder()
-        .addInterceptor(ApiKeyInterceptor())
+        .addInterceptor(ApiKeyInterceptor(apiKeyManager))
         .addInterceptor(AccountIdInterceptor(userManager))
         .addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
