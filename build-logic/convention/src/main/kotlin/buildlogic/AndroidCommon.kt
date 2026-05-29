@@ -8,15 +8,15 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 internal fun Project.configureAndroidApplication(extension: ApplicationExtension) {
     extension.apply {
-        namespace = ProjectConfigs.applicationId
-        compileSdk = ProjectConfigs.compileSdk
+        namespace = ProjectConfigs.APPLICATION_ID
+        compileSdk = ProjectConfigs.COMPILE_SDK
 
         defaultConfig {
-            applicationId = ProjectConfigs.applicationId
-            minSdk = ProjectConfigs.minSdk
-            targetSdk = ProjectConfigs.targetSdk
-            versionCode = ProjectConfigs.versionCode
-            versionName = ProjectConfigs.versionName
+            applicationId = ProjectConfigs.APPLICATION_ID
+            minSdk = ProjectConfigs.MIN_SDK
+            targetSdk = ProjectConfigs.TARGET_SDK
+            versionCode = ProjectConfigs.VERSION_CODE
+            versionName = ProjectConfigs.VERSION_NAME
 
             vectorDrawables {
                 useSupportLibrary = true
@@ -49,11 +49,11 @@ internal fun Project.configureAndroidApplication(extension: ApplicationExtension
 
 internal fun Project.configureAndroidLibrary(extension: LibraryExtension) {
     extension.apply {
-        compileSdk = ProjectConfigs.compileSdk
+        compileSdk = ProjectConfigs.COMPILE_SDK
 
         defaultConfig {
-            minSdk = ProjectConfigs.minSdk
-            testInstrumentationRunner = ProjectConfigs.testInstrumentationRunner
+            minSdk = ProjectConfigs.MIN_SDK
+            testInstrumentationRunner = ProjectConfigs.TEST_INSTRUMENTATION_RUNNER
             //consumerProguardFiles("consumer-rules.pro")
         }
 
