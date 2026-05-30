@@ -10,7 +10,7 @@ import com.google.crypto.tink.integration.android.AndroidKeysetManager
 
 class EncryptedPreferences(context: Context, fileName: String) {
     private val sharedPreferences =
-        context.getSharedPreferences("encrpyted_preferences", Context.MODE_PRIVATE)
+        context.getSharedPreferences(fileName, Context.MODE_PRIVATE)
 
     init {
         AeadConfig.register()
@@ -29,7 +29,7 @@ class EncryptedPreferences(context: Context, fileName: String) {
     }
 
     fun putString(key: String, value: String): Boolean {
-        val encryptedText = encryption.encrypt(value.toByteArray(), null)
+        val encryptedText = encryption.encrypt(value.toByteArray(), key.toByteArray())
         return sharedPreferences.edit()
             .putString(key, Base64.encodeToString(encryptedText, Base64.DEFAULT)).commit()
     }
@@ -38,7 +38,7 @@ class EncryptedPreferences(context: Context, fileName: String) {
         val encryptedText = sharedPreferences.getString(key, null) ?: return null
         return encryption.decrypt(
             Base64.decode(encryptedText, Base64.DEFAULT),
-            null
+            key.toByteArray()
         ).toString(Charsets.UTF_8)
     }
 

@@ -126,13 +126,13 @@ private fun TopBar(
             .height(60.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Spacer(Modifier.weight(1f))
-        TextButton(onClick = onClickAbout) {
+        TextButton(onClick = onClickAbout, Modifier.padding(start = 16.dp)) {
             Text(
                 text = stringResource(feature.profile.presentation.R.string.about),
                 color = MaterialTheme.colorScheme.onBackground
             )
         }
+        Spacer(Modifier.weight(1f))
         IconButton(onClick = onClickSettings, Modifier.padding(end = 16.dp)) {
             Icon(
                 imageVector = Icons.Filled.Settings,
