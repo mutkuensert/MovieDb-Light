@@ -16,4 +16,5 @@
     <string name="something_is_wrong">Üzgünüz! İsteğinizde bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
     <string name="update_your_device">Üzgünüz! İsteğinizde bir hata oluştu. Cihazınızı güncellemeniz sorunu çözebilir.</string>
     <string name="logout_attempt_has_failed">Çıkış yapma işlemi başarısız oldu.</string>
+    <string name="api_key_could_not_be_retrieved">Api anahtarı çekilemedi!</string>
 </resources>

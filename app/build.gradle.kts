@@ -20,6 +20,20 @@ android {
             )
         }
     }
+
+    sourceSets {
+        getByName("debug") {
+            kotlin {
+                directories.add("src/firebase/kotlin")
+            }
+        }
+
+        getByName("release") {
+            kotlin {
+                directories.add("src/firebase/kotlin")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -45,4 +59,5 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.remote.config)
 }

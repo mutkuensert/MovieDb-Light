@@ -1,5 +1,7 @@
 package core.domain
 
+import kotlinx.coroutines.flow.MutableStateFlow
+
 interface ApiKeyManager {
-    var tmdbApiKey: String
+    val tmdbApiKey: MutableStateFlow<String?>
 }

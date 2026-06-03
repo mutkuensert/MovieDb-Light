@@ -63,6 +63,13 @@ internal fun Project.configureAndroidLibrary(extension: LibraryExtension) {
             compileOptions.isCoreLibraryDesugaringEnabled = true
         }
 
+        buildTypes {
+            create("demo") {
+                initWith(getByName("debug"))
+                matchingFallbacks += listOf("debug")
+            }
+        }
+
         buildFeatures {
             compose = false
             aidl = false

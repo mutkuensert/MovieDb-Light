@@ -16,4 +16,5 @@
     <string name="something_is_wrong">Oops! Something went wrong with your request. Please try again later.</string>
     <string name="update_your_device">Oops! Something went wrong with your request. Updating your device may fix the problem.</string>
     <string name="logout_attempt_has_failed">Logout attempt has failed.</string>
+    <string name="api_key_could_not_be_retrieved">Api key could not be retrieved!</string>
 </resources>

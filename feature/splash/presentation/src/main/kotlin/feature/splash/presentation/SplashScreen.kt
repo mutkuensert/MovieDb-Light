@@ -43,12 +43,6 @@ fun SplashScreen() {
     val context = LocalContext.current
     val activity = LocalActivity.current
     LaunchedEffect(Unit) {
-        setupRemoteConfig(
-            viewModel::handleSuccessfulRemoteConfigFetch,
-            viewModel::handleUpdatedRemoteConfigFetch,
-            viewModel::handleFailedRemoteConfigFetch
-        )
-
         if (activity == null) return@LaunchedEffect
 
         ProviderInstaller.installIfNeededAsync(
