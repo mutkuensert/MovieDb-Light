@@ -7,21 +7,42 @@ import com.google.firebase.remoteconfig.remoteConfigSettings
 import utils.Constants
 import utils.Constants.REMOTE_CONFIG_TMDB_API_KEY_NAME
 
-fun fetchRemoteConfig(
-    onSuccess: (tmdbApiKey: String) -> Unit,
-    onFailure: () -> Unit
-) {
-    val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
-    val configSettings = remoteConfigSettings {
-        minimumFetchIntervalInSeconds = 36000
-        fetchTimeoutInSeconds = Constants.TIMEOUT_SEC
-    }
-    remoteConfig.setConfigSettingsAsync(configSettings).addOnCompleteListener {
-        remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                onSuccess.invoke(remoteConfig.getString(REMOTE_CONFIG_TMDB_API_KEY_NAME))
-            } else {
-                onFailure.invoke()
+class RemoteConfig {
+    private var isRequesting = false
+    private val pendingSuccessListeners = mutableListOf<(String) -> Unit>()
+    private val pendingFailureListeners = mutableListOf<() -> Unit>()
+
+    fun fetch(
+        onSuccess: (tmdbApiKey: String) -> Unit,
+        onFailure: () -> Unit
+    ) {
+        pendingSuccessListeners.add(onSuccess)
+        pendingFailureListeners.add(onFailure)
+
+        if (isRequesting) {
+            return
+        }
+        isRequesting = true
+
+        val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 36000
+            fetchTimeoutInSeconds = Constants.TIMEOUT_SEC
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings).addOnCompleteListener {
+            remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    pendingSuccessListeners.forEach {
+                        it.invoke(remoteConfig.getString(REMOTE_CONFIG_TMDB_API_KEY_NAME))
+                    }
+                } else {
+                    pendingFailureListeners.forEach {
+                        it.invoke()
+                    }
+                }
+                pendingSuccessListeners.clear()
+                pendingFailureListeners.clear()
+                isRequesting = false
             }
         }
     }

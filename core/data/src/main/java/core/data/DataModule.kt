@@ -33,7 +33,15 @@ val dataModule = module {
     single { UserManager(androidContext(), get()) }
     single {
         Retrofit.Builder()
-            .client(getClient(get(), get(), get(), get()))
+            .client(
+                getClient(
+                    get(),
+                    get(),
+                    get(),
+                    get(),
+                    get()
+                )
+            )
             .addCallAdapterFactory(ResultCallAdapterFactory(get<Json>(), get<StringResource>()))
             .baseUrl(Configs.BASE_URL)
             .addConverterFactory(get<Json>().asConverterFactory("application/json; charset=UTF8".toMediaType()))
@@ -61,6 +69,7 @@ val dataModule = module {
         )
     }
     single<ApiKeyManager> { ApiKeyManagerImpl() }
+    single { RemoteConfig() }
 }
 
 private fun getJson(): Json {
@@ -78,10 +87,11 @@ private fun getClient(
     userManager: UserManager,
     apiKeyManager: ApiKeyManager,
     stringResource: StringResource,
+    remoteConfig: RemoteConfig,
 ): OkHttpClient {
     return OkHttpClient()
         .newBuilder()
-        .addInterceptor(ApiKeyInterceptor(apiKeyManager, getJson(), stringResource))
+        .addInterceptor(ApiKeyInterceptor(apiKeyManager, getJson(), stringResource, remoteConfig))
         .addInterceptor(AccountIdInterceptor(userManager))
         .addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY

@@ -1,6 +1,6 @@
 package core.data.network.interceptor
 
-import core.data.fetchRemoteConfig
+import core.data.RemoteConfig
 import core.data.network.ErrorResponse
 import core.domain.ApiKeyManager
 import filmcan.core.data.R
@@ -20,12 +20,13 @@ class ApiKeyInterceptor(
     private val apiKeyManager: ApiKeyManager,
     private val json: Json,
     private val stringResource: StringResource,
+    private val remoteConfig: RemoteConfig,
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val baseRequest = chain.request()
         if (apiKeyManager.tmdbApiKey.value == null) {
-            fetchRemoteConfig(
+            remoteConfig.fetch(
                 onSuccess = { apiKey ->
                     apiKeyManager.tmdbApiKey.value = apiKey
                 },
