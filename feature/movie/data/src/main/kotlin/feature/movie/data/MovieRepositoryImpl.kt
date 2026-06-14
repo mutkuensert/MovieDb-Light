@@ -1,5 +1,8 @@
 package feature.movie.data
 
+import javax.inject.Inject
+import javax.inject.Singleton
+
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -41,7 +44,8 @@ import utils.LocalizationHelper
     ExperimentalPagingApi::class,
     ExperimentalCoroutinesApi::class
 )
-class MovieRepositoryImpl(
+@Singleton
+class MovieRepositoryImpl @Inject constructor(
     private val movieService: MovieService,
     private val popularMovieDao: PopularMovieDao,
     private val nowPlayingMovieDao: NowPlayingMovieDao,

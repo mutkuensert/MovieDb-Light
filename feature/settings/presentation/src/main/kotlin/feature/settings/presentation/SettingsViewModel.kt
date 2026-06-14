@@ -1,6 +1,8 @@
 package feature.settings.presentation
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import feature.settings.domain.usecase.SetRemoteContentLanguagePreferenceUseCase
 import feature.settings.domain.SettingsRepository
@@ -9,7 +11,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(
+
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val setRemoteContentLanguagePreferenceUseCase: SetRemoteContentLanguagePreferenceUseCase,
 ) : ViewModel() {

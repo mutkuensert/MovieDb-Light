@@ -50,10 +50,10 @@ import core.ui.darkenBy
 import feature.person.presentation.R
 import feature.person.presentation.detail.model.PersonDetailUiModel
 import feature.person.presentation.detail.model.ProductionUiModel
-import org.koin.androidx.compose.koinViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
-fun PersonDetailScreen(viewModel: PersonDetailViewModel = koinViewModel()) {
+fun PersonDetailScreen(viewModel: PersonDetailViewModel = hiltViewModel()) {
     val uiModel by viewModel.uiModel.collectAsStateWithLifecycle()
 
     PersonDetail(

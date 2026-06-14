@@ -1,5 +1,8 @@
 package feature.tvshow.data
 
+import javax.inject.Inject
+import javax.inject.Singleton
+
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -38,7 +41,8 @@ import utils.LocalizationHelper
     ExperimentalPagingApi::class,
     ExperimentalCoroutinesApi::class
 )
-class TvShowRepositoryImpl(
+@Singleton
+class TvShowRepositoryImpl @Inject constructor(
     private val tvShowService: TvShowService,
     private val popularTvShowDao: PopularTvShowDao,
     private val tvShowAiringTodayDao: TvShowsAiringTodayDao,

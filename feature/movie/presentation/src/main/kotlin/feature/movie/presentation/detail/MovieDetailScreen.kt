@@ -100,10 +100,10 @@ import feature.movie.presentation.detail.model.CrewPersonUiModel
 import feature.movie.presentation.detail.model.MovieDetailUiModel
 import feature.movie.presentation.detail.model.PersonUiModel
 import feature.movie.presentation.detail.model.ReviewUiModel
-import org.koin.androidx.compose.koinViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
-fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
+fun MovieDetailScreen(viewModel: MovieDetailViewModel = hiltViewModel()) {
     val uiModel by viewModel.uiModel.collectAsStateWithLifecycle()
 
     MovieDetail(

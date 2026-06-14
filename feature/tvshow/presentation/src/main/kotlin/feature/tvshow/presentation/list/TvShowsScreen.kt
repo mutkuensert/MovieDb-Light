@@ -43,11 +43,11 @@ import feature.tvshow.presentation.list.model.TvShowUiModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun TvShowsScreen(
-    viewModel: TvShowsViewModel = koinViewModel()
+    viewModel: TvShowsViewModel = hiltViewModel()
 ) {
     TvShows(
         viewModel.upcomingTvShows,

@@ -27,7 +27,7 @@ abstract class FeatureModuleCreatorTask : DefaultTask() {
     fun createModule() {
         val featureName = this.featureName ?: defaultFeatureName
         val featureDir = project.rootDir.resolve("feature/$featureName")
-        val modules = listOf("data", "domain", "presentation", "injection")
+        val modules = listOf("data", "domain", "presentation")
         val settingsFile = project.rootDir.resolve("settings.gradle.kts")
 
         featureDir.mkdirs()
@@ -78,26 +78,6 @@ abstract class FeatureModuleCreatorTask : DefaultTask() {
 
                     dependencies {
                         implementation(projects.feature.$featureName.domain)
-                    }
-                """.trimIndent()
-
-                "injection" -> """
-                    plugins {
-                        id("base-library")
-                    }
-
-                    android {
-                        namespace = "$featureName.injection"
-                    }
-
-                    dependencies {
-                        implementation(projects.core.data)
-                        implementation(projects.core.domain)
-                        implementation(projects.core.ui)
-                        implementation(projects.feature.$featureName.data)
-                        implementation(projects.feature.$featureName.domain)
-                        implementation(projects.feature.$featureName.presentation)
-                        implementation(libs.retrofit)
                     }
                 """.trimIndent()
 

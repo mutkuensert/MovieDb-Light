@@ -2,6 +2,8 @@ package feature.profile.presentation.login
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onErr
 import com.github.michaelbull.result.onOk
@@ -21,7 +23,9 @@ import kotlinx.coroutines.launch
 
 const val KEY_CAME_FROM_TMDB_LOGIN = "cameFromTmdbLogin"
 
-class LoginViewModel(
+
+@HiltViewModel
+class LoginViewModel @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,
     private val authStateProvider: AuthStateProvider,
     private val savedStateHandle: SavedStateHandle,

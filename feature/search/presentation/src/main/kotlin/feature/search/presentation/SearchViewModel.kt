@@ -1,6 +1,8 @@
 package feature.search.presentation
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
@@ -24,7 +26,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
 @OptIn(FlowPreview::class)
-class SearchViewModel(
+
+@HiltViewModel
+class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
     private val navigator: Navigator,
 ) : ViewModel() {

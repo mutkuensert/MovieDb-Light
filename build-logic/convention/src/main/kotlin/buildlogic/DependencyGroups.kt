@@ -14,13 +14,12 @@ internal fun Project.composeDependencies() {
     debugImplementation(getLibrary("androidx.compose.ui.tooling"))
     implementation(getLibrary("androidx.lifecycle.runtime.compose"))
     implementation(getLibrary("androidx.lifecycle.viewmodel.compose"))
+    implementation(getLibrary("hilt.navigation.compose"))
     androidTestImplementation(getLibrary("androidx.compose.ui.test.junit4"))
     debugImplementation(getLibrary("androidx.compose.ui.test.manifest"))
-    implementation(getLibrary("koin.compose"))
 }
 
 internal fun Project.baseAndroidDependencies() {
-    implementation(getLibrary("koin.android"))
     implementation(getLibrary("androidx.core.ktx"))
     implementation(getLibrary("androidx.lifecycle.runtime.ktx"))
     implementation(getLibrary("androidx.lifecycle.viewmodel.ktx"))
@@ -28,8 +27,8 @@ internal fun Project.baseAndroidDependencies() {
 
 internal fun Project.baseDependencies() {
     coroutinesDependencies()
-    implementation(getLibrary("koin.android"))
-    testImplementation(getLibrary("koin.test"))
+    implementation(getLibrary("hilt.android"))
+    ksp(getLibrary("hilt.compiler"))
     implementation(getLibrary("timber"))
     implementation(getLibrary("kotlin.result"))
 }

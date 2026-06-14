@@ -1,10 +1,14 @@
 package feature.settings.data
 
+import javax.inject.Inject
+import javax.inject.Singleton
+
 import core.database.LanguagePreference
 import feature.settings.domain.SettingsRepository
 import utils.LocalizationHelper
 
-class SettingsRepositoryImpl(
+@Singleton
+class SettingsRepositoryImpl @Inject constructor(
     private val languagePreference: LanguagePreference,
 ) : SettingsRepository {
 

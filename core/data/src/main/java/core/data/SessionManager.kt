@@ -3,14 +3,20 @@ package core.data
 import android.content.Context
 import core.database.user.EncryptedPreferences
 import core.domain.auth.AuthStateProvider
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
+import javax.inject.Singleton
 
 private const val PREFS_SESSION: String = "sessionPreferences"
 private const val KEY_SESSION_ID: String = "sessionId"
 private const val KEY_REQUEST_TOKEN: String = "requestToken"
 
-class SessionManager(context: Context) : AuthStateProvider {
+@Singleton
+class SessionManager @Inject constructor(
+    @ApplicationContext context: Context
+) : AuthStateProvider {
     private val encryptedSharedPreferences = EncryptedPreferences(context, PREFS_SESSION)
     private val _loggedIn = MutableStateFlow<Boolean>(
         encryptedSharedPreferences.contains(KEY_SESSION_ID)

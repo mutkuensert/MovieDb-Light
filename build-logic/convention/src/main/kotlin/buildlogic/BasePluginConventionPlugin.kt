@@ -10,6 +10,8 @@ class BasePluginConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             apply(plugin = "com.android.library")
+            apply(plugin = "com.google.devtools.ksp")
+            apply(plugin = "com.google.dagger.hilt.android")
             extensions.configure<LibraryExtension> {
                 configureAndroidLibrary(this)
             }

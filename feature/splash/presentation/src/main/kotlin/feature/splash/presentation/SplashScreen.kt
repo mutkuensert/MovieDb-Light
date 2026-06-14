@@ -30,13 +30,13 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.security.ProviderInstaller
 import core.ui.FilmCanTheme
 import core.ui.LightBlue
-import org.koin.androidx.compose.koinViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 const val SECURITY_PROVIDER_UPDATE_REQUEST_CODE = 5
 
 @Composable
 fun SplashScreen() {
-    val viewModel = koinViewModel<SplashViewModel>()
+    val viewModel = hiltViewModel<SplashViewModel>()
 
     Splash()
 

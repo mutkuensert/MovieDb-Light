@@ -1,12 +1,14 @@
 package feature.tvshow.domain.usecase
 
+import javax.inject.Inject
+
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.onOk
 import core.domain.Failure
 import core.domain.account.AccountRepository
 import core.domain.profile.WatchlistTvShowsRefresher
 
-class SyncTvShowWatchlistStatusUseCase(
+class SyncTvShowWatchlistStatusUseCase @Inject constructor(
     private val watchlistTvShowsRefresher: WatchlistTvShowsRefresher,
     private val accountRepository: AccountRepository
 ) {

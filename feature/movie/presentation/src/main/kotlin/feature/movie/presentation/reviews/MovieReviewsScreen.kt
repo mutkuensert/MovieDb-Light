@@ -33,10 +33,10 @@ import core.ui.AppColors
 import core.ui.darkenBy
 import feature.movie.presentation.R
 import feature.movie.presentation.detail.model.ReviewUiModel
-import org.koin.androidx.compose.koinViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
-fun MovieReviewsScreen(viewModel: MovieReviewsViewModel = koinViewModel()) {
+fun MovieReviewsScreen(viewModel: MovieReviewsViewModel = hiltViewModel()) {
     ReviewsFeed(
         reviews = viewModel.reviews.collectAsLazyPagingItems(),
         modifier = Modifier.fillMaxSize()

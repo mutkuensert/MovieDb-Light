@@ -1,17 +1,16 @@
-package utils
+package feature.settings.data
 
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import utils.stringresource.StringResource
-import utils.stringresource.StringResourceImpl
+import feature.settings.domain.SettingsRepository
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface UtilsModule {
+interface InjectionModule {
     @Binds
     @Singleton
-    fun bindStringResource(stringResource: StringResourceImpl): StringResource
+    fun bindSettingsRepository(settingsRepository: SettingsRepositoryImpl): SettingsRepository
 }

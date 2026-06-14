@@ -2,6 +2,8 @@ package feature.movie.presentation.reviews
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
@@ -12,7 +14,9 @@ import feature.movie.presentation.detail.model.toUiModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class MovieReviewsViewModel(
+
+@HiltViewModel
+class MovieReviewsViewModel @Inject constructor(
     movieRepository: MovieRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {

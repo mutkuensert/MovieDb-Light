@@ -78,11 +78,11 @@ import feature.splash.presentation.SplashScreen
 import feature.tvshow.presentation.detail.TvShowDetailScreen
 import feature.tvshow.presentation.list.TvShowsScreen
 import feature.tvshow.presentation.reviews.TvShowReviewsScreen
-import org.koin.androidx.compose.koinViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun HomeScreen(navigator: Navigator) {
-    val viewModel: HomeViewModel = koinViewModel()
+    val viewModel: HomeViewModel = hiltViewModel()
     val statusBarContentColor by viewModel.statusBarContentColor.collectAsStateWithLifecycle()
     val loading by viewModel.loadingAnimator.loading.collectAsStateWithLifecycle()
     val popup by viewModel.popupHandler.popup.collectAsStateWithLifecycle()

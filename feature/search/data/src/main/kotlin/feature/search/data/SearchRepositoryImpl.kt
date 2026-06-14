@@ -1,5 +1,8 @@
 package feature.search.data
 
+import javax.inject.Inject
+import javax.inject.Singleton
+
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -11,7 +14,8 @@ import feature.search.domain.SearchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class SearchRepositoryImpl(
+@Singleton
+class SearchRepositoryImpl @Inject constructor(
     private val searchService: SearchService,
     private val trendingService: TrendingService,
 ) : SearchRepository {

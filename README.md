@@ -284,11 +284,12 @@ interface MyService {
 
 2. Create the service instance using Retrofit with
    the [ResultCallAdapterFactory](core/data/src/main/java/core/data/network/ResultCallAdapterFactory.kt) (
-   typically in a Koin module):
+   typically in a Hilt module):
 
 ```kotlin
-single {
-    get<Retrofit>().create(MyService::class.java)
+@Provides
+fun provideMyService(retrofit: Retrofit): MyService {
+    return retrofit.create(MyService::class.java)
 }
 ```
 

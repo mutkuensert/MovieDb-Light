@@ -1,6 +1,8 @@
 package feature.tvshow.presentation.list
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
@@ -16,7 +18,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-class TvShowsViewModel(
+
+@HiltViewModel
+class TvShowsViewModel @Inject constructor(
     repository: TvShowRepository,
     private val syncTvShowWatchlistStatusUseCase: SyncTvShowWatchlistStatusUseCase,
     private val navigator: Navigator,

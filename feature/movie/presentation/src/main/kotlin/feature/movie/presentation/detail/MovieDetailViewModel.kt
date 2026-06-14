@@ -2,6 +2,8 @@ package feature.movie.presentation.detail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onErr
 import com.github.michaelbull.result.onOk
@@ -28,7 +30,9 @@ import kotlinx.coroutines.launch
 import utils.stringresource.StringResource
 import kotlin.math.roundToInt
 
-class MovieDetailViewModel(
+
+@HiltViewModel
+class MovieDetailViewModel @Inject constructor(
     private val movieRepository: MovieRepository,
     private val rateMovieUseCase: RateMovieUseCase,
     private val removeRatingUseCase: RemoveRatingUseCase,

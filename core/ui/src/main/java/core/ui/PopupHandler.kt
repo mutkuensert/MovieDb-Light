@@ -4,8 +4,11 @@ import androidx.annotation.StringRes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import utils.stringresource.StringResource
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PopupHandler(private val stringResource: StringResource) {
+@Singleton
+class PopupHandler @Inject constructor(private val stringResource: StringResource) {
     private val _popup = MutableStateFlow<Popup?>(null)
     val popup = _popup.asStateFlow()
 

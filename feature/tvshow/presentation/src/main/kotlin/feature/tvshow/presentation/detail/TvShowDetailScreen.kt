@@ -99,10 +99,10 @@ import feature.tvshow.presentation.R
 import feature.tvshow.presentation.detail.model.PersonUiModel
 import feature.tvshow.presentation.detail.model.ReviewUiModel
 import feature.tvshow.presentation.detail.model.TvShowDetailUiModel
-import org.koin.androidx.compose.koinViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
-fun TvShowDetailScreen(viewModel: TvShowDetailViewModel = koinViewModel()) {
+fun TvShowDetailScreen(viewModel: TvShowDetailViewModel = hiltViewModel()) {
     val uiModel by viewModel.uiModel.collectAsStateWithLifecycle()
 
     TvShowDetail(

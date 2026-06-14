@@ -2,6 +2,8 @@ package feature.tvshow.presentation.detail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onErr
 import com.github.michaelbull.result.onOk
@@ -28,7 +30,9 @@ import kotlinx.coroutines.launch
 import utils.stringresource.StringResource
 import kotlin.math.roundToInt
 
-class TvShowDetailViewModel(
+
+@HiltViewModel
+class TvShowDetailViewModel @Inject constructor(
     private val tvShowRepository: TvShowRepository,
     private val rateTvShowUseCase: RateTvShowUseCase,
     private val removeRatingUseCase: RemoveRatingUseCase,

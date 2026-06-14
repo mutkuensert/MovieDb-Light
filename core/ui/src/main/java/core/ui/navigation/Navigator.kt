@@ -7,8 +7,11 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class Navigator {
+@Singleton
+class Navigator @Inject constructor() {
     private val commands = MutableSharedFlow<NavCommand>(
         replay = 0,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,

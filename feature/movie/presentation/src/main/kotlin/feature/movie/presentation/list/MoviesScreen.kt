@@ -43,11 +43,11 @@ import feature.movie.presentation.list.model.MovieUiModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun MoviesScreen(
-    viewModel: MoviesViewModel = koinViewModel()
+    viewModel: MoviesViewModel = hiltViewModel()
 ) {
     Movies(
         viewModel.upcomingMovies,

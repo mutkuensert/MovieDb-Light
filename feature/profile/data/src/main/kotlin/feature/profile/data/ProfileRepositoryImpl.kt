@@ -1,5 +1,8 @@
 package feature.profile.data
 
+import javax.inject.Inject
+import javax.inject.Singleton
+
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -30,7 +33,8 @@ import kotlinx.coroutines.flow.update
     ExperimentalPagingApi::class,
     ExperimentalCoroutinesApi::class
 )
-class ProfileRepositoryImpl(
+@Singleton
+class ProfileRepositoryImpl @Inject constructor(
     private val accountService: AccountService,
     private val sessionManager: SessionManager,
     private val favoriteMovieDao: FavoriteMovieDao,

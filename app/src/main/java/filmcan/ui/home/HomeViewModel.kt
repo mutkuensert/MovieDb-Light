@@ -1,13 +1,17 @@
 package filmcan.ui.home
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.StatusBarBackgroundColorHandler
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
 
-class HomeViewModel(
+
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val navigator: Navigator,
     val loadingAnimator: LoadingAnimator,
     val popupHandler: PopupHandler,

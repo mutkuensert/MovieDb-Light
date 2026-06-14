@@ -33,10 +33,10 @@ import core.ui.AppColors
 import core.ui.darkenBy
 import feature.tvshow.presentation.R
 import feature.tvshow.presentation.detail.model.ReviewUiModel
-import org.koin.androidx.compose.koinViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
-fun TvShowReviewsScreen(viewModel: TvShowReviewsViewModel = koinViewModel()) {
+fun TvShowReviewsScreen(viewModel: TvShowReviewsViewModel = hiltViewModel()) {
     ReviewsFeed(
         reviews = viewModel.reviews.collectAsLazyPagingItems(),
         modifier = Modifier.fillMaxSize()

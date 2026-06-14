@@ -2,14 +2,18 @@ package core.database.user
 
 import android.annotation.SuppressLint
 import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
+import javax.inject.Singleton
 
 private const val PREFS_USER = "userPreferences"
 private const val KEY_USER_DETAILS = "userDetails"
 
-class UserManager(
-    context: Context,
+@Singleton
+class UserManager @Inject constructor(
+    @ApplicationContext context: Context,
     private val json: Json,
 ) {
     private val encryptedSharedPreferences = EncryptedPreferences(context, PREFS_USER)

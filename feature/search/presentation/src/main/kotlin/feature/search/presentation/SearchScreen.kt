@@ -41,13 +41,13 @@ import core.ui.component.ImageType
 import core.ui.component.Poster
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
-import org.koin.compose.viewmodel.koinViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Serializable
 object SearchRoute
 
 @Composable
-fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
+fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
     val uiModel by viewModel.uiModel.collectAsStateWithLifecycle()
     val searchResults = viewModel.searchResult.collectAsLazyPagingItems()
     val trending = viewModel.trendingThisWeek.collectAsLazyPagingItems()

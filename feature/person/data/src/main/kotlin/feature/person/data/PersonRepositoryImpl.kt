@@ -1,5 +1,8 @@
 package feature.person.data
 
+import javax.inject.Inject
+import javax.inject.Singleton
+
 import com.github.michaelbull.result.Result
 import core.data.network.mapToDomain
 import core.data.util.withDecimals
@@ -17,7 +20,8 @@ import feature.person.domain.model.PersonMovieCredits
 import feature.person.domain.model.PersonTvCredit
 import feature.person.domain.model.PersonTvCredits
 
-class PersonRepositoryImpl(
+@Singleton
+class PersonRepositoryImpl @Inject constructor(
     private val personService: PersonService,
     private val languagePreference: LanguagePreference,
 ) : PersonRepository {

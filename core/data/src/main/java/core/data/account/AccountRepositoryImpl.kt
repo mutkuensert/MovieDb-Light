@@ -37,8 +37,11 @@ import filmcan.core.data.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import utils.stringresource.StringResource
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AccountRepositoryImpl(
+@Singleton
+class AccountRepositoryImpl @Inject constructor(
     private val accountService: AccountService,
     private val sessionManager: SessionManager,
     private val userManager: UserManager,

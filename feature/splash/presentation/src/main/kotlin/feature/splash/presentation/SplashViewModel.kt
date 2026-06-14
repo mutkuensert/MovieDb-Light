@@ -1,6 +1,8 @@
 package feature.splash.presentation
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import core.domain.account.AccountRepository
 import core.domain.auth.AuthStateProvider
@@ -10,7 +12,9 @@ import core.ui.navigation.Navigator
 import kotlinx.coroutines.launch
 import utils.stringresource.StringResource
 
-class SplashViewModel(
+
+@HiltViewModel
+class SplashViewModel @Inject constructor(
     private val navigator: Navigator,
     private val popupHandler: PopupHandler,
     private val stringResource: StringResource,

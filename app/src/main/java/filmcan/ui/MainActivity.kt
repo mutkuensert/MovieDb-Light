@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,15 +19,20 @@ import core.ui.LocalStatusBarBackgroundColorHandler
 import core.ui.StatusBarBackgroundColorHandler
 import core.ui.StatusBarColorHandler
 import core.ui.navigation.Navigator
+import dagger.hilt.android.AndroidEntryPoint
 import feature.splash.presentation.SECURITY_PROVIDER_UPDATE_REQUEST_CODE
 import filmcan.ui.home.HomeScreen
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val navigator: Navigator by inject()
-    private val statusBarBackgroundColorHandler: StatusBarBackgroundColorHandler by inject()
-    private val viewModel: MainViewModel by viewModel()
+    @Inject
+    lateinit var navigator: Navigator
+
+    @Inject
+    lateinit var statusBarBackgroundColorHandler: StatusBarBackgroundColorHandler
+
+    private val viewModel: MainViewModel by viewModels()
     private var retrySecurityProviderInstall = false
 
     override fun onCreate(savedInstanceState: Bundle?) {

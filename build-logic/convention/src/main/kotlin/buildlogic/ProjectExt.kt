@@ -38,6 +38,10 @@ internal fun Project.testImplementation(dependency: Any) {
     dependencies.add("testImplementation", dependency)
 }
 
+internal fun Project.ksp(dependency: Any) {
+    dependencies.add("ksp", dependency)
+}
+
 internal fun Project.coreLibraryDesugaring(dependency: Any) {
     dependencies.add("coreLibraryDesugaring", dependency)
 }

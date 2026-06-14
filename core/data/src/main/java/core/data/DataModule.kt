@@ -15,61 +15,92 @@ import core.domain.ApiKeyManager
 import core.domain.account.AccountRepository
 import core.domain.auth.AuthStateProvider
 import core.domain.auth.AuthenticationRepository
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.android.ext.koin.androidContext
-import org.koin.dsl.binds
-import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import utils.Constants
 import utils.stringresource.StringResource
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
-val dataModule = module {
-    single { getJson() }
-    single { UserManager(androidContext(), get()) }
-    single {
-        Retrofit.Builder()
-            .client(
-                getClient(
-                    get(),
-                    get(),
-                    get(),
-                    get(),
-                    get()
-                )
-            )
-            .addCallAdapterFactory(ResultCallAdapterFactory(get<Json>(), get<StringResource>()))
-            .baseUrl(Configs.BASE_URL)
-            .addConverterFactory(get<Json>().asConverterFactory("application/json; charset=UTF8".toMediaType()))
-            .build()
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class DataModule {
+    @Binds
+    @Singleton
+    abstract fun bindApiKeyManager(apiKeyManager: ApiKeyManagerImpl): ApiKeyManager
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthStateProvider(sessionManager: SessionManager): AuthStateProvider
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthenticationRepository(
+        authenticationRepository: AuthenticationRepositoryImpl
+    ): AuthenticationRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAccountRepository(accountRepository: AccountRepositoryImpl): AccountRepository
+
+    companion object {
+        @Provides
+        @Singleton
+        fun provideJson(): Json = getJson()
+
+        @Provides
+        @Singleton
+        fun provideOkHttpClient(
+            @ApplicationContext context: Context,
+            userManager: UserManager,
+            apiKeyManager: ApiKeyManager,
+            stringResource: StringResource,
+            remoteConfig: RemoteConfig,
+        ): OkHttpClient {
+            return getClient(context, userManager, apiKeyManager, stringResource, remoteConfig)
+        }
+
+        @Provides
+        @Singleton
+        fun provideRetrofit(
+            json: Json,
+            client: OkHttpClient,
+            stringResource: StringResource,
+        ): Retrofit {
+            return Retrofit.Builder()
+                .client(client)
+                .addCallAdapterFactory(ResultCallAdapterFactory(json, stringResource))
+                .baseUrl(Configs.BASE_URL)
+                .addConverterFactory(json.asConverterFactory("application/json; charset=UTF8".toMediaType()))
+                .build()
+        }
+
+        @Provides
+        fun provideAuthenticationService(retrofit: Retrofit): AuthenticationService {
+            return retrofit.create(AuthenticationService::class.java)
+        }
+
+        @Provides
+        fun provideAccountService(retrofit: Retrofit): AccountService {
+            return retrofit.create(AccountService::class.java)
+        }
+
+        @Provides
+        @Singleton
+        fun provideRemoteConfig(): RemoteConfig {
+            return RemoteConfig()
+        }
     }
-    single { get<Retrofit>().create(AuthenticationService::class.java) }
-    single { get<Retrofit>().create(AccountService::class.java) }
-    single { SessionManager(androidContext()) }.binds(arrayOf(AuthStateProvider::class))
-    single<AuthenticationRepository> {
-        AuthenticationRepositoryImpl(get(), get(), get())
-    }
-    single<AccountRepository> {
-        AccountRepositoryImpl(
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-        )
-    }
-    single<ApiKeyManager> { ApiKeyManagerImpl() }
-    single { RemoteConfig() }
 }
 
 private fun getJson(): Json {

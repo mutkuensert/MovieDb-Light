@@ -13,8 +13,11 @@ import core.domain.auth.AuthenticationRepository
 import filmcan.core.data.R
 import timber.log.Timber
 import utils.stringresource.StringResource
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AuthenticationRepositoryImpl(
+@Singleton
+class AuthenticationRepositoryImpl @Inject constructor(
     private val authenticationService: AuthenticationService,
     private val sessionManager: SessionManager,
     private val stringResource: StringResource,

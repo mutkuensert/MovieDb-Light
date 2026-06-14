@@ -1,5 +1,7 @@
 package feature.profile.domain.usecase
 
+import javax.inject.Inject
+
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.flatMap
 import com.github.michaelbull.result.onOk
@@ -8,7 +10,7 @@ import core.domain.account.AccountRepository
 import core.domain.account.User
 import core.domain.auth.AuthenticationRepository
 
-class StartSessionUseCase(
+class StartSessionUseCase @Inject constructor(
     private val accountRepository: AccountRepository,
     private val authenticationRepository: AuthenticationRepository,
 ) {

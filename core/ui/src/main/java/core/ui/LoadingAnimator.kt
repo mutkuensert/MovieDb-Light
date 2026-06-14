@@ -2,8 +2,11 @@ package core.ui
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class LoadingAnimator {
+@Singleton
+class LoadingAnimator @Inject constructor() {
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
 

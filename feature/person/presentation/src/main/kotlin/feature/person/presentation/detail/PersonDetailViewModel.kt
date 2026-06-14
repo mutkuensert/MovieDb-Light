@@ -2,6 +2,8 @@ package feature.person.presentation.detail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onErr
 import com.github.michaelbull.result.onOk
@@ -19,7 +21,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class PersonDetailViewModel(
+
+@HiltViewModel
+class PersonDetailViewModel @Inject constructor(
     private val personRepository: PersonRepository,
     private val loadingAnimator: LoadingAnimator,
     private val popupHandler: PopupHandler,

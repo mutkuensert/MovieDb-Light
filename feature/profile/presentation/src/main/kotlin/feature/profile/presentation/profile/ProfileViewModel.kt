@@ -1,6 +1,8 @@
 package feature.profile.presentation.profile
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import androidx.paging.map
@@ -26,7 +28,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ProfileViewModel(
+
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
     private val popupHandler: PopupHandler,
     private val logoutUseCase: LogoutUseCase,
     private val accountRepository: AccountRepository,

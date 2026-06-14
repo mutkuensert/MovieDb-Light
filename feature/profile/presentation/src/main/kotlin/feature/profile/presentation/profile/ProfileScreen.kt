@@ -73,13 +73,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import org.koin.androidx.compose.koinViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Serializable
 object ProfileRoute
 
 @Composable
-fun ProfileScreen(viewModel: ProfileViewModel = koinViewModel()) {
+fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
     val uiModel by viewModel.uiModel.collectAsStateWithLifecycle()
     Profile(
         uiModel,

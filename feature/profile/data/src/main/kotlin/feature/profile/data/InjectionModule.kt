@@ -1,17 +1,16 @@
-package utils
+package feature.profile.data
 
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import utils.stringresource.StringResource
-import utils.stringresource.StringResourceImpl
+import feature.profile.domain.ProfileRepository
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface UtilsModule {
+interface InjectionModule {
     @Binds
     @Singleton
-    fun bindStringResource(stringResource: StringResourceImpl): StringResource
+    fun bindProfileRepository(profileRepository: ProfileRepositoryImpl): ProfileRepository
 }
