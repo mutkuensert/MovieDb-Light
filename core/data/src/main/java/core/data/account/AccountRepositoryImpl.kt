@@ -13,6 +13,7 @@ import core.data.account.model.FavoriteTvShowDto
 import core.data.account.model.WatchlistMovieRequest
 import core.data.account.model.WatchlistTvShowRequest
 import core.data.account.model.toDto
+import core.data.auth.LogoutTrigger
 import core.data.common.model.MovieDto
 import core.data.common.model.TvShowDto
 import core.data.network.toFailure
@@ -53,10 +54,15 @@ class AccountRepositoryImpl @Inject constructor(
     private val ratedTvShowDao: RatedTvShowDao,
     private val languagePreference: LanguagePreference,
     private val stringResource: StringResource,
+    private val logoutTrigger: LogoutTrigger,
 ) : AccountRepository {
 
     override suspend fun getAccountDetails(): Result<User, Failure> {
-        val sessionId = sessionManager.requireSessionId()
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId == null) {
+            logoutTrigger.triggerLogout()
+            return Err(AuthFailure(stringResource.get(R.string.logged_out_unknown_reason)))
+        }
         return accountService.getAccountDetails(sessionId)
             .mapBoth(success = { response ->
                 userManager.setCurrentUser(
@@ -73,6 +79,11 @@ class AccountRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchFavoriteMovies(sortBy: SortBy.CreatedAt) {
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId == null) {
+            logoutTrigger.triggerLogout()
+            return
+        }
         withContext(Dispatchers.IO) {
             favoriteMovieDao.clearAllIds()
             val favoriteMovies = mutableListOf<MovieDto>()
@@ -82,7 +93,7 @@ class AccountRepositoryImpl @Inject constructor(
             while (page in 0..endPage) {
                 accountService.getFavoriteMovies(
                     page,
-                    sessionManager.requireSessionId(),
+                    sessionId,
                     languagePreference.getLanguageTag(),
                     sortBy.toDto().value
                 ).onOk { response ->
@@ -104,6 +115,11 @@ class AccountRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchFavoriteTvShows(sortBy: SortBy.CreatedAt) {
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId == null) {
+            logoutTrigger.triggerLogout()
+            return
+        }
         withContext(Dispatchers.IO) {
             favoriteTvShowDao.clearAllIds()
             val favoriteTvShows = mutableListOf<TvShowDto>()
@@ -113,7 +129,7 @@ class AccountRepositoryImpl @Inject constructor(
             while (page in 0..endPage) {
                 accountService.getFavoriteTvShows(
                     page,
-                    sessionManager.requireSessionId(),
+                    sessionId,
                     languagePreference.getLanguageTag(),
                     sortBy.toDto().value
                 ).onOk { response ->
@@ -135,6 +151,11 @@ class AccountRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchWatchlistMovies(sortBy: SortBy.CreatedAt) {
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId == null) {
+            logoutTrigger.triggerLogout()
+            return
+        }
         withContext(Dispatchers.IO) {
             watchlistMovieDao.clearAllIds()
             val watchlistMovies = mutableListOf<MovieDto>()
@@ -144,7 +165,7 @@ class AccountRepositoryImpl @Inject constructor(
             while (page in 1..endPage) {
                 accountService.getWatchlistMovies(
                     page,
-                    sessionManager.requireSessionId(),
+                    sessionId,
                     languagePreference.getLanguageTag(),
                     sortBy.toDto().value
 
@@ -167,6 +188,11 @@ class AccountRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchWatchlistTvShows(sortBy: SortBy.CreatedAt) {
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId == null) {
+            logoutTrigger.triggerLogout()
+            return
+        }
         withContext(Dispatchers.IO) {
             watchlistTvShowDao.clearAllIds()
             val watchlistTvShows = mutableListOf<TvShowDto>()
@@ -176,7 +202,7 @@ class AccountRepositoryImpl @Inject constructor(
             while (page in 1..endPage) {
                 accountService.getWatchlistTvShows(
                     page,
-                    sessionManager.requireSessionId(),
+                    sessionId,
                     languagePreference.getLanguageTag(),
                     sortBy.toDto().value
 
@@ -239,6 +265,12 @@ class AccountRepositoryImpl @Inject constructor(
         movieId: Int,
         inWatchlist: Boolean,
     ): Result<Unit, Failure> {
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId == null) {
+            logoutTrigger.triggerLogout()
+            return Err(AuthFailure(stringResource.get(R.string.logged_out_unknown_reason)))
+        }
+
         return withContext(Dispatchers.IO) {
             if (inWatchlist) {
                 watchlistMovieDao.insertIds(WatchlistMovieIdEntity(movieId))
@@ -251,7 +283,7 @@ class AccountRepositoryImpl @Inject constructor(
                     watchlist = inWatchlist,
                     mediaId = movieId
                 ),
-                sessionId = sessionManager.requireSessionId()
+                sessionId = sessionId
             ).mapBoth(
                 success = {
                     Ok(Unit)
@@ -305,6 +337,12 @@ class AccountRepositoryImpl @Inject constructor(
         tvShowId: Int,
         inWatchlist: Boolean,
     ): Result<Unit, Failure> {
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId == null) {
+            logoutTrigger.triggerLogout()
+            return Err(AuthFailure(stringResource.get(R.string.logged_out_unknown_reason)))
+        }
+
         return withContext(Dispatchers.IO) {
             if (inWatchlist) {
                 watchlistTvShowDao.insertIds(WatchlistTvShowIdEntity(tvShowId))
@@ -317,7 +355,7 @@ class AccountRepositoryImpl @Inject constructor(
                     watchlist = inWatchlist,
                     mediaId = tvShowId
                 ),
-                sessionId = sessionManager.requireSessionId()
+                sessionId = sessionId
             ).mapBoth(
                 success = { Ok(Unit) },
                 failure = { networkError ->

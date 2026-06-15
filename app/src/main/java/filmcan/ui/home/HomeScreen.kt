@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -78,7 +79,6 @@ import feature.splash.presentation.SplashScreen
 import feature.tvshow.presentation.detail.TvShowDetailScreen
 import feature.tvshow.presentation.list.TvShowsScreen
 import feature.tvshow.presentation.reviews.TvShowReviewsScreen
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun HomeScreen(navigator: Navigator) {

@@ -17,4 +17,5 @@
     <string name="update_your_device">Oops! Something went wrong with your request. Updating your device may fix the problem.</string>
     <string name="logout_attempt_has_failed">Logout attempt has failed.</string>
     <string name="api_key_could_not_be_retrieved">Api key could not be retrieved!</string>
+    <string name="logged_out_unknown_reason">Logged out because of an unknown reason. Please try logging back into your account later.</string>
 </resources>

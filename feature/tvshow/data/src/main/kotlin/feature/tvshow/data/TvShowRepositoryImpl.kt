@@ -1,16 +1,15 @@
 package feature.tvshow.data
 
-import javax.inject.Inject
-import javax.inject.Singleton
-
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.filter
 import androidx.paging.map
+import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Result
 import core.data.SessionManager
+import core.data.auth.LogoutTrigger
 import core.data.common.model.ReviewDto
 import core.data.network.mapToDomain
 import core.data.util.withDecimals
@@ -19,6 +18,7 @@ import core.database.feature.tvshows.airingtoday.TvShowsAiringTodayDao
 import core.database.feature.tvshows.popular.PopularTvShowDao
 import core.database.feature.tvshows.toprated.TopRatedTvShowDao
 import core.database.feature.tvshows.upcoming.UpcomingTvShowDao
+import core.domain.AuthFailure
 import core.domain.Failure
 import core.domain.common.model.Provider
 import core.domain.common.model.Review
@@ -29,6 +29,7 @@ import feature.tvshow.domain.model.AccountStates
 import feature.tvshow.domain.model.Person
 import feature.tvshow.domain.model.TvShow
 import feature.tvshow.domain.model.TvShowDetails
+import filmcan.core.data.R
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,6 +37,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import utils.LocalizationHelper
+import utils.stringresource.StringResource
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @OptIn(
     ExperimentalPagingApi::class,
@@ -50,6 +54,8 @@ class TvShowRepositoryImpl @Inject constructor(
     private val topRatedTvShowDao: TopRatedTvShowDao,
     private val sessionManager: SessionManager,
     private val languagePreference: LanguagePreference,
+    private val logoutTrigger: LogoutTrigger,
+    private val stringResource: StringResource,
 ) : TvShowRepository {
     private val refreshTrigger = MutableStateFlow(0)
 
@@ -249,23 +255,40 @@ class TvShowRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAccountStates(tvShowId: Int): Result<AccountStates, Failure> {
-        return tvShowService.getAccountStates(tvShowId, sessionManager.requireSessionId())
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId == null) {
+            logoutTrigger.triggerLogout()
+            return Err(AuthFailure(stringResource.get(R.string.logged_out_unknown_reason)))
+        }
+
+        return tvShowService.getAccountStates(tvShowId, sessionId)
             .mapToDomain {
                 AccountStates(it.id, it.favorite, it.rated?.value?.withDecimals(1), it.watchlist)
             }
     }
 
     override suspend fun rateTvShow(tvShowId: Int, rating: Int): Result<Unit, Failure> {
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId == null) {
+            logoutTrigger.triggerLogout()
+            return Err(AuthFailure(stringResource.get(R.string.logged_out_unknown_reason)))
+        }
+
         return tvShowService.rateTvShow(
             tvShowId,
             PostTvShowRatingRequest(rating),
-            sessionManager.requireSessionId()
+            sessionId
         ).mapToDomain {}
     }
 
     override suspend fun removeRating(tvShowId: Int): Result<Unit, Failure> {
-        return tvShowService.deleteRating(tvShowId, sessionManager.requireSessionId())
-            .mapToDomain { }
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId == null) {
+            logoutTrigger.triggerLogout()
+            return Err(AuthFailure(stringResource.get(R.string.logged_out_unknown_reason)))
+        }
+
+        return tvShowService.deleteRating(tvShowId, sessionId).mapToDomain { }
     }
 
     override fun updateLanguageRelatedData() {

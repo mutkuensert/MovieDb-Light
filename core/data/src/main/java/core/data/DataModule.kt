@@ -6,6 +6,7 @@ import core.data.account.AccountRepositoryImpl
 import core.data.account.AccountService
 import core.data.auth.AuthenticationRepositoryImpl
 import core.data.auth.AuthenticationService
+import core.data.auth.LogoutTrigger
 import core.data.network.Configs
 import core.data.network.ResultCallAdapterFactory
 import core.data.network.interceptor.AccountIdInterceptor
@@ -63,11 +64,36 @@ abstract class DataModule {
         fun provideOkHttpClient(
             @ApplicationContext context: Context,
             userManager: UserManager,
+            logoutTrigger: LogoutTrigger,
             apiKeyManager: ApiKeyManager,
             stringResource: StringResource,
             remoteConfig: RemoteConfig,
+            json: Json,
         ): OkHttpClient {
-            return getClient(context, userManager, apiKeyManager, stringResource, remoteConfig)
+            return OkHttpClient()
+                .newBuilder()
+                .addInterceptor(
+                    ApiKeyInterceptor(
+                        apiKeyManager,
+                        getJson(),
+                        stringResource,
+                        remoteConfig
+                    )
+                )
+                .addInterceptor(
+                    AccountIdInterceptor(
+                        userManager,
+                        logoutTrigger,
+                        json,
+                        stringResource
+                    )
+                )
+                .addInterceptor(HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                })
+                .addInterceptor(ChuckerInterceptor(context))
+                .callTimeout(Constants.TIMEOUT_SEC, TimeUnit.SECONDS)
+                .build()
         }
 
         @Provides
@@ -111,23 +137,4 @@ private fun getJson(): Json {
         isLenient = true
         encodeDefaults = true
     }
-}
-
-private fun getClient(
-    context: Context,
-    userManager: UserManager,
-    apiKeyManager: ApiKeyManager,
-    stringResource: StringResource,
-    remoteConfig: RemoteConfig,
-): OkHttpClient {
-    return OkHttpClient()
-        .newBuilder()
-        .addInterceptor(ApiKeyInterceptor(apiKeyManager, getJson(), stringResource, remoteConfig))
-        .addInterceptor(AccountIdInterceptor(userManager))
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
-        .addInterceptor(ChuckerInterceptor(context))
-        .callTimeout(Constants.TIMEOUT_SEC, TimeUnit.SECONDS)
-        .build()
 }

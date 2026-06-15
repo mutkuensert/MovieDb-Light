@@ -15,6 +15,7 @@ import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import utils.Constants
 import utils.stringresource.StringResource
+import kotlin.time.Duration.Companion.milliseconds
 
 class ApiKeyInterceptor(
     private val apiKeyManager: ApiKeyManager,
@@ -24,7 +25,7 @@ class ApiKeyInterceptor(
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val baseRequest = chain.request()
+        val request = chain.request()
         if (apiKeyManager.tmdbApiKey.value == null) {
             remoteConfig.fetch(
                 onSuccess = { apiKey ->
@@ -34,7 +35,7 @@ class ApiKeyInterceptor(
             )
         }
         val apiKey: String? = runBlocking {
-            withTimeout(Constants.TIMEOUT_MS) {
+            withTimeout(Constants.TIMEOUT_MS.milliseconds) {
                 return@withTimeout apiKeyManager.tmdbApiKey.first {
                     it != null
                 } //Waits here until it matches the predicate
@@ -43,6 +44,7 @@ class ApiKeyInterceptor(
 
         return if (apiKey == null) {
             Response.Builder()
+                .request(request)
                 .protocol(Protocol.HTTP_1_1)
                 .code(401)
                 .message("Unauthorized")
@@ -57,12 +59,12 @@ class ApiKeyInterceptor(
                 )
                 .build()
         } else {
-            val url = baseRequest
+            val url = request
                 .url
                 .newBuilder()
                 .addQueryParameter("api_key", apiKey)
                 .build()
-            val newRequest = baseRequest.newBuilder().url(url).build()
+            val newRequest = request.newBuilder().url(url).build()
             chain.proceed(newRequest)
         }
     }

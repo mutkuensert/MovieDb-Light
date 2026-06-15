@@ -1,16 +1,15 @@
 package feature.movie.data
 
-import javax.inject.Inject
-import javax.inject.Singleton
-
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.filter
 import androidx.paging.map
+import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Result
 import core.data.SessionManager
+import core.data.auth.LogoutTrigger
 import core.data.common.model.ReviewDto
 import core.data.network.mapToDomain
 import core.data.util.withDecimals
@@ -19,6 +18,7 @@ import core.database.feature.movies.nowplaying.NowPlayingMovieDao
 import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
 import core.database.feature.movies.upcoming.UpcomingMovieDao
+import core.domain.AuthFailure
 import core.domain.Failure
 import core.domain.common.model.Provider
 import core.domain.common.model.Review
@@ -32,6 +32,7 @@ import feature.movie.domain.model.MovieDetails
 import feature.movie.domain.model.People
 import feature.movie.domain.model.Person
 import feature.movie.domain.model.Writer
+import filmcan.core.data.R
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,6 +40,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import utils.LocalizationHelper
+import utils.stringresource.StringResource
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @OptIn(
     ExperimentalPagingApi::class,
@@ -53,6 +57,8 @@ class MovieRepositoryImpl @Inject constructor(
     private val topRatedMovieDao: TopRatedMovieDao,
     private val sessionManager: SessionManager,
     private val languagePreference: LanguagePreference,
+    private val stringResource: StringResource,
+    private val logoutTrigger: LogoutTrigger,
 ) : MovieRepository {
     private val refreshTrigger = MutableStateFlow(0)
 
@@ -262,22 +268,40 @@ class MovieRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAccountStates(movieId: Int): Result<AccountStates, Failure> {
-        return movieService.getAccountStates(movieId, sessionManager.requireSessionId())
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId == null) {
+            logoutTrigger.triggerLogout()
+            return Err(AuthFailure(stringResource.get(R.string.logged_out_unknown_reason)))
+        }
+
+        return movieService.getAccountStates(movieId, sessionId)
             .mapToDomain {
                 AccountStates(it.id, it.favorite, it.rated?.value?.withDecimals(1), it.watchlist)
             }
     }
 
     override suspend fun rateMovie(movieId: Int, rating: Int): Result<Unit, Failure> {
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId == null) {
+            logoutTrigger.triggerLogout()
+            return Err(AuthFailure(stringResource.get(R.string.logged_out_unknown_reason)))
+        }
+
         return movieService.rateMovie(
             movieId,
             PostMovieRatingRequest(rating),
-            sessionManager.requireSessionId()
+            sessionId
         ).mapToDomain {}
     }
 
     override suspend fun removeRating(movieId: Int): Result<Unit, Failure> {
-        return movieService.deleteRating(movieId, sessionManager.requireSessionId()).mapToDomain { }
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId == null) {
+            logoutTrigger.triggerLogout()
+            return Err(AuthFailure(stringResource.get(R.string.logged_out_unknown_reason)))
+        }
+
+        return movieService.deleteRating(movieId, sessionId).mapToDomain { }
     }
 
     override fun updateLanguageRelatedData() {

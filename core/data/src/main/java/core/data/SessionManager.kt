@@ -33,12 +33,6 @@ class SessionManager @Inject constructor(
         _loggedIn.value = !hasNoSessionId
     }
 
-    fun requireSessionId(): String {
-        return requireNotNull(encryptedSharedPreferences.getString(KEY_SESSION_ID)) {
-            "Session id can't be null here."
-        }
-    }
-
     fun getSessionId(): String? {
         return encryptedSharedPreferences.getString(KEY_SESSION_ID)
     }

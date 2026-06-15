@@ -17,4 +17,5 @@
     <string name="update_your_device">Üzgünüz! İsteğinizde bir hata oluştu. Cihazınızı güncellemeniz sorunu çözebilir.</string>
     <string name="logout_attempt_has_failed">Çıkış yapma işlemi başarısız oldu.</string>
     <string name="api_key_could_not_be_retrieved">Api anahtarı çekilemedi!</string>
+    <string name="logged_out_unknown_reason">Bilinmeyen bir sebepten ötürü çıkış yapıldı. Daha sonra tekrar giriş yapmayı deneyiniz.</string>
 </resources>

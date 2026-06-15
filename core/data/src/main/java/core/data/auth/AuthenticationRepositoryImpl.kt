@@ -7,6 +7,7 @@ import com.github.michaelbull.result.mapBoth
 import com.github.michaelbull.result.onOk
 import core.data.SessionManager
 import core.data.network.toFailure
+import core.domain.AuthFailure
 import core.domain.Failure
 import core.domain.UndefinedFailure
 import core.domain.auth.AuthenticationRepository
@@ -21,6 +22,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
     private val authenticationService: AuthenticationService,
     private val sessionManager: SessionManager,
     private val stringResource: StringResource,
+    private val logoutTrigger: LogoutTrigger,
 ) : AuthenticationRepository {
 
     override suspend fun getRequestToken(): Result<String, Failure> {
@@ -37,7 +39,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
 
     override suspend fun startSession(): Result<Unit, Failure> {
         val requestToken = sessionManager.getRequestToken()
-            ?: return Err(UndefinedFailure(stringResource.get(R.string.something_is_wrong)))
+            ?: return Err(AuthFailure(stringResource.get(R.string.something_is_wrong)))
 
         return authenticationService.startSession(NewSessionRequest(requestToken))
             .mapBoth(success = {
@@ -51,7 +53,12 @@ class AuthenticationRepositoryImpl @Inject constructor(
     }
 
     override suspend fun logout(): Result<Unit, Failure> {
-        val sessionId = sessionManager.requireSessionId()
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId == null) {
+            logoutTrigger.triggerLogout()
+            return Err(AuthFailure(stringResource.get(R.string.logged_out_unknown_reason)))
+        }
+
         return authenticationService.deleteSession(SessionIdRequest(sessionId))
             .onOk {
                 if (it.success) {
