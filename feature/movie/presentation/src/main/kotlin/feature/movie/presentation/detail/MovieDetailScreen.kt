@@ -78,6 +78,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -100,7 +101,6 @@ import feature.movie.presentation.detail.model.CrewPersonUiModel
 import feature.movie.presentation.detail.model.MovieDetailUiModel
 import feature.movie.presentation.detail.model.PersonUiModel
 import feature.movie.presentation.detail.model.ReviewUiModel
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun MovieDetailScreen(viewModel: MovieDetailViewModel = hiltViewModel()) {
@@ -218,15 +218,18 @@ private fun MovieDetail(
 
             if (uiModel.review != null) {
                 ReviewCard(
-                    uiModel.review, Modifier
+                    uiModel.review,
+                    Modifier
                         .padding(top = 8.dp)
                         .padding(horizontal = 16.dp)
                 )
 
-                ReviewsButton(
-                    onClick = onClickReviews,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+                if (uiModel.showsReviewsButton) {
+                    ReviewsButton(
+                        onClick = onClickReviews,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
             }
         }
     }
@@ -990,7 +993,8 @@ private fun MovieDetailPreview() {
                     content = LoremIpsum(20).values.joinToString(" "),
                     editedAt = "02.04.2025",
                     rating = "10"
-                )
+                ),
+                showsReviewsButton = true,
             ),
             {},
             {},

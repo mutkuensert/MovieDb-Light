@@ -2,8 +2,6 @@ package feature.tvshow.presentation.detail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onErr
 import com.github.michaelbull.result.onOk
@@ -14,6 +12,7 @@ import core.ui.navigation.Navigator
 import core.ui.route.PersonDetailRoute
 import core.ui.route.TvShowReviewsRoute
 import core.ui.showFailurePopup
+import dagger.hilt.android.lifecycle.HiltViewModel
 import feature.tvshow.domain.TvShowRepository
 import feature.tvshow.domain.usecase.RateTvShowUseCase
 import feature.tvshow.domain.usecase.RemoveRatingUseCase
@@ -22,12 +21,14 @@ import feature.tvshow.domain.usecase.SyncTvShowWatchlistStatusUseCase
 import feature.tvshow.presentation.R
 import feature.tvshow.presentation.detail.model.TvShowDetailUiModel
 import feature.tvshow.presentation.detail.model.toUiModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import utils.stringresource.StringResource
+import javax.inject.Inject
 import kotlin.math.roundToInt
 
 
@@ -69,66 +70,88 @@ class TvShowDetailViewModel @Inject constructor(
         viewModelScope.launch {
             loadingAnimator.start()
 
-            tvShowRepository.getTvShowDetails(tvShowId).onOk { tvShowDetails ->
-                _uiModel.update {
-                    it.copy(
-                        imagePaths = tvShowDetails.imagePath?.let { path -> listOf(path) }
-                            ?: listOf(),
-                        title = tvShowDetails.title ?: "",
-                        vote = tvShowDetails.voteAverage?.toString() ?: "",
-                        runtime = tvShowDetails.runtime?.toString() ?: "",
-                        releaseDate = tvShowDetails.releaseDate?.replace("-", ".") ?: "",
-                        genres = tvShowDetails.genres.joinToString(", "),
-                        overview = tvShowDetails.overview ?: "",
-                        cast = emptyList()
-                    )
-                }
-            }.onErr(popupHandler::showFailurePopup)
-
-            tvShowRepository.getImagePaths(tvShowId).onOk { paths ->
-                _uiModel.update {
-                    it.copy(imagePaths = it.imagePaths + paths)
-                }
-            }
-
-            tvShowRepository.getCast(tvShowId).onOk { cast ->
-                _uiModel.update {
-                    it.copy(
-                        cast = cast.map { person -> person.toUiModel() },
-                    )
-                }
-            }
-
-            tvShowRepository.getProviders(tvShowId).onOk { providers ->
-                _uiModel.update {
-                    it.copy(providerLogoPaths = providers.mapNotNull { provider -> provider.logoPath })
-                }
-            }
-
-            tvShowRepository.getTrailerYoutubeVideoId(tvShowId).onOk { id ->
-                _uiModel.update {
-                    it.copy(trailerYoutubeVideoId = id)
-                }
-            }
-
-            tvShowRepository.getFirstReview(tvShowId).onOk { review ->
-                _uiModel.update {
-                    it.copy(review = review?.toUiModel())
-                }
-            }
-
-            if (authStateProvider.loggedIn.value) {
-                tvShowRepository.getAccountStates(tvShowId).onOk { accountStates ->
+            val detailsJob = async {
+                tvShowRepository.getTvShowDetails(tvShowId).onOk { tvShowDetails ->
                     _uiModel.update {
                         it.copy(
-                            userRate = accountStates.rate?.roundToInt()
-                                ?.toString(), //TODO Implement a rating system supports floating number
-                            inWatchlist = accountStates.watchlist,
-                            favorite = accountStates.favorite
+                            imagePaths = tvShowDetails.imagePath?.let { path -> listOf(path) }
+                                ?: listOf(),
+                            title = tvShowDetails.title ?: "",
+                            vote = tvShowDetails.voteAverage?.toString() ?: "",
+                            runtime = tvShowDetails.runtime?.toString() ?: "",
+                            releaseDate = tvShowDetails.releaseDate?.replace("-", ".") ?: "",
+                            genres = tvShowDetails.genres.joinToString(", "),
+                            overview = tvShowDetails.overview ?: "",
+                            cast = emptyList()
                         )
                     }
                 }.onErr(popupHandler::showFailurePopup)
             }
+
+            val imagePathsJob = async {
+                tvShowRepository.getImagePaths(tvShowId).onOk { paths ->
+                    _uiModel.update {
+                        it.copy(imagePaths = it.imagePaths + paths)
+                    }
+                }
+            }
+
+            val castJob = async {
+                tvShowRepository.getCast(tvShowId).onOk { cast ->
+                    _uiModel.update {
+                        it.copy(
+                            cast = cast.map { person -> person.toUiModel() },
+                        )
+                    }
+                }
+            }
+
+            val providersJob = async {
+                tvShowRepository.getProviders(tvShowId).onOk { providers ->
+                    _uiModel.update {
+                        it.copy(providerLogoPaths = providers.mapNotNull { provider -> provider.logoPath })
+                    }
+                }
+            }
+
+            val youtubeTrailerVideoIdJob = async {
+                tvShowRepository.getTrailerYoutubeVideoId(tvShowId).onOk { id ->
+                    _uiModel.update {
+                        it.copy(trailerYoutubeVideoId = id)
+                    }
+                }
+            }
+
+            val firstReviewJob = async {
+                tvShowRepository.getFirstReview(tvShowId).onOk { review ->
+                    _uiModel.update {
+                        it.copy(review = review?.toUiModel())
+                    }
+                }
+            }
+
+            val accountStatesJob = async {
+                if (authStateProvider.loggedIn.value) {
+                    tvShowRepository.getAccountStates(tvShowId).onOk { accountStates ->
+                        _uiModel.update {
+                            it.copy(
+                                userRate = accountStates.rate?.roundToInt()
+                                    ?.toString(), //TODO Implement a rating system supports floating number
+                                inWatchlist = accountStates.watchlist,
+                                favorite = accountStates.favorite
+                            )
+                        }
+                    }.onErr(popupHandler::showFailurePopup)
+                }
+            }
+
+            detailsJob.await()
+            imagePathsJob.await()
+            castJob.await()
+            providersJob.await()
+            youtubeTrailerVideoIdJob.await()
+            firstReviewJob.await()
+            accountStatesJob.await()
 
             loadingAnimator.stop()
         }

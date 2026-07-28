@@ -6,16 +6,13 @@ import core.domain.ApiKeyManager
 import filmcan.core.data.R
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
-import utils.Constants
 import utils.stringresource.StringResource
-import kotlin.time.Duration.Companion.milliseconds
 
 class ApiKeyInterceptor(
     private val apiKeyManager: ApiKeyManager,
@@ -35,11 +32,7 @@ class ApiKeyInterceptor(
             )
         }
         val apiKey: String? = runBlocking {
-            withTimeout(Constants.TIMEOUT_MS.milliseconds) {
-                return@withTimeout apiKeyManager.tmdbApiKey.first {
-                    it != null
-                } //Waits here until it matches the predicate
-            }
+            apiKeyManager.tmdbApiKey.first { it != null }
         }
 
         return if (apiKey == null) {

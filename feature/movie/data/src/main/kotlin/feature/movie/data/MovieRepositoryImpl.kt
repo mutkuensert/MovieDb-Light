@@ -262,9 +262,9 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getFirstReview(movieId: Int): Result<Review?, Failure> {
+    override suspend fun getReviews(movieId: Int): Result<List<Review>, Failure> {
         return movieService.getReviews(movieId, languagePreference.getLanguageTag())
-            .mapToDomain { it.results?.firstOrNull()?.toReview() }
+            .mapToDomain { it.results?.map { it.toReview() } ?: emptyList() }
     }
 
     override suspend fun getAccountStates(movieId: Int): Result<AccountStates, Failure> {

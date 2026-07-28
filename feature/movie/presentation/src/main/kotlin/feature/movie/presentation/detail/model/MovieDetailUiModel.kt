@@ -25,6 +25,7 @@ data class MovieDetailUiModel(
     val directors: List<CrewPersonUiModel>,
     val writers: List<CrewPersonUiModel>,
     val review: ReviewUiModel?,
+    val showsReviewsButton: Boolean,
 ) {
     companion object {
         fun initial(id: Int): MovieDetailUiModel {
@@ -49,6 +50,7 @@ data class MovieDetailUiModel(
                 directors = emptyList(),
                 writers = emptyList(),
                 review = null,
+                showsReviewsButton = false,
             )
         }
     }

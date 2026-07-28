@@ -26,5 +26,5 @@ interface MovieRepository {
     suspend fun removeRating(movieId: Int): Result<Unit, Failure>
     fun updateLanguageRelatedData()
     suspend fun getImagePaths(movieId: Int): Result<List<String>, Failure>
-    suspend fun getFirstReview(movieId: Int): Result<Review?, Failure>
+    suspend fun getReviews(movieId: Int): Result<List<Review>, Failure>
 }

@@ -2,8 +2,6 @@ package feature.movie.presentation.detail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onErr
 import com.github.michaelbull.result.onOk
@@ -14,6 +12,7 @@ import core.ui.navigation.Navigator
 import core.ui.route.MovieReviewsRoute
 import core.ui.route.PersonDetailRoute
 import core.ui.showFailurePopup
+import dagger.hilt.android.lifecycle.HiltViewModel
 import feature.movie.domain.MovieRepository
 import feature.movie.domain.usecase.RateMovieUseCase
 import feature.movie.domain.usecase.RemoveRatingUseCase
@@ -22,12 +21,14 @@ import feature.movie.domain.usecase.SyncMovieWatchlistStatusUseCase
 import feature.movie.presentation.R
 import feature.movie.presentation.detail.model.MovieDetailUiModel
 import feature.movie.presentation.detail.model.toUiModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import utils.stringresource.StringResource
+import javax.inject.Inject
 import kotlin.math.roundToInt
 
 
@@ -69,68 +70,93 @@ class MovieDetailViewModel @Inject constructor(
         viewModelScope.launch {
             loadingAnimator.start()
 
-            movieRepository.getMovieDetails(movieId).onOk { movieDetails ->
-                _uiModel.update {
-                    it.copy(
-                        imagePaths = movieDetails.imagePath?.let { path -> listOf(path) }
-                            ?: listOf(),
-                        title = movieDetails.title ?: "",
-                        vote = movieDetails.voteAverage?.toString() ?: "",
-                        runtime = movieDetails.runtime?.toString() ?: "",
-                        releaseDate = movieDetails.releaseDate?.replace("-", ".") ?: "",
-                        genres = movieDetails.genres.joinToString(", "),
-                        overview = movieDetails.overview ?: "",
-                        cast = emptyList()
-                    )
-                }
-            }.onErr(popupHandler::showFailurePopup)
-
-            movieRepository.getImagePaths(movieId).onOk { paths ->
-                _uiModel.update {
-                    it.copy(imagePaths = it.imagePaths + paths)
-                }
-            }
-
-            movieRepository.getPeople(movieId).onOk { people ->
-                _uiModel.update {
-                    it.copy(
-                        cast = people.cast.map { person -> person.toUiModel() },
-                        directors = people.directors.map { director -> director.toUiModel() },
-                        writers = people.writers.map { writer -> writer.toUiModel() }
-                    )
-                }
-            }
-
-            movieRepository.getProviders(movieId).onOk { providers ->
-                _uiModel.update {
-                    it.copy(providerLogoPaths = providers.mapNotNull { provider -> provider.logoPath })
-                }
-            }
-
-            movieRepository.getTrailerYoutubeVideoId(movieId).onOk { id ->
-                _uiModel.update {
-                    it.copy(youtubeVideoId = id)
-                }
-            }
-
-            movieRepository.getFirstReview(movieId).onOk { review ->
-                _uiModel.update {
-                    it.copy(review = review?.toUiModel())
-                }
-            }
-
-            if (authStateProvider.loggedIn.value) {
-                movieRepository.getAccountStates(movieId).onOk { accountStates ->
+            val detailsJob = async {
+                movieRepository.getMovieDetails(movieId).onOk { movieDetails ->
                     _uiModel.update {
                         it.copy(
-                            userRate = accountStates.rate?.roundToInt()
-                                ?.toString(), //TODO Implement a rating system supports floating number
-                            inWatchlist = accountStates.watchlist,
-                            favorite = accountStates.favorite
+                            imagePaths = movieDetails.imagePath?.let { path -> listOf(path) }
+                                ?: listOf(),
+                            title = movieDetails.title ?: "",
+                            vote = movieDetails.voteAverage?.toString() ?: "",
+                            runtime = movieDetails.runtime?.toString() ?: "",
+                            releaseDate = movieDetails.releaseDate?.replace("-", ".") ?: "",
+                            genres = movieDetails.genres.joinToString(", "),
+                            overview = movieDetails.overview ?: "",
+                            cast = emptyList()
                         )
                     }
                 }.onErr(popupHandler::showFailurePopup)
             }
+
+            val imagePathsJob = async {
+                movieRepository.getImagePaths(movieId).onOk { paths ->
+                    _uiModel.update {
+                        it.copy(imagePaths = it.imagePaths + paths)
+                    }
+                }
+            }
+
+            val peopleJob = async {
+                movieRepository.getPeople(movieId).onOk { people ->
+                    _uiModel.update {
+                        it.copy(
+                            cast = people.cast.map { person -> person.toUiModel() },
+                            directors = people.directors.map { director -> director.toUiModel() },
+                            writers = people.writers.map { writer -> writer.toUiModel() }
+                        )
+                    }
+                }
+            }
+
+            val providersJob = async {
+                movieRepository.getProviders(movieId).onOk { providers ->
+                    _uiModel.update {
+                        it.copy(providerLogoPaths = providers.mapNotNull { provider -> provider.logoPath })
+                    }
+                }
+            }
+
+            val youtubeTrailerIdJob = async {
+                movieRepository.getTrailerYoutubeVideoId(movieId).onOk { id ->
+                    _uiModel.update {
+                        it.copy(youtubeVideoId = id)
+                    }
+                }
+            }
+
+            val reviewsJob = async {
+                movieRepository.getReviews(movieId).onOk { reviews ->
+                    _uiModel.update {
+                        it.copy(
+                            review = reviews.firstOrNull()?.toUiModel(),
+                            showsReviewsButton = reviews.count() > 2
+                        )
+                    }
+                }
+            }
+
+            val accountStatesJob = async {
+                if (authStateProvider.loggedIn.value) {
+                    movieRepository.getAccountStates(movieId).onOk { accountStates ->
+                        _uiModel.update {
+                            it.copy(
+                                userRate = accountStates.rate?.roundToInt()
+                                    ?.toString(), //TODO Implement a rating system supports floating number
+                                inWatchlist = accountStates.watchlist,
+                                favorite = accountStates.favorite
+                            )
+                        }
+                    }.onErr(popupHandler::showFailurePopup)
+                }
+            }
+
+            detailsJob.await()
+            imagePathsJob.await()
+            peopleJob.await()
+            providersJob.await()
+            youtubeTrailerIdJob.await()
+            reviewsJob.await()
+            accountStatesJob.await()
 
             loadingAnimator.stop()
         }
