@@ -5,10 +5,12 @@ import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
@@ -32,16 +34,17 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import core.ui.component.FeedLoadError
 import core.ui.component.ImageQuality
 import core.ui.component.ImageType
 import core.ui.component.Poster
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Serializable
 object SearchRoute
@@ -157,6 +160,8 @@ private fun Results(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) { CircularProgressIndicator() }
+    } else if (results.loadState.append is LoadState.Error || results.loadState.refresh is LoadState.Error) {
+        FeedLoadError(onRetryClick = results::retry)
     } else {
         val state = rememberLazyGridState()
         LazyVerticalGrid(
@@ -187,6 +192,15 @@ private fun Results(
                         },
                         imageQuality = ImageQuality.HIGH
                     )
+                }
+            }
+
+            if (results.loadState.append is LoadState.Loading) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) { CircularProgressIndicator() }
                 }
             }
         }
