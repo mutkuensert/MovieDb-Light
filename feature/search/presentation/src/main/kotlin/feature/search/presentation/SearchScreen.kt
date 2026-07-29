@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -164,43 +165,49 @@ private fun Results(
         FeedLoadError(onRetryClick = results::retry)
     } else {
         val state = rememberLazyGridState()
-        LazyVerticalGrid(
-            modifier = modifier.fillMaxSize(),
-            state = state,
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            columns = GridCells.Fixed(2)
+        PullToRefreshBox(
+            isRefreshing = results.loadState.refresh is LoadState.Error,
+            onRefresh = results::refresh,
+            modifier
         ) {
-            items(count = results.itemCount) { index ->
-                val result = results[index]
-                if (result != null) {
-                    Poster(
-                        modifier = Modifier
-                            .clickable {
-                                when (result) {
-                                    is ResultUiModel.Movie -> onClickMovie(result.id)
-                                    is ResultUiModel.Person -> onClickPerson(result.id)
-                                    is ResultUiModel.TvShow -> onClickTvShow(result.id)
+            LazyVerticalGrid(
+                modifier = Modifier.fillMaxSize(),
+                state = state,
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                columns = GridCells.Fixed(2)
+            ) {
+                items(count = results.itemCount) { index ->
+                    val result = results[index]
+                    if (result != null) {
+                        Poster(
+                            modifier = Modifier
+                                .clickable {
+                                    when (result) {
+                                        is ResultUiModel.Movie -> onClickMovie(result.id)
+                                        is ResultUiModel.Person -> onClickPerson(result.id)
+                                        is ResultUiModel.TvShow -> onClickTvShow(result.id)
+                                    }
                                 }
-                            }
-                            .fillMaxSize(),
-                        imagePath = result.imagePath,
-                        imageType = when (result) {
-                            is ResultUiModel.Movie -> ImageType.POSTER
-                            is ResultUiModel.Person -> ImageType.PROFILE
-                            is ResultUiModel.TvShow -> ImageType.POSTER
-                        },
-                        imageQuality = ImageQuality.HIGH
-                    )
+                                .fillMaxSize(),
+                            imagePath = result.imagePath,
+                            imageType = when (result) {
+                                is ResultUiModel.Movie -> ImageType.POSTER
+                                is ResultUiModel.Person -> ImageType.PROFILE
+                                is ResultUiModel.TvShow -> ImageType.POSTER
+                            },
+                            imageQuality = ImageQuality.HIGH
+                        )
+                    }
                 }
-            }
 
-            if (results.loadState.append is LoadState.Loading) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) { CircularProgressIndicator() }
+                if (results.loadState.append is LoadState.Loading) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) { CircularProgressIndicator() }
+                    }
                 }
             }
         }
