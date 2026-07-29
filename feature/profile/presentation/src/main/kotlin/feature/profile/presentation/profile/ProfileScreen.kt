@@ -35,6 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -233,7 +234,7 @@ private fun RatedTvShowsTab(
     onClickTvShow: (Int) -> Unit
 ) {
     Column {
-        Filter(
+        SortMenu(
             Modifier.padding(top = 4.dp),
             uiModel.ratedTvShowsSortBy,
             onClickSortRatedTvShowsBy,
@@ -260,7 +261,7 @@ private fun FavoriteTvShowsTab(
     onClickTvShow: (Int) -> Unit
 ) {
     Column {
-        Filter(
+        SortMenu(
             Modifier.padding(top = 4.dp),
             uiModel.favoriteTvShowsSortBy,
             onClickSortFavoriteTvShowsBy,
@@ -287,7 +288,7 @@ private fun WatchlistTvShowsTab(
     onClickTvShow: (Int) -> Unit
 ) {
     Column {
-        Filter(
+        SortMenu(
             Modifier.padding(top = 4.dp),
             uiModel.watchlistTvShowsSortBy,
             onClickSortWatchlistTvShowsBy,
@@ -314,7 +315,7 @@ private fun RatedMoviesTab(
     onClickMovie: (Int) -> Unit
 ) {
     Column {
-        Filter(
+        SortMenu(
             Modifier.padding(top = 4.dp),
             uiModel.ratedMoviesSortBy,
             onClickSortRatedMoviesBy,
@@ -341,7 +342,7 @@ private fun FavoriteMoviesTab(
     onClickMovie: (Int) -> Unit
 ) {
     Column {
-        Filter(
+        SortMenu(
             Modifier.padding(top = 4.dp),
             uiModel.favoriteMoviesSortBy,
             onClickSortFavoriteMoviesBy,
@@ -368,7 +369,7 @@ private fun WatchlistMoviesTab(
     onClickMovie: (Int) -> Unit
 ) {
     Column {
-        Filter(
+        SortMenu(
             Modifier.padding(top = 4.dp),
             uiModel.watchlistMoviesSortBy,
             onClickSortWatchlistMoviesBy,
@@ -423,37 +424,43 @@ private fun Productions(
     } else if (productions.loadState.append is LoadState.Error || productions.loadState.refresh is LoadState.Error) {
         FeedLoadError(onRetryClick = productions::retry)
     } else {
-        LazyVerticalGrid(
-            modifier = modifier.fillMaxSize(),
-            state = state,
-            contentPadding = PaddingValues(vertical = 2.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            columns = GridCells.Fixed(2)
+        PullToRefreshBox(
+            isRefreshing = productions.loadState.refresh is LoadState.Loading,
+            onRefresh = productions::refresh,
+            modifier
         ) {
-            items(
-                count = productions.itemCount,
-                key = { index ->
-                    productions[index]?.id ?: index
-                }) { index ->
-                val movie = productions[index]
-                if (movie != null) {
-                    InteractivePoster(
-                        modifier = Modifier.fillMaxSize(),
-                        imagePath = movie.imagePath,
-                        title = movie.title,
-                        vote = movie.voteAverage,
-                        onPosterClick = { onClickMovie(movie.id) },
-                    )
+            LazyVerticalGrid(
+                modifier = Modifier.fillMaxSize(),
+                state = state,
+                contentPadding = PaddingValues(vertical = 2.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                columns = GridCells.Fixed(2)
+            ) {
+                items(
+                    count = productions.itemCount,
+                    key = { index ->
+                        productions[index]?.id ?: index
+                    }) { index ->
+                    val movie = productions[index]
+                    if (movie != null) {
+                        InteractivePoster(
+                            modifier = Modifier.fillMaxSize(),
+                            imagePath = movie.imagePath,
+                            title = movie.title,
+                            vote = movie.voteAverage,
+                            onPosterClick = { onClickMovie(movie.id) },
+                        )
+                    }
                 }
-            }
 
-            if (productions.loadState.append is LoadState.Loading) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) { CircularProgressIndicator() }
+                if (productions.loadState.append is LoadState.Loading) {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) { CircularProgressIndicator() }
+                    }
                 }
             }
         }
@@ -467,7 +474,7 @@ private fun SortByListener(
     sortBy: SortByUiModel,
     gridState: LazyGridState
 ) {
-    var previousSortBy: SortByUiModel? by rememberSaveable { mutableStateOf(null) }
+    var previousSortBy: SortByUiModel by rememberSaveable { mutableStateOf(sortBy) }
     LaunchedEffect(movies.itemSnapshotList) {
         if (previousSortBy != sortBy) {
             delay(500.milliseconds) //To fix race condition between internal scroll based on item key and this scroll
@@ -478,7 +485,7 @@ private fun SortByListener(
 }
 
 @Composable
-private fun Filter(
+private fun SortMenu(
     modifier: Modifier = Modifier,
     sortBy: SortByUiModel,
     onClickSortBy: (sortBy: SortByUiModel) -> Unit
@@ -565,9 +572,9 @@ private fun Filter(
 
 @Preview
 @Composable
-private fun FilterPreview() {
+private fun SortMenuPreview() {
     FilmCanTheme {
-        Filter(sortBy = SortByUiModel.ASCENDING) { }
+        SortMenu(sortBy = SortByUiModel.ASCENDING) { }
     }
 }
 

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -175,36 +175,40 @@ private fun Movies(
     } else if (movies.loadState.append is LoadState.Error || movies.loadState.refresh is LoadState.Error) {
         FeedLoadError(onRetryClick = movies::retry)
     } else {
-        val state = rememberLazyGridState()
-        LazyVerticalGrid(
-            modifier = modifier.fillMaxSize(),
-            state = state,
-            contentPadding = PaddingValues(vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            columns = GridCells.Fixed(2)
+        PullToRefreshBox(
+            isRefreshing = movies.loadState.refresh is LoadState.Loading,
+            onRefresh = movies::refresh,
+            modifier
         ) {
-            items(movies.itemCount) { index ->
-                val movie = movies[index]
-                if (movie != null) {
-                    InteractivePoster(
-                        modifier = Modifier.fillMaxSize(),
-                        imagePath = movie.imagePath,
-                        title = movie.title,
-                        vote = movie.voteAverage,
-                        onPosterClick = { onClickMovie(movie.id) },
-                        inWatchlist = movie.inWatchlist,
-                        onWatchlistClick = { onWatchlistClick(movie) }
-                    )
+            LazyVerticalGrid(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                columns = GridCells.Fixed(2)
+            ) {
+                items(movies.itemCount) { index ->
+                    val movie = movies[index]
+                    if (movie != null) {
+                        InteractivePoster(
+                            modifier = Modifier.fillMaxSize(),
+                            imagePath = movie.imagePath,
+                            title = movie.title,
+                            vote = movie.voteAverage,
+                            onPosterClick = { onClickMovie(movie.id) },
+                            inWatchlist = movie.inWatchlist,
+                            onWatchlistClick = { onWatchlistClick(movie) }
+                        )
+                    }
                 }
-            }
 
-            if (movies.loadState.append is LoadState.Loading) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) { CircularProgressIndicator() }
+                if (movies.loadState.append is LoadState.Loading) {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) { CircularProgressIndicator() }
+                    }
                 }
             }
         }

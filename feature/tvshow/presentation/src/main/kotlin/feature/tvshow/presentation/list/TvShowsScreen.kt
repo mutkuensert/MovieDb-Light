@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -175,36 +175,40 @@ private fun TvShows(
     } else if (tvShows.loadState.append is LoadState.Error || tvShows.loadState.refresh is LoadState.Error) {
         FeedLoadError(onRetryClick = tvShows::retry)
     } else {
-        val state = rememberLazyGridState()
-        LazyVerticalGrid(
-            modifier = modifier.fillMaxSize(),
-            state = state,
-            contentPadding = PaddingValues(vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            columns = GridCells.Fixed(2)
+        PullToRefreshBox(
+            isRefreshing = tvShows.loadState.refresh is LoadState.Loading,
+            onRefresh = tvShows::refresh,
+            modifier
         ) {
-            items(tvShows.itemCount) { index ->
-                val tvShow = tvShows[index]
-                if (tvShow != null) {
-                    InteractivePoster(
-                        modifier = Modifier.fillMaxSize(),
-                        imagePath = tvShow.imagePath,
-                        title = tvShow.title,
-                        vote = tvShow.voteAverage,
-                        onPosterClick = { onClickTvShow(tvShow.id) },
-                        inWatchlist = tvShow.inWatchlist,
-                        onWatchlistClick = { onWatchlistClick(tvShow) }
-                    )
+            LazyVerticalGrid(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                columns = GridCells.Fixed(2)
+            ) {
+                items(tvShows.itemCount) { index ->
+                    val tvShow = tvShows[index]
+                    if (tvShow != null) {
+                        InteractivePoster(
+                            modifier = Modifier.fillMaxSize(),
+                            imagePath = tvShow.imagePath,
+                            title = tvShow.title,
+                            vote = tvShow.voteAverage,
+                            onPosterClick = { onClickTvShow(tvShow.id) },
+                            inWatchlist = tvShow.inWatchlist,
+                            onWatchlistClick = { onWatchlistClick(tvShow) }
+                        )
+                    }
                 }
-            }
 
-            if (tvShows.loadState.append is LoadState.Loading) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) { CircularProgressIndicator() }
+                if (tvShows.loadState.append is LoadState.Loading) {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) { CircularProgressIndicator() }
+                    }
                 }
             }
         }
