@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -32,18 +34,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import core.ui.FilmCanTheme
+import core.ui.component.FeedLoadError
 import core.ui.component.InteractivePoster
 import feature.tvshow.presentation.R
 import feature.tvshow.presentation.list.model.TvShowUiModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun TvShowsScreen(
@@ -169,6 +172,8 @@ private fun TvShows(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) { CircularProgressIndicator() }
+    } else if (tvShows.loadState.append is LoadState.Error || tvShows.loadState.refresh is LoadState.Error) {
+        FeedLoadError(onRetryClick = tvShows::retry)
     } else {
         val state = rememberLazyGridState()
         LazyVerticalGrid(
@@ -191,6 +196,15 @@ private fun TvShows(
                         inWatchlist = tvShow.inWatchlist,
                         onWatchlistClick = { onWatchlistClick(tvShow) }
                     )
+                }
+            }
+
+            if (tvShows.loadState.append is LoadState.Loading) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) { CircularProgressIndicator() }
                 }
             }
         }

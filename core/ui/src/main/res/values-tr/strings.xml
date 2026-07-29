@@ -7,4 +7,6 @@
     <string name="watchlist_button">İzleme listesi butonu</string>
     <string name="ok">Tamam</string>
     <string name="cancel">İptal</string>
+    <string name="content_could_not_be_loaded">İçerik yüklenemedi.</string>
+    <string name="retry">Tekrar dene</string>
 </resources>

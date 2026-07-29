@@ -55,6 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -64,6 +65,7 @@ import coil3.compose.AsyncImage
 import core.ui.FilmCanTheme
 import core.ui.LightGreen
 import core.ui.TmdbImage
+import core.ui.component.FeedLoadError
 import core.ui.component.InteractivePoster
 import core.ui.component.OneTimeEffect
 import core.ui.darkenBy
@@ -73,7 +75,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import kotlin.time.Duration.Companion.milliseconds
 
 @Serializable
 object ProfileRoute
@@ -237,8 +239,8 @@ private fun RatedTvShowsTab(
             onClickSortRatedTvShowsBy,
         )
         val state = rememberLazyGridState()
-        Movies(
-            movies = ratedTvShows,
+        Productions(
+            productions = ratedTvShows,
             state = state,
             onClickMovie = onClickTvShow,
         )
@@ -264,8 +266,8 @@ private fun FavoriteTvShowsTab(
             onClickSortFavoriteTvShowsBy,
         )
         val state = rememberLazyGridState()
-        Movies(
-            movies = favoriteTvShows,
+        Productions(
+            productions = favoriteTvShows,
             state = state,
             onClickMovie = onClickTvShow,
         )
@@ -291,8 +293,8 @@ private fun WatchlistTvShowsTab(
             onClickSortWatchlistTvShowsBy,
         )
         val state = rememberLazyGridState()
-        Movies(
-            movies = watchlistTvShows,
+        Productions(
+            productions = watchlistTvShows,
             state = state,
             onClickMovie = onClickTvShow,
         )
@@ -318,8 +320,8 @@ private fun RatedMoviesTab(
             onClickSortRatedMoviesBy,
         )
         val state = rememberLazyGridState()
-        Movies(
-            movies = ratedMovies,
+        Productions(
+            productions = ratedMovies,
             state = state,
             onClickMovie = onClickMovie,
         )
@@ -345,8 +347,8 @@ private fun FavoriteMoviesTab(
             onClickSortFavoriteMoviesBy,
         )
         val state = rememberLazyGridState()
-        Movies(
-            movies = favoriteMovies,
+        Productions(
+            productions = favoriteMovies,
             state = state,
             onClickMovie = onClickMovie,
         )
@@ -372,8 +374,8 @@ private fun WatchlistMoviesTab(
             onClickSortWatchlistMoviesBy,
         )
         val state = rememberLazyGridState()
-        Movies(
-            movies = watchlistMovies,
+        Productions(
+            productions = watchlistMovies,
             state = state,
             onClickMovie = onClickMovie,
         )
@@ -407,17 +409,19 @@ private fun TabTitle(tab: ProfileTab) {
 }
 
 @Composable
-private fun Movies(
+private fun Productions(
     modifier: Modifier = Modifier,
-    movies: LazyPagingItems<MovieUiModel>,
+    productions: LazyPagingItems<MovieUiModel>,
     state: LazyGridState,
     onClickMovie: (movieId: Int) -> Unit,
 ) {
-    if (movies.loadState.refresh == LoadState.Loading) {
+    if (productions.loadState.refresh == LoadState.Loading) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) { CircularProgressIndicator() }
+    } else if (productions.loadState.append is LoadState.Error || productions.loadState.refresh is LoadState.Error) {
+        FeedLoadError(onRetryClick = productions::retry)
     } else {
         LazyVerticalGrid(
             modifier = modifier.fillMaxSize(),
@@ -428,11 +432,11 @@ private fun Movies(
             columns = GridCells.Fixed(2)
         ) {
             items(
-                count = movies.itemCount,
+                count = productions.itemCount,
                 key = { index ->
-                    movies[index]?.id ?: index
+                    productions[index]?.id ?: index
                 }) { index ->
-                val movie = movies[index]
+                val movie = productions[index]
                 if (movie != null) {
                     InteractivePoster(
                         modifier = Modifier.fillMaxSize(),
@@ -441,6 +445,15 @@ private fun Movies(
                         vote = movie.voteAverage,
                         onPosterClick = { onClickMovie(movie.id) },
                     )
+                }
+            }
+
+            if (productions.loadState.append is LoadState.Loading) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) { CircularProgressIndicator() }
                 }
             }
         }
@@ -457,7 +470,7 @@ private fun SortByListener(
     var previousSortBy: SortByUiModel? by rememberSaveable { mutableStateOf(null) }
     LaunchedEffect(movies.itemSnapshotList) {
         if (previousSortBy != sortBy) {
-            delay(500) //To fix race condition between internal scroll based on item key and this scroll
+            delay(500.milliseconds) //To fix race condition between internal scroll based on item key and this scroll
             gridState.requestScrollToItem(0)
             previousSortBy = sortBy
         }

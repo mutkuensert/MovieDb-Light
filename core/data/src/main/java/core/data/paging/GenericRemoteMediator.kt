@@ -63,7 +63,7 @@ abstract class GenericRemoteMediator<T, R : Any> : RemoteMediator<Int, R>() {
                 },
                 failure = {
                     Timber.w(it.message)
-                    MediatorResult.Success(endOfPaginationReached = true)
+                    MediatorResult.Error(RuntimeException(it.message))
                 }
             )
         } catch (e: Exception) {

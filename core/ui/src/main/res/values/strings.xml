@@ -7,4 +7,6 @@
     <string name="watchlist_button">Watchlist button</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
+    <string name="content_could_not_be_loaded">Content could not be loaded.</string>
+    <string name="retry">Retry</string>
 </resources>

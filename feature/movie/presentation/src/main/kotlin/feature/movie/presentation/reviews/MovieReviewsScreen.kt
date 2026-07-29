@@ -17,7 +17,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,14 +26,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import core.ui.AppColors
+import core.ui.component.FeedLoadError
 import core.ui.darkenBy
 import feature.movie.presentation.R
 import feature.movie.presentation.detail.model.ReviewUiModel
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun MovieReviewsScreen(viewModel: MovieReviewsViewModel = hiltViewModel()) {
@@ -48,17 +49,23 @@ private fun ReviewsFeed(
     reviews: LazyPagingItems<ReviewUiModel>,
     modifier: Modifier = Modifier,
 ) {
-    when (reviews.loadState.refresh) {
-        LoadState.Loading -> Box(modifier, contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+    val refreshState = reviews.loadState.refresh
+    val appendState = reviews.loadState.append
+    when {
+        appendState is LoadState.Loading -> {
+            Box(modifier, contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
         }
 
-        is LoadState.Error -> LoadError(
-            onRetryClick = reviews::retry,
-            modifier = modifier
-        )
+        appendState is LoadState.Error || refreshState is LoadState.Error -> {
+            FeedLoadError(
+                onRetryClick = reviews::retry,
+                modifier = modifier
+            )
+        }
 
-        is LoadState.NotLoading -> {
+        appendState is LoadState.NotLoading || refreshState is LoadState.NotLoading -> {
             if (reviews.itemCount == 0) {
                 Box(modifier, contentAlignment = Alignment.Center) {
                     Text(
@@ -69,56 +76,41 @@ private fun ReviewsFeed(
                 return
             }
 
-            LazyColumn(
-                modifier = modifier,
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+            PullToRefreshBox(
+                isRefreshing = refreshState is LoadState.Loading,
+                onRefresh = reviews::refresh
             ) {
-                items(reviews.itemCount) { index ->
-                    reviews[index]?.let { review ->
-                        ReviewCard(review)
-                    }
-                }
-
-                when (reviews.loadState.append) {
-                    LoadState.Loading -> item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
+                LazyColumn(
+                    modifier = modifier,
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(reviews.itemCount) { index ->
+                        reviews[index]?.let { review ->
+                            ReviewCard(review)
                         }
                     }
 
-                    is LoadState.Error -> item {
-                        LoadError(onRetryClick = reviews::retry)
-                    }
+                    when (reviews.loadState.append) {
+                        LoadState.Loading -> item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
 
-                    is LoadState.NotLoading -> Unit
+                        is LoadState.Error -> item {
+                            FeedLoadError(onRetryClick = reviews::retry)
+                        }
+
+                        is LoadState.NotLoading -> Unit
+                    }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun LoadError(
-    onRetryClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = stringResource(R.string.reviews_could_not_be_loaded),
-            color = MaterialTheme.colorScheme.onBackground
-        )
-        TextButton(onClick = onRetryClick) {
-            Text(stringResource(R.string.retry))
         }
     }
 }
