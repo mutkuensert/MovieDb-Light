@@ -25,5 +25,5 @@
     <string name="writers">Yazarlar</string>
     <string name="read_more_reviews">İncelemelerin devamını görüntüle</string>
     <string name="no_reviews">Henüz yorum yok.</string>
-    <string name="movie_icon_description">Film detay ekranında olduğunuzu belirten ikon.</string>
+    <string name="film">Film</string>
 </resources>

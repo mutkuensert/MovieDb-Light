@@ -33,7 +33,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
@@ -540,12 +539,6 @@ private fun MoviePosters(
                             vote,
                             runtime
                         )
-
-                        Icon(
-                            imageVector = Icons.Filled.Movie,
-                            contentDescription = stringResource(R.string.movie_icon_description),
-                            Modifier.height(height = 16.dp)
-                        )
                     }
                 }
             }
@@ -699,6 +692,12 @@ private fun YearVoteRuntimeText(
         Text(
             modifier = Modifier.padding(end = 8.dp),
             text = stringResource(R.string.runtime, runtime),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+        )
+
+        Text(
+            modifier = Modifier.padding(end = 8.dp),
+            text = stringResource(R.string.film),
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
         )
     }

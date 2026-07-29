@@ -33,7 +33,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.LiveTv
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
@@ -78,6 +77,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -99,7 +99,6 @@ import feature.tvshow.presentation.R
 import feature.tvshow.presentation.detail.model.PersonUiModel
 import feature.tvshow.presentation.detail.model.ReviewUiModel
 import feature.tvshow.presentation.detail.model.TvShowDetailUiModel
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun TvShowDetailScreen(viewModel: TvShowDetailViewModel = hiltViewModel()) {
@@ -439,12 +438,6 @@ private fun TvShowPosters(
                             vote,
                             runtime
                         )
-
-                        Icon(
-                            imageVector = Icons.Filled.LiveTv,
-                            contentDescription = stringResource(R.string.tv_icon_description),
-                            Modifier.height(height = 16.dp)
-                        )
                     }
                 }
             }
@@ -598,6 +591,12 @@ private fun YearVoteRuntimeText(
         Text(
             modifier = Modifier.padding(end = 8.dp),
             text = stringResource(R.string.runtime, runtime),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+        )
+
+        Text(
+            modifier = Modifier.padding(end = 8.dp),
+            text = stringResource(R.string.tv_show),
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
         )
     }

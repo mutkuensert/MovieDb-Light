@@ -25,5 +25,5 @@
     <string name="writers">Writers</string>
     <string name="read_more_reviews">Read more reviews</string>
     <string name="no_reviews">No reviews yet.</string>
-    <string name="movie_icon_description">Icon that indicates you\'re in movie detail screen.</string>
+    <string name="film">Film</string>
 </resources>
