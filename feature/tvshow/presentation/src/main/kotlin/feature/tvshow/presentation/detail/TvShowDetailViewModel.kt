@@ -122,10 +122,13 @@ class TvShowDetailViewModel @Inject constructor(
                 }
             }
 
-            val firstReviewJob = async {
-                tvShowRepository.getFirstReview(tvShowId).onOk { review ->
+            val reviewsJob = async {
+                tvShowRepository.getReviews(tvShowId).onOk { reviews ->
                     _uiModel.update {
-                        it.copy(review = review?.toUiModel())
+                        it.copy(
+                            review = reviews.firstOrNull()?.toUiModel(),
+                            showsReviewsButton = reviews.count() > 2
+                        )
                     }
                 }
             }
@@ -150,7 +153,7 @@ class TvShowDetailViewModel @Inject constructor(
             castJob.await()
             providersJob.await()
             youtubeTrailerVideoIdJob.await()
-            firstReviewJob.await()
+            reviewsJob.await()
             accountStatesJob.await()
 
             loadingAnimator.stop()

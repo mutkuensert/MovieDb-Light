@@ -23,6 +23,7 @@ data class TvShowDetailUiModel(
     val providerLogoPaths: List<String>,
     val cast: List<PersonUiModel>,
     val review: ReviewUiModel?,
+    val showsReviewsButton: Boolean,
 ) {
     companion object {
         fun initial(id: Int): TvShowDetailUiModel {
@@ -45,6 +46,7 @@ data class TvShowDetailUiModel(
                 providerLogoPaths = emptyList(),
                 cast = emptyList(),
                 review = null,
+                showsReviewsButton = false,
             )
         }
     }

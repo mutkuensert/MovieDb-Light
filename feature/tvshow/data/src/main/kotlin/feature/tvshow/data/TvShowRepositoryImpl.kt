@@ -231,7 +231,7 @@ class TvShowRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getReviews(tvShowId: Int): Flow<PagingData<Review>> {
+    override fun getReviewsPagingFlow(tvShowId: Int): Flow<PagingData<Review>> {
         return Pager(PagingConfig(pageSize = 20)) {
             TvShowReviewsPagingSource(
                 getReviews = { page ->
@@ -249,9 +249,9 @@ class TvShowRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getFirstReview(tvShowId: Int): Result<Review?, Failure> {
+    override suspend fun getReviews(tvShowId: Int): Result<List<Review>, Failure> {
         return tvShowService.getReviews(tvShowId, languagePreference.getLanguageTag())
-            .mapToDomain { it.results?.firstOrNull()?.toReview() }
+            .mapToDomain { it.results?.map { review -> review.toReview() } ?: emptyList() }
     }
 
     override suspend fun getAccountStates(tvShowId: Int): Result<AccountStates, Failure> {

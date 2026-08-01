@@ -24,7 +24,7 @@ class TvShowReviewsViewModel @Inject constructor(
         "TvShow id can't be null"
     }
 
-    val reviews: Flow<PagingData<ReviewUiModel>> = tvShowRepository.getReviews(tvShowId)
+    val reviews: Flow<PagingData<ReviewUiModel>> = tvShowRepository.getReviewsPagingFlow(tvShowId)
         .map { pagingData -> pagingData.map { review -> review.toUiModel() } }
         .cachedIn(viewModelScope)
 }

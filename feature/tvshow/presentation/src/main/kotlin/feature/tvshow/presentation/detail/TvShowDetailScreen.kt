@@ -200,10 +200,12 @@ private fun TvShowDetail(
                         .padding(horizontal = 16.dp)
                 )
 
-                ReviewsButton(
-                    onClick = onClickReviews,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+                if (uiModel.showsReviewsButton) {
+                    ReviewsButton(
+                        onClick = onClickReviews,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
             }
         }
     }
@@ -920,6 +922,7 @@ private fun TvShowDetailPreview() {
                 trailerYoutubeVideoId = "123",
                 cast = cast,
                 review = null,
+                showsReviewsButton = false,
             ),
             {},
             {},
