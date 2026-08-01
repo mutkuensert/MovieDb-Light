@@ -76,6 +76,7 @@ graph TD
 %% Core module dependencies
     C2 --> C1
     C2 --> C3
+    C1 --> C3
 
 %% Feature module dependencies
     F1 --> C2
