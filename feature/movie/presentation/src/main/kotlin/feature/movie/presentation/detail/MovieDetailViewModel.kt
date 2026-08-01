@@ -22,10 +22,11 @@ import feature.movie.domain.usecase.SyncMovieWatchlistStatusUseCase
 import feature.movie.presentation.R
 import feature.movie.presentation.detail.model.MovieDetailUiModel
 import feature.movie.presentation.detail.model.toUiModel
-import kotlinx.coroutines.async
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import utils.stringresource.StringResource
 import javax.inject.Inject
@@ -81,8 +82,9 @@ class MovieDetailViewModel @Inject constructor(
     fun getDetails() {
         viewModelScope.launch {
             loadingAnimator.start()
+            val jobs = mutableListOf<Job>()
 
-            val detailsJob = async {
+            jobs.add(launch {
                 movieRepository.getMovieDetails(movieId).onOk { movieDetails ->
                     _uiModel.update {
                         it.copy(
@@ -98,17 +100,17 @@ class MovieDetailViewModel @Inject constructor(
                         )
                     }
                 }.onErr(popupHandler::showFailurePopup)
-            }
+            })
 
-            val imagePathsJob = async {
+            jobs.add(launch {
                 movieRepository.getImagePaths(movieId).onOk { paths ->
                     _uiModel.update {
                         it.copy(imagePaths = it.imagePaths + paths)
                     }
                 }
-            }
+            })
 
-            val peopleJob = async {
+            jobs.add(launch {
                 movieRepository.getPeople(movieId).onOk { people ->
                     _uiModel.update {
                         it.copy(
@@ -118,25 +120,25 @@ class MovieDetailViewModel @Inject constructor(
                         )
                     }
                 }
-            }
+            })
 
-            val providersJob = async {
+            jobs.add(launch {
                 movieRepository.getProviders(movieId).onOk { providers ->
                     _uiModel.update {
                         it.copy(providerLogoPaths = providers.mapNotNull { provider -> provider.logoPath })
                     }
                 }
-            }
+            })
 
-            val youtubeTrailerIdJob = async {
+            jobs.add(launch {
                 movieRepository.getTrailerYoutubeVideoId(movieId).onOk { id ->
                     _uiModel.update {
                         it.copy(youtubeVideoId = id)
                     }
                 }
-            }
+            })
 
-            val reviewsJob = async {
+            jobs.add(launch {
                 movieRepository.getReviews(movieId).onOk { reviews ->
                     _uiModel.update {
                         it.copy(
@@ -145,9 +147,9 @@ class MovieDetailViewModel @Inject constructor(
                         )
                     }
                 }
-            }
+            })
 
-            val accountStatesJob = async {
+            jobs.add(launch {
                 if (authStateProvider.loggedIn.value) {
                     movieRepository.getAccountStates(movieId).onOk { accountStates ->
                         _uiModel.update {
@@ -160,16 +162,9 @@ class MovieDetailViewModel @Inject constructor(
                         }
                     }.onErr(popupHandler::showFailurePopup)
                 }
-            }
+            })
 
-            detailsJob.await()
-            imagePathsJob.await()
-            peopleJob.await()
-            providersJob.await()
-            youtubeTrailerIdJob.await()
-            reviewsJob.await()
-            accountStatesJob.await()
-
+            jobs.joinAll()
             loadingAnimator.stop()
         }
     }

@@ -22,10 +22,11 @@ import feature.tvshow.domain.usecase.SyncTvShowWatchlistStatusUseCase
 import feature.tvshow.presentation.R
 import feature.tvshow.presentation.detail.model.TvShowDetailUiModel
 import feature.tvshow.presentation.detail.model.toUiModel
-import kotlinx.coroutines.async
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import utils.stringresource.StringResource
 import javax.inject.Inject
@@ -81,8 +82,9 @@ class TvShowDetailViewModel @Inject constructor(
     fun getDetails() {
         viewModelScope.launch {
             loadingAnimator.start()
+            val jobs = mutableListOf<Job>()
 
-            val detailsJob = async {
+            jobs.add(launch {
                 tvShowRepository.getTvShowDetails(tvShowId).onOk { tvShowDetails ->
                     _uiModel.update {
                         it.copy(
@@ -98,17 +100,17 @@ class TvShowDetailViewModel @Inject constructor(
                         )
                     }
                 }.onErr(popupHandler::showFailurePopup)
-            }
+            })
 
-            val imagePathsJob = async {
+            jobs.add(launch {
                 tvShowRepository.getImagePaths(tvShowId).onOk { paths ->
                     _uiModel.update {
                         it.copy(imagePaths = it.imagePaths + paths)
                     }
                 }
-            }
+            })
 
-            val castJob = async {
+            jobs.add(launch {
                 tvShowRepository.getCast(tvShowId).onOk { cast ->
                     _uiModel.update {
                         it.copy(
@@ -116,25 +118,25 @@ class TvShowDetailViewModel @Inject constructor(
                         )
                     }
                 }
-            }
+            })
 
-            val providersJob = async {
+            jobs.add(launch {
                 tvShowRepository.getProviders(tvShowId).onOk { providers ->
                     _uiModel.update {
                         it.copy(providerLogoPaths = providers.mapNotNull { provider -> provider.logoPath })
                     }
                 }
-            }
+            })
 
-            val youtubeTrailerVideoIdJob = async {
+            jobs.add(launch {
                 tvShowRepository.getTrailerYoutubeVideoId(tvShowId).onOk { id ->
                     _uiModel.update {
                         it.copy(trailerYoutubeVideoId = id)
                     }
                 }
-            }
+            })
 
-            val reviewsJob = async {
+            jobs.add(launch {
                 tvShowRepository.getReviews(tvShowId).onOk { reviews ->
                     _uiModel.update {
                         it.copy(
@@ -143,9 +145,9 @@ class TvShowDetailViewModel @Inject constructor(
                         )
                     }
                 }
-            }
+            })
 
-            val accountStatesJob = async {
+            jobs.add(launch {
                 if (authStateProvider.loggedIn.value) {
                     tvShowRepository.getAccountStates(tvShowId).onOk { accountStates ->
                         _uiModel.update {
@@ -158,16 +160,9 @@ class TvShowDetailViewModel @Inject constructor(
                         }
                     }.onErr(popupHandler::showFailurePopup)
                 }
-            }
+            })
 
-            detailsJob.await()
-            imagePathsJob.await()
-            castJob.await()
-            providersJob.await()
-            youtubeTrailerVideoIdJob.await()
-            reviewsJob.await()
-            accountStatesJob.await()
-
+            jobs.joinAll()
             loadingAnimator.stop()
         }
     }

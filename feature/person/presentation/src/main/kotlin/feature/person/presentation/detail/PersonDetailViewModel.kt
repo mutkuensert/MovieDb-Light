@@ -16,9 +16,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import feature.person.domain.PersonRepository
 import feature.person.presentation.detail.model.PersonDetailUiModel
 import feature.person.presentation.detail.model.toUiModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -52,39 +54,47 @@ class PersonDetailViewModel @Inject constructor(
     fun getDetails() {
         viewModelScope.launch {
             loadingAnimator.start()
+            val jobs = mutableListOf<Job>()
 
-            personRepository.getPersonDetails(personId).onOk { personDetails ->
-                _uiModel.update {
-                    it.copy(
-                        imagePath = personDetails.imagePath,
-                        name = personDetails.name,
-                        knownForDepartment = personDetails.knownForDepartment ?: "",
-                        birthday = personDetails.birthday ?: "",
-                        deathday = personDetails.deathday ?: "",
-                        placeOfBirth = personDetails.placeOfBirth ?: "",
-                        biography = personDetails.biography ?: ""
-                    )
+            jobs.add(launch {
+                personRepository.getPersonDetails(personId).onOk { personDetails ->
+                    _uiModel.update {
+                        it.copy(
+                            imagePath = personDetails.imagePath,
+                            name = personDetails.name,
+                            knownForDepartment = personDetails.knownForDepartment ?: "",
+                            birthday = personDetails.birthday ?: "",
+                            deathday = personDetails.deathday ?: "",
+                            placeOfBirth = personDetails.placeOfBirth ?: "",
+                            biography = personDetails.biography ?: ""
+                        )
+                    }
+                }.onErr(popupHandler::showFailurePopup)
+            })
+
+            jobs.add(launch {
+                personRepository.getPersonMovieCredits(personId).onOk { credits ->
+                    _uiModel.update {
+                        it.copy(
+                            castMovies = credits.cast.map { movie -> movie.toUiModel() },
+                            crewMovies = credits.crew.map { movie -> movie.toUiModel() }
+                        )
+                    }
                 }
-            }.onErr(popupHandler::showFailurePopup)
+            })
 
-            personRepository.getPersonMovieCredits(personId).onOk { credits ->
-                _uiModel.update {
-                    it.copy(
-                        castMovies = credits.cast.map { movie -> movie.toUiModel() },
-                        crewMovies = credits.crew.map { movie -> movie.toUiModel() }
-                    )
+            jobs.add(launch {
+                personRepository.getPersonTvCredits(personId).onOk { credits ->
+                    _uiModel.update {
+                        it.copy(
+                            castTvShows = credits.cast.map { tvShow -> tvShow.toUiModel() },
+                            crewTvShows = credits.crew.map { movie -> movie.toUiModel() }
+                        )
+                    }
                 }
-            }
+            })
 
-            personRepository.getPersonTvCredits(personId).onOk { credits ->
-                _uiModel.update {
-                    it.copy(
-                        castTvShows = credits.cast.map { tvShow -> tvShow.toUiModel() },
-                        crewTvShows = credits.crew.map { movie -> movie.toUiModel() }
-                    )
-                }
-            }
-
+            jobs.joinAll()
             loadingAnimator.stop()
         }
     }
