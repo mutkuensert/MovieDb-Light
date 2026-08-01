@@ -154,7 +154,7 @@ private fun LanguageSelectionDialog(
         dismissButton = {
             TextButton(onDismiss) {
                 Text(
-                    text = "Cancel",
+                    text = stringResource(R.string.cancel),
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
