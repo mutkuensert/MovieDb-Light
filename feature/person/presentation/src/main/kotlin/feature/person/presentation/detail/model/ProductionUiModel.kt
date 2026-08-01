@@ -1,9 +1,12 @@
 package feature.person.presentation.detail.model
 
+import android.os.Parcelable
 import core.ui.TmdbImage
 import feature.person.domain.model.PersonMovieCredit
 import feature.person.domain.model.PersonTvCredit
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class ProductionUiModel(
     val id: Int,
     val title: String,
@@ -12,7 +15,7 @@ data class ProductionUiModel(
     val year: String,
     val character: String,
     val job: String,
-)
+) : Parcelable
 
 fun PersonMovieCredit.toUiModel(): ProductionUiModel {
     return ProductionUiModel(

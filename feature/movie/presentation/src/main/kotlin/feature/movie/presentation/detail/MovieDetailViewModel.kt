@@ -23,7 +23,6 @@ import feature.movie.presentation.R
 import feature.movie.presentation.detail.model.MovieDetailUiModel
 import feature.movie.presentation.detail.model.toUiModel
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
@@ -51,7 +50,10 @@ class MovieDetailViewModel @Inject constructor(
     private var movieId: Int = requireNotNull(savedStateHandle["id"]) {
         "Movie id can't be null"
     }
-    private val _uiModel = MutableStateFlow(MovieDetailUiModel.initial(movieId))
+    private val _uiModel = savedStateHandle.getMutableStateFlow(
+        "uiModel",
+        MovieDetailUiModel.initial(movieId)
+    )
     val uiModel = _uiModel.asStateFlow()
 
     init {

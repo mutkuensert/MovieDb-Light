@@ -8,6 +8,7 @@ class BasePresentationConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             apply(plugin = "base-compose")
+            apply(plugin = "kotlin-parcelize")
             apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 
             api(project(":core:ui"))

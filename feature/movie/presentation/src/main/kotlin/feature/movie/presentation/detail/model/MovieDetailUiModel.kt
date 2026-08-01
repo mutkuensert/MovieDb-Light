@@ -1,9 +1,12 @@
 package feature.movie.presentation.detail.model
 
+import android.os.Parcelable
 import core.domain.common.model.Review
+import kotlinx.parcelize.Parcelize
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
+@Parcelize
 data class MovieDetailUiModel(
     val id: Int,
     val imagePaths: List<String>,
@@ -26,7 +29,7 @@ data class MovieDetailUiModel(
     val writers: List<CrewPersonUiModel>,
     val review: ReviewUiModel?,
     val showsReviewsButton: Boolean,
-) {
+) : Parcelable {
     companion object {
         fun initial(id: Int): MovieDetailUiModel {
             return MovieDetailUiModel(
@@ -56,13 +59,14 @@ data class MovieDetailUiModel(
     }
 }
 
+@Parcelize
 data class ReviewUiModel(
     val id: String,
     val author: String,
     val content: String,
     val editedAt: String,
     val rating: String?,
-)
+) : Parcelable
 
 fun Review.toUiModel(): ReviewUiModel {
     val dateTime = DateTimeFormatter

@@ -16,7 +16,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import feature.person.domain.PersonRepository
 import feature.person.presentation.detail.model.PersonDetailUiModel
 import feature.person.presentation.detail.model.toUiModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
@@ -36,7 +35,10 @@ class PersonDetailViewModel @Inject constructor(
     private var personId: Int = requireNotNull(savedStateHandle["id"]) {
         "Person id can't be null"
     }
-    private val _uiModel = MutableStateFlow(PersonDetailUiModel.initial(personId))
+    private val _uiModel = savedStateHandle.getMutableStateFlow(
+        "uiModel",
+        PersonDetailUiModel.initial(personId)
+    )
     val uiModel = _uiModel.asStateFlow()
 
     init {

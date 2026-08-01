@@ -23,7 +23,6 @@ import feature.tvshow.presentation.R
 import feature.tvshow.presentation.detail.model.TvShowDetailUiModel
 import feature.tvshow.presentation.detail.model.toUiModel
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
@@ -51,7 +50,10 @@ class TvShowDetailViewModel @Inject constructor(
     private var tvShowId: Int = requireNotNull(savedStateHandle["id"]) {
         "TvShow id can't be null"
     }
-    private val _uiModel = MutableStateFlow(TvShowDetailUiModel.initial(tvShowId))
+    private val _uiModel = savedStateHandle.getMutableStateFlow(
+        "uiModel",
+        TvShowDetailUiModel.initial(tvShowId)
+    )
     val uiModel = _uiModel.asStateFlow()
 
     init {
