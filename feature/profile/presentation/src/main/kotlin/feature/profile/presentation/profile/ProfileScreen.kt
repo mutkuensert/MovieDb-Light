@@ -40,7 +40,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -437,15 +436,13 @@ private fun Productions(
                 items(count = productions.itemCount) { index ->
                     val movie = productions[index]
                     if (movie != null) {
-                        key(movie.id) {
-                            InteractivePoster(
-                                modifier = Modifier.fillMaxSize(),
-                                imagePath = movie.imagePath,
-                                title = movie.title,
-                                vote = movie.voteAverage,
-                                onPosterClick = { onClickMovie(movie.id) },
-                            )
-                        }
+                        InteractivePoster(
+                            modifier = Modifier.fillMaxSize(),
+                            imagePath = movie.imagePath,
+                            title = movie.title,
+                            vote = movie.voteAverage,
+                            onPosterClick = { onClickMovie(movie.id) },
+                        )
                     }
                 }
 
