@@ -2,6 +2,8 @@ package core.database
 
 import android.content.Context
 import androidx.room.Room
+import core.domain.common.LanguagePreferenceUpdateState
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,62 +13,71 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DatabaseModule {
-    @Provides
+abstract class DatabaseModule {
+
+    @Binds
     @Singleton
-    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "app-database"
-        ).addMigrations(MIGRATION_2_3, MIGRATION_4_5).build()
-    }
+    abstract fun bindLanguagePreference(
+        languagePreference: LanguagePreference
+    ): LanguagePreferenceUpdateState
 
-    @Provides
-    fun providePopularMovieDao(database: AppDatabase) = database.getPopularMovieDao()
+    companion object {
+        @Provides
+        @Singleton
+        fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+            return Room.databaseBuilder(
+                context,
+                AppDatabase::class.java,
+                "app-database"
+            ).addMigrations(MIGRATION_2_3, MIGRATION_4_5).build()
+        }
 
-    @Provides
-    fun provideNowPlayingMovieDao(database: AppDatabase) = database.getNowPlayingMovieDao()
+        @Provides
+        fun providePopularMovieDao(database: AppDatabase) = database.getPopularMovieDao()
 
-    @Provides
-    fun provideUpcomingMovieDao(database: AppDatabase) = database.getUpcomingMovieDao()
+        @Provides
+        fun provideNowPlayingMovieDao(database: AppDatabase) = database.getNowPlayingMovieDao()
 
-    @Provides
-    fun provideTopRatedMovieDao(database: AppDatabase) = database.getTopRateMovieDao()
+        @Provides
+        fun provideUpcomingMovieDao(database: AppDatabase) = database.getUpcomingMovieDao()
 
-    @Provides
-    fun provideFavoriteMovieDao(database: AppDatabase) = database.getFavoriteMovieDao()
+        @Provides
+        fun provideTopRatedMovieDao(database: AppDatabase) = database.getTopRateMovieDao()
 
-    @Provides
-    fun provideWatchlistMovieDao(database: AppDatabase) = database.getWatchlistMovieDao()
+        @Provides
+        fun provideFavoriteMovieDao(database: AppDatabase) = database.getFavoriteMovieDao()
 
-    @Provides
-    fun provideRatedMovieDao(database: AppDatabase) = database.getRatedMovieDao()
+        @Provides
+        fun provideWatchlistMovieDao(database: AppDatabase) = database.getWatchlistMovieDao()
 
-    @Provides
-    fun provideFavoriteTvShowDao(database: AppDatabase) = database.getFavoriteTvShowDao()
+        @Provides
+        fun provideRatedMovieDao(database: AppDatabase) = database.getRatedMovieDao()
 
-    @Provides
-    fun provideWatchlistTvShowDao(database: AppDatabase) = database.getWatchlistTvShowDao()
+        @Provides
+        fun provideFavoriteTvShowDao(database: AppDatabase) = database.getFavoriteTvShowDao()
 
-    @Provides
-    fun provideRatedTvShowDao(database: AppDatabase) = database.getRatedTvShowDao()
+        @Provides
+        fun provideWatchlistTvShowDao(database: AppDatabase) = database.getWatchlistTvShowDao()
 
-    @Provides
-    fun providePopularTvShowDao(database: AppDatabase) = database.getPopularTvShowDao()
+        @Provides
+        fun provideRatedTvShowDao(database: AppDatabase) = database.getRatedTvShowDao()
 
-    @Provides
-    fun provideTvShowAiringTodayDao(database: AppDatabase) = database.getTvShowAiringTodayDao()
+        @Provides
+        fun providePopularTvShowDao(database: AppDatabase) = database.getPopularTvShowDao()
 
-    @Provides
-    fun provideUpcomingTvShowDao(database: AppDatabase) = database.getUpcomingTvShowDao()
+        @Provides
+        fun provideTvShowAiringTodayDao(database: AppDatabase) = database.getTvShowAiringTodayDao()
 
-    @Provides
-    fun provideTopRatedTvShowDao(database: AppDatabase) = database.getTopRatedTvShowDao()
+        @Provides
+        fun provideUpcomingTvShowDao(database: AppDatabase) = database.getUpcomingTvShowDao()
 
-    @Provides
-    @Singleton
-    fun provideLanguagePreference(@ApplicationContext context: Context): LanguagePreference {
-        return LanguagePreference(context)
+        @Provides
+        fun provideTopRatedTvShowDao(database: AppDatabase) = database.getTopRatedTvShowDao()
+
+        @Provides
+        @Singleton
+        fun provideLanguagePreference(@ApplicationContext context: Context): LanguagePreference {
+            return LanguagePreference(context)
+        }
     }
 }

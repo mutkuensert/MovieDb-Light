@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onErr
 import com.github.michaelbull.result.onOk
 import core.domain.auth.AuthStateProvider
+import core.domain.common.LanguagePreferenceUpdateState
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
@@ -44,6 +45,7 @@ class TvShowDetailViewModel @Inject constructor(
     private val navigator: Navigator,
     private val authStateProvider: AuthStateProvider,
     private val stringResource: StringResource,
+    private val languagePreferenceUpdateState: LanguagePreferenceUpdateState,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var tvShowId: Int = requireNotNull(savedStateHandle["id"]) {
@@ -54,13 +56,21 @@ class TvShowDetailViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            authStateProvider.loggedIn.collectLatest { loggedIn ->
-                _uiModel.update {
-                    it.copy(
-                        showRateButton = loggedIn,
-                        showWatchlistButton = loggedIn,
-                        showFavoriteButton = loggedIn
-                    )
+            launch {
+                authStateProvider.loggedIn.collectLatest { loggedIn ->
+                    _uiModel.update {
+                        it.copy(
+                            showRateButton = loggedIn,
+                            showWatchlistButton = loggedIn,
+                            showFavoriteButton = loggedIn
+                        )
+                    }
+                }
+            }
+
+            launch {
+                languagePreferenceUpdateState.updatedLanguage.collectLatest {
+                    getDetails()
                 }
             }
         }

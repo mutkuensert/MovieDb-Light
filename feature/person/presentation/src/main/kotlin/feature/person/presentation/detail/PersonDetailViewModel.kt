@@ -2,24 +2,26 @@ package feature.person.presentation.detail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onErr
 import com.github.michaelbull.result.onOk
+import core.domain.common.LanguagePreferenceUpdateState
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
 import core.ui.route.TvShowDetailRoute
 import core.ui.showFailurePopup
+import dagger.hilt.android.lifecycle.HiltViewModel
 import feature.person.domain.PersonRepository
 import feature.person.presentation.detail.model.PersonDetailUiModel
 import feature.person.presentation.detail.model.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @HiltViewModel
@@ -28,6 +30,7 @@ class PersonDetailViewModel @Inject constructor(
     private val loadingAnimator: LoadingAnimator,
     private val popupHandler: PopupHandler,
     private val navigator: Navigator,
+    private val languagePreferenceUpdateState: LanguagePreferenceUpdateState,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var personId: Int = requireNotNull(savedStateHandle["id"]) {
@@ -35,6 +38,14 @@ class PersonDetailViewModel @Inject constructor(
     }
     private val _uiModel = MutableStateFlow(PersonDetailUiModel.initial(personId))
     val uiModel = _uiModel.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            languagePreferenceUpdateState.updatedLanguage.collectLatest {
+                getDetails()
+            }
+        }
+    }
 
     fun getDetails() {
         viewModelScope.launch {
