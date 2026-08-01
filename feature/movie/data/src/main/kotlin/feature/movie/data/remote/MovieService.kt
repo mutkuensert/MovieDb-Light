@@ -89,8 +89,8 @@ interface MovieService {
     @GET("movie/{movie_id}/reviews")
     suspend fun getReviews(
         @Path("movie_id") movieId: Int,
-        @Query("language") language: String = DEFAULT_REMOTE_CONTENT_LANGUAGE,
         @Query("page") page: Int = 1,
+        @Query("language") language: String = DEFAULT_REMOTE_CONTENT_LANGUAGE,
     ): NetworkResult<ReviewsResponse>
 
     @GET("movie/{movie_id}/account_states")

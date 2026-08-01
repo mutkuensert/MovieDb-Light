@@ -27,8 +27,8 @@ interface AccountService {
     suspend fun getFavoriteMovies(
         @Query("page") page: Int = 1,
         @Query("session_id") sessionId: String,
+        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value,
         @Query("language") language: String = "en-US",
-        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value
     ): NetworkResult<MoviesResponse>
 
     @POST("account/account_id/favorite")
@@ -41,8 +41,8 @@ interface AccountService {
     suspend fun getWatchlistMovies(
         @Query("page") page: Int = 1,
         @Query("session_id") sessionId: String,
+        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value,
         @Query("language") language: String = "en-US",
-        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value
     ): NetworkResult<MoviesResponse>
 
     @POST("account/account_id/watchlist")
@@ -61,24 +61,24 @@ interface AccountService {
     suspend fun getFavoriteTvShows(
         @Query("page") page: Int = 1,
         @Query("session_id") sessionId: String,
+        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value,
         @Query("language") language: String = "en-US",
-        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value
     ): NetworkResult<TvShowsResponse>
 
     @GET("account/account_id/watchlist/tv")
     suspend fun getWatchlistTvShows(
         @Query("page") page: Int = 1,
         @Query("session_id") sessionId: String,
+        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value,
         @Query("language") language: String = "en-US",
-        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value
     ): NetworkResult<TvShowsResponse>
 
     @GET("account/account_id/rated/tv")
     suspend fun getRatedTvShows(
         @Query("page") page: Int = 1,
         @Query("session_id") sessionId: String,
+        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value,
         @Query("language") language: String = "en-US",
-        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value
     ): NetworkResult<TvShowsResponse>
 
     @POST("account/account_id/favorite")
@@ -91,7 +91,7 @@ interface AccountService {
     suspend fun getRatedMovies(
         @Query("page") page: Int = 1,
         @Query("session_id") sessionId: String,
+        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value,
         @Query("language") language: String = "en-US",
-        @Query("sort_by") sortBy: String = SortBySto.CreatedAtDto.ASCENDING.value
     ): NetworkResult<MoviesResponse>
 }

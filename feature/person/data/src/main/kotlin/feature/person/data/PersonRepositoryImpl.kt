@@ -1,12 +1,8 @@
 package feature.person.data
 
-import javax.inject.Inject
-import javax.inject.Singleton
-
 import com.github.michaelbull.result.Result
 import core.data.network.mapToDomain
 import core.data.util.withDecimals
-import core.database.LanguagePreference
 import core.domain.Failure
 import feature.person.data.remote.PersonService
 import feature.person.data.remote.response.PersonMovieCastDto
@@ -19,18 +15,16 @@ import feature.person.domain.model.PersonMovieCredit
 import feature.person.domain.model.PersonMovieCredits
 import feature.person.domain.model.PersonTvCredit
 import feature.person.domain.model.PersonTvCredits
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class PersonRepositoryImpl @Inject constructor(
     private val personService: PersonService,
-    private val languagePreference: LanguagePreference,
 ) : PersonRepository {
 
     override suspend fun getPersonDetails(personId: Int): Result<PersonDetails, Failure> {
-        return personService.getPersonDetails(
-            personId,
-            languagePreference.getLanguageTag()
-        ).mapToDomain { response ->
+        return personService.getPersonDetails(personId).mapToDomain { response ->
             PersonDetails(
                 id = response.id,
                 name = response.name,
@@ -44,13 +38,8 @@ class PersonRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getPersonMovieCredits(
-        personId: Int
-    ): Result<PersonMovieCredits, Failure> {
-        return personService.getPersonMovieCredits(
-            personId,
-            languagePreference.getLanguageTag()
-        ).mapToDomain { response ->
+    override suspend fun getPersonMovieCredits(personId: Int): Result<PersonMovieCredits, Failure> {
+        return personService.getPersonMovieCredits(personId).mapToDomain { response ->
             PersonMovieCredits(
                 cast = response.cast?.toCastMovieCredits() ?: emptyList(),
                 crew = response.crew?.toCrewMovieCredits() ?: emptyList()
@@ -58,13 +47,8 @@ class PersonRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getPersonTvCredits(
-        personId: Int
-    ): Result<PersonTvCredits, Failure> {
-        return personService.getPersonTvCredits(
-            personId,
-            languagePreference.getLanguageTag()
-        ).mapToDomain { response ->
+    override suspend fun getPersonTvCredits(personId: Int): Result<PersonTvCredits, Failure> {
+        return personService.getPersonTvCredits(personId).mapToDomain { response ->
             PersonTvCredits(
                 cast = response.cast?.toCastTvCredits() ?: emptyList(),
                 crew = response.crew?.toCrewTvCredits() ?: emptyList()

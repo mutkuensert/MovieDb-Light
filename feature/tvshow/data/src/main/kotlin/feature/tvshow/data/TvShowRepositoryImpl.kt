@@ -13,7 +13,6 @@ import core.data.auth.LogoutTrigger
 import core.data.common.model.ReviewDto
 import core.data.network.mapToDomain
 import core.data.util.withDecimals
-import core.database.LanguagePreference
 import core.database.feature.tvshows.airingtoday.TvShowsAiringTodayDao
 import core.database.feature.tvshows.popular.PopularTvShowDao
 import core.database.feature.tvshows.toprated.TopRatedTvShowDao
@@ -53,7 +52,6 @@ class TvShowRepositoryImpl @Inject constructor(
     private val upcomingTvShowDao: UpcomingTvShowDao,
     private val topRatedTvShowDao: TopRatedTvShowDao,
     private val sessionManager: SessionManager,
-    private val languagePreference: LanguagePreference,
     private val logoutTrigger: LogoutTrigger,
     private val stringResource: StringResource,
 ) : TvShowRepository {
@@ -65,11 +63,7 @@ class TvShowRepositoryImpl @Inject constructor(
                 config = PagingConfig(pageSize = 20),
                 remoteMediator = PopularTvShowsRemoteMediator(
                     getTvShows = { page ->
-                        tvShowService.getPopularTvShows(
-                            page,
-                            countryCode,
-                            languagePreference.getLanguageTag()
-                        )
+                        tvShowService.getPopularTvShows(page, countryCode)
                     },
                     popularTvShowDao
                 ),
@@ -95,11 +89,7 @@ class TvShowRepositoryImpl @Inject constructor(
                 config = PagingConfig(pageSize = 20),
                 remoteMediator = TvShowsAiringTodayRemoteMediator(
                     getTvShows = { page ->
-                        tvShowService.getTvShowsAiringToday(
-                            page,
-                            countryCode,
-                            languagePreference.getLanguageTag()
-                        )
+                        tvShowService.getTvShowsAiringToday(page, countryCode)
                     },
                     tvShowAiringTodayDao
                 ),
@@ -124,11 +114,7 @@ class TvShowRepositoryImpl @Inject constructor(
                 config = PagingConfig(pageSize = 20),
                 remoteMediator = UpcomingTvShowsRemoteMediator(
                     getUpcomingTvShows = { page ->
-                        tvShowService.getUpcomingTvShows(
-                            page,
-                            countryCode,
-                            languagePreference.getLanguageTag()
-                        )
+                        tvShowService.getUpcomingTvShows(page, countryCode)
                     },
                     upcomingTvShowDao
                 ),
@@ -153,11 +139,7 @@ class TvShowRepositoryImpl @Inject constructor(
                 config = PagingConfig(pageSize = 20),
                 remoteMediator = TopRatedTvShowsRemoteMediator(
                     getTvShows = { page ->
-                        tvShowService.getTopRatedTvShows(
-                            page,
-                            countryCode,
-                            languagePreference.getLanguageTag()
-                        )
+                        tvShowService.getTopRatedTvShows(page, countryCode)
                     },
                     topRatedTvShowDao
                 ),
@@ -177,10 +159,7 @@ class TvShowRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTvShowDetails(tvShowId: Int): Result<TvShowDetails, Failure> {
-        return tvShowService.getTvShowDetails(
-            tvShowId,
-            languagePreference.getLanguageTag()
-        ).mapToDomain { response ->
+        return tvShowService.getTvShowDetails(tvShowId).mapToDomain { response ->
             TvShowDetails(
                 imagePath = response.posterPath,
                 title = response.name ?: response.originalName,
@@ -194,17 +173,16 @@ class TvShowRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getCast(tvShowId: Int): Result<List<Person>, Failure> {
-        return tvShowService.getTvShowCredits(tvShowId, languagePreference.getLanguageTag())
-            .mapToDomain { response ->
-                response.cast.map {
-                    Person(
-                        id = it.id,
-                        imagePath = it.profilePath,
-                        name = it.name,
-                        character = it.character
-                    )
-                }
+        return tvShowService.getTvShowCredits(tvShowId).mapToDomain { response ->
+            response.cast.map {
+                Person(
+                    id = it.id,
+                    imagePath = it.profilePath,
+                    name = it.name,
+                    character = it.character
+                )
             }
+        }
     }
 
     override suspend fun getProviders(tvShowId: Int): Result<List<Provider>, Failure> {
@@ -224,7 +202,7 @@ class TvShowRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTrailerYoutubeVideoId(tvShowId: Int): Result<String?, Failure> {
-        return tvShowService.getVideos(tvShowId, languagePreference.getLanguageTag()).mapToDomain {
+        return tvShowService.getVideos(tvShowId).mapToDomain {
             it.results.find { video ->
                 (video.official && video.type == "Trailer" || video.type == "Trailer") && video.site.lowercase() == "youtube"
             }?.key
@@ -235,7 +213,7 @@ class TvShowRepositoryImpl @Inject constructor(
         return Pager(PagingConfig(pageSize = 20)) {
             TvShowReviewsPagingSource(
                 getReviews = { page ->
-                    tvShowService.getReviews(tvShowId, languagePreference.getLanguageTag(), page)
+                    tvShowService.getReviews(tvShowId, page)
                 },
             )
         }.flow.map { pagingData ->
@@ -250,7 +228,7 @@ class TvShowRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getReviews(tvShowId: Int): Result<List<Review>, Failure> {
-        return tvShowService.getReviews(tvShowId, languagePreference.getLanguageTag())
+        return tvShowService.getReviews(tvShowId)
             .mapToDomain { it.results?.map { review -> review.toReview() } ?: emptyList() }
     }
 
@@ -296,10 +274,9 @@ class TvShowRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getImagePaths(tvShowId: Int): Result<List<String>, Failure> {
-        return tvShowService.getImages(tvShowId, language = languagePreference.getLanguageTag())
-            .mapToDomain { response ->
-                response.posters?.map { it.filePath } ?: emptyList()
-            }
+        return tvShowService.getImages(tvShowId).mapToDomain { response ->
+            response.posters?.map { it.filePath } ?: emptyList()
+        }
     }
 
     private fun ReviewDto.toReview(): Review {

@@ -13,7 +13,6 @@ import core.data.auth.LogoutTrigger
 import core.data.common.model.ReviewDto
 import core.data.network.mapToDomain
 import core.data.util.withDecimals
-import core.database.LanguagePreference
 import core.database.feature.movies.nowplaying.NowPlayingMovieDao
 import core.database.feature.movies.popular.PopularMovieDao
 import core.database.feature.movies.toprated.TopRatedMovieDao
@@ -56,7 +55,6 @@ class MovieRepositoryImpl @Inject constructor(
     private val upcomingMovieDao: UpcomingMovieDao,
     private val topRatedMovieDao: TopRatedMovieDao,
     private val sessionManager: SessionManager,
-    private val languagePreference: LanguagePreference,
     private val stringResource: StringResource,
     private val logoutTrigger: LogoutTrigger,
 ) : MovieRepository {
@@ -68,11 +66,7 @@ class MovieRepositoryImpl @Inject constructor(
                 config = PagingConfig(pageSize = 20),
                 remoteMediator = PopularMoviesRemoteMediator(
                     getMovies = { page ->
-                        movieService.getPopularMovies(
-                            page,
-                            countryCode,
-                            languagePreference.getLanguageTag()
-                        )
+                        movieService.getPopularMovies(page, countryCode)
                     },
                     popularMovieDao
                 ),
@@ -98,11 +92,7 @@ class MovieRepositoryImpl @Inject constructor(
                 config = PagingConfig(pageSize = 20),
                 remoteMediator = NowPlayingMoviesRemoteMediator(
                     getMovies = { page ->
-                        movieService.getMoviesNowPlaying(
-                            page,
-                            countryCode,
-                            languagePreference.getLanguageTag()
-                        )
+                        movieService.getMoviesNowPlaying(page, countryCode)
                     },
                     nowPlayingMovieDao
                 ),
@@ -127,11 +117,7 @@ class MovieRepositoryImpl @Inject constructor(
                 config = PagingConfig(pageSize = 20),
                 remoteMediator = UpcomingMoviesRemoteMediator(
                     getMovies = { page ->
-                        movieService.getUpcomingMovies(
-                            page,
-                            countryCode,
-                            languagePreference.getLanguageTag()
-                        )
+                        movieService.getUpcomingMovies(page, countryCode)
                     },
                     upcomingMovieDao
                 ),
@@ -156,11 +142,7 @@ class MovieRepositoryImpl @Inject constructor(
                 config = PagingConfig(pageSize = 20),
                 remoteMediator = TopRatedMoviesRemoteMediator(
                     getMovies = { page ->
-                        movieService.getTopRatedMovies(
-                            page,
-                            countryCode,
-                            languagePreference.getLanguageTag()
-                        )
+                        movieService.getTopRatedMovies(page, countryCode)
                     },
                     topRatedMovieDao
                 ),
@@ -180,10 +162,7 @@ class MovieRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getMovieDetails(movieId: Int): Result<MovieDetails, Failure> {
-        return movieService.getMovieDetails(
-            movieId,
-            languagePreference.getLanguageTag()
-        ).mapToDomain { response ->
+        return movieService.getMovieDetails(movieId).mapToDomain { response ->
             MovieDetails(
                 imagePath = response.posterPath,
                 title = response.originalTitle,
@@ -197,7 +176,7 @@ class MovieRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getPeople(movieId: Int): Result<People, Failure> {
-        return movieService.getMovieCredits(movieId, languagePreference.getLanguageTag())
+        return movieService.getMovieCredits(movieId)
             .mapToDomain { response ->
                 val cast = response.cast.map {
                     Person(
@@ -237,7 +216,7 @@ class MovieRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTrailerYoutubeVideoId(movieId: Int): Result<String?, Failure> {
-        return movieService.getVideos(movieId, languagePreference.getLanguageTag()).mapToDomain {
+        return movieService.getVideos(movieId).mapToDomain {
             it.results.find { video ->
                 (video.official && video.type == "Trailer" || video.type == "Trailer") && video.site.lowercase() == "youtube"
             }?.key
@@ -248,7 +227,7 @@ class MovieRepositoryImpl @Inject constructor(
         return Pager(PagingConfig(pageSize = 20)) {
             MovieReviewsPagingSource(
                 getReviews = { page ->
-                    movieService.getReviews(movieId, languagePreference.getLanguageTag(), page)
+                    movieService.getReviews(movieId, page)
                 },
             )
         }.flow.map { pagingData ->
@@ -263,8 +242,9 @@ class MovieRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getReviews(movieId: Int): Result<List<Review>, Failure> {
-        return movieService.getReviews(movieId, languagePreference.getLanguageTag())
-            .mapToDomain { it.results?.map { it.toReview() } ?: emptyList() }
+        return movieService.getReviews(movieId).mapToDomain { response ->
+            response.results?.map { it.toReview() } ?: emptyList()
+        }
     }
 
     override suspend fun getAccountStates(movieId: Int): Result<AccountStates, Failure> {
@@ -309,10 +289,9 @@ class MovieRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getImagePaths(movieId: Int): Result<List<String>, Failure> {
-        return movieService.getImages(movieId, language = languagePreference.getLanguageTag())
-            .mapToDomain { response ->
-                response.posters?.map { it.filePath } ?: emptyList()
-            }
+        return movieService.getImages(movieId).mapToDomain { response ->
+            response.posters?.map { it.filePath } ?: emptyList()
+        }
     }
 
     private fun ReviewDto.toReview(): Review {

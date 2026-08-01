@@ -11,6 +11,8 @@ import core.data.network.Configs
 import core.data.network.ResultCallAdapterFactory
 import core.data.network.interceptor.AccountIdInterceptor
 import core.data.network.interceptor.ApiKeyInterceptor
+import core.data.network.interceptor.LanguageInterceptor
+import core.database.LanguagePreference
 import core.database.user.UserManager
 import core.domain.ApiKeyManager
 import core.domain.account.AccountRepository
@@ -68,10 +70,12 @@ abstract class DataModule {
             apiKeyManager: ApiKeyManager,
             stringResource: StringResource,
             remoteConfig: RemoteConfig,
+            languagePreference: LanguagePreference,
             json: Json,
         ): OkHttpClient {
             return OkHttpClient()
                 .newBuilder()
+                .addInterceptor(LanguageInterceptor(languagePreference))
                 .addInterceptor(
                     ApiKeyInterceptor(
                         apiKeyManager,

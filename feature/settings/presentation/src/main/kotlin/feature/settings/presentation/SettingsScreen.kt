@@ -26,10 +26,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import core.ui.component.OneTimeEffect
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import utils.LocalizationHelper
+import java.text.Collator
+import java.util.Locale
 
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
@@ -48,7 +50,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
 @Composable
 private fun Settings(
     uiModel: SettingsUiModel,
-    onSelectLanguage: (String) -> Unit,
+    onSelectLanguage: (Locale) -> Unit,
 ) {
     var isLanguageDialogVisible by remember { mutableStateOf(false) }
 
@@ -80,7 +82,7 @@ private fun Settings(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = uiModel.language,
+                    text = uiModel.language.displayLanguage,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -99,9 +101,9 @@ private fun Settings(
 
 @Composable
 private fun LanguageSelectionDialog(
-    currentLanguage: String,
+    currentLanguage: Locale,
     onDismiss: () -> Unit,
-    onSelectLanguage: (String) -> Unit,
+    onSelectLanguage: (Locale) -> Unit,
 ) {
     AlertDialog(
         title = {
@@ -119,26 +121,32 @@ private fun LanguageSelectionDialog(
                     .background(MaterialTheme.colorScheme.background),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                val systemLanguage = LocalizationHelper.systemLanguage
                 LanguageItem(
-                    language = systemLanguage,
-                    isSelected = currentLanguage == systemLanguage,
+                    language = LocalizationHelper.systemLanguage,
+                    isSelected = currentLanguage == LocalizationHelper.systemLanguage,
                     onClick = {
-                        onSelectLanguage(systemLanguage)
+                        onSelectLanguage(LocalizationHelper.systemLanguage)
                         onDismiss()
                     }
                 )
 
-                LocalizationHelper.availableLanguages.sorted().forEach { language ->
-                    LanguageItem(
-                        language = language,
-                        isSelected = currentLanguage == language,
-                        onClick = {
-                            onSelectLanguage(language)
-                            onDismiss()
-                        }
-                    )
-                }
+                val turkishLocale = Locale.forLanguageTag("tr-TR")
+                val comparator = compareBy<Locale, String>(
+                    Collator.getInstance(turkishLocale)
+                ) { it.displayLanguage }
+
+                LocalizationHelper.availableLanguages
+                    .sortedWith(comparator)
+                    .forEach { language ->
+                        LanguageItem(
+                            language = language,
+                            isSelected = currentLanguage == language,
+                            onClick = {
+                                onSelectLanguage(language)
+                                onDismiss()
+                            }
+                        )
+                    }
             }
         },
         onDismissRequest = onDismiss,
@@ -157,7 +165,7 @@ private fun LanguageSelectionDialog(
 
 @Composable
 private fun LanguageItem(
-    language: String,
+    language: Locale,
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
@@ -171,7 +179,7 @@ private fun LanguageItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = language,
+                text = language.displayLanguage,
                 color = if (isSelected) {
                     MaterialTheme.colorScheme.primary
                 } else {

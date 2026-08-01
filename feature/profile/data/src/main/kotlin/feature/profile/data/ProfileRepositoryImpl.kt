@@ -12,7 +12,6 @@ import core.data.account.model.toDto
 import core.data.auth.LogoutTrigger
 import core.data.network.NetworkError
 import core.data.util.withDecimals
-import core.database.LanguagePreference
 import core.database.account.FavoriteMovieDao
 import core.database.account.FavoriteTvShowDao
 import core.database.account.RatedMovieDao
@@ -47,7 +46,6 @@ class ProfileRepositoryImpl @Inject constructor(
     private val favoriteTvShowDao: FavoriteTvShowDao,
     private val watchlistTvShowDao: WatchlistTvShowDao,
     private val ratedTvShowDao: RatedTvShowDao,
-    private val languagePreference: LanguagePreference,
     private val logoutTrigger: LogoutTrigger,
     private val stringResource: StringResource,
 ) : ProfileRepository {
@@ -67,12 +65,17 @@ class ProfileRepositoryImpl @Inject constructor(
                         val sessionId = sessionManager.getSessionId()
                         if (sessionId == null) {
                             logoutTrigger.triggerLogout()
-                            Err(NetworkError(null, null, stringResource.get(R.string.logged_out_unknown_reason)))
+                            Err(
+                                NetworkError(
+                                    null,
+                                    null,
+                                    stringResource.get(R.string.logged_out_unknown_reason)
+                                )
+                            )
                         } else {
                             accountService.getFavoriteMovies(
                                 page,
                                 sessionId,
-                                languagePreference.getLanguageTag(),
                                 sortBy.toDto().value
                             )
                         }
@@ -103,14 +106,15 @@ class ProfileRepositoryImpl @Inject constructor(
                         val sessionId = sessionManager.getSessionId()
                         if (sessionId == null) {
                             logoutTrigger.triggerLogout()
-                            Err(NetworkError(null, null, stringResource.get(R.string.logged_out_unknown_reason)))
-                        } else {
-                            accountService.getWatchlistMovies(
-                                page,
-                                sessionId,
-                                languagePreference.getLanguageTag(),
-                                sortBy.toDto().value
+                            Err(
+                                NetworkError(
+                                    null,
+                                    null,
+                                    stringResource.get(R.string.logged_out_unknown_reason)
+                                )
                             )
+                        } else {
+                            accountService.getWatchlistMovies(page, sessionId, sortBy.toDto().value)
                         }
                     },
                     watchlistMovieDao
@@ -138,14 +142,15 @@ class ProfileRepositoryImpl @Inject constructor(
                         val sessionId = sessionManager.getSessionId()
                         if (sessionId == null) {
                             logoutTrigger.triggerLogout()
-                            Err(NetworkError(null, null, stringResource.get(R.string.logged_out_unknown_reason)))
-                        } else {
-                            accountService.getRatedMovies(
-                                page,
-                                sessionId,
-                                languagePreference.getLanguageTag(),
-                                sortBy.toDto().value
+                            Err(
+                                NetworkError(
+                                    null,
+                                    null,
+                                    stringResource.get(R.string.logged_out_unknown_reason)
+                                )
                             )
+                        } else {
+                            accountService.getRatedMovies(page, sessionId, sortBy.toDto().value)
                         }
                     },
                     ratedMovieDao
@@ -173,14 +178,15 @@ class ProfileRepositoryImpl @Inject constructor(
                         val sessionId = sessionManager.getSessionId()
                         if (sessionId == null) {
                             logoutTrigger.triggerLogout()
-                            Err(NetworkError(null, null, stringResource.get(R.string.logged_out_unknown_reason)))
-                        } else {
-                            accountService.getFavoriteTvShows(
-                                page,
-                                sessionId,
-                                languagePreference.getLanguageTag(),
-                                sortBy.toDto().value
+                            Err(
+                                NetworkError(
+                                    null,
+                                    null,
+                                    stringResource.get(R.string.logged_out_unknown_reason)
+                                )
                             )
+                        } else {
+                            accountService.getFavoriteTvShows(page, sessionId, sortBy.toDto().value)
                         }
                     },
                     favoriteTvShowDao
@@ -208,12 +214,17 @@ class ProfileRepositoryImpl @Inject constructor(
                         val sessionId = sessionManager.getSessionId()
                         if (sessionId == null) {
                             logoutTrigger.triggerLogout()
-                            Err(NetworkError(null, null, stringResource.get(R.string.logged_out_unknown_reason)))
+                            Err(
+                                NetworkError(
+                                    null,
+                                    null,
+                                    stringResource.get(R.string.logged_out_unknown_reason)
+                                )
+                            )
                         } else {
                             accountService.getWatchlistTvShows(
                                 page,
                                 sessionId,
-                                languagePreference.getLanguageTag(),
                                 sortBy.toDto().value
                             )
                         }
@@ -243,14 +254,15 @@ class ProfileRepositoryImpl @Inject constructor(
                         val sessionId = sessionManager.getSessionId()
                         if (sessionId == null) {
                             logoutTrigger.triggerLogout()
-                            Err(NetworkError(null, null, stringResource.get(R.string.logged_out_unknown_reason)))
-                        } else {
-                            accountService.getRatedTvShows(
-                                page,
-                                sessionId,
-                                languagePreference.getLanguageTag(),
-                                sortBy.toDto().value
+                            Err(
+                                NetworkError(
+                                    null,
+                                    null,
+                                    stringResource.get(R.string.logged_out_unknown_reason)
+                                )
                             )
+                        } else {
+                            accountService.getRatedTvShows(page, sessionId, sortBy.toDto().value)
                         }
                     },
                     ratedTvShowDao

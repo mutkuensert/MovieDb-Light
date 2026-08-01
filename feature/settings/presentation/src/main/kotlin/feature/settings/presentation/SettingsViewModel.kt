@@ -1,15 +1,16 @@
 package feature.settings.presentation
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
-import feature.settings.domain.usecase.SetRemoteContentLanguagePreferenceUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import feature.settings.domain.SettingsRepository
+import feature.settings.domain.usecase.SetRemoteContentLanguagePreferenceUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
+import javax.inject.Inject
 
 
 @HiltViewModel
@@ -27,7 +28,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun handleLanguageClick(language: String) {
+    fun handleLanguageClick(language: Locale) {
         viewModelScope.launch {
             setRemoteContentLanguagePreferenceUseCase(language)
             _uiModel.update { it.copy(language = language) }

@@ -17,7 +17,6 @@ import core.data.auth.LogoutTrigger
 import core.data.common.model.MovieDto
 import core.data.common.model.TvShowDto
 import core.data.network.toFailure
-import core.database.LanguagePreference
 import core.database.account.FavoriteMovieDao
 import core.database.account.FavoriteTvShowDao
 import core.database.account.RatedMovieDao
@@ -52,7 +51,6 @@ class AccountRepositoryImpl @Inject constructor(
     private val favoriteTvShowDao: FavoriteTvShowDao,
     private val watchlistTvShowDao: WatchlistTvShowDao,
     private val ratedTvShowDao: RatedTvShowDao,
-    private val languagePreference: LanguagePreference,
     private val stringResource: StringResource,
     private val logoutTrigger: LogoutTrigger,
 ) : AccountRepository {
@@ -91,18 +89,14 @@ class AccountRepositoryImpl @Inject constructor(
             var endPage = 2
             var page = 1
             while (page in 0..endPage) {
-                accountService.getFavoriteMovies(
-                    page,
-                    sessionId,
-                    languagePreference.getLanguageTag(),
-                    sortBy.toDto().value
-                ).onOk { response ->
-                    endPage = response.totalPages
+                accountService.getFavoriteMovies(page, sessionId, sortBy.toDto().value)
+                    .onOk { response ->
+                        endPage = response.totalPages
 
-                    if (response.results.isNotEmpty()) {
-                        favoriteMovies.addAll(response.results)
-                    }
-                }.onErr { break }
+                        if (response.results.isNotEmpty()) {
+                            favoriteMovies.addAll(response.results)
+                        }
+                    }.onErr { break }
                 page++
             }
 
@@ -130,7 +124,6 @@ class AccountRepositoryImpl @Inject constructor(
                 accountService.getFavoriteTvShows(
                     page,
                     sessionId,
-                    languagePreference.getLanguageTag(),
                     sortBy.toDto().value
                 ).onOk { response ->
                     endPage = response.totalPages
@@ -163,19 +156,14 @@ class AccountRepositoryImpl @Inject constructor(
             var endPage = 2
             var page = 1
             while (page in 1..endPage) {
-                accountService.getWatchlistMovies(
-                    page,
-                    sessionId,
-                    languagePreference.getLanguageTag(),
-                    sortBy.toDto().value
+                accountService.getWatchlistMovies(page, sessionId, sortBy.toDto().value)
+                    .onOk { response ->
+                        endPage = response.totalPages
 
-                ).onOk { response ->
-                    endPage = response.totalPages
-
-                    if (response.results.isNotEmpty()) {
-                        watchlistMovies.addAll(response.results)
-                    }
-                }.onErr { break }
+                        if (response.results.isNotEmpty()) {
+                            watchlistMovies.addAll(response.results)
+                        }
+                    }.onErr { break }
                 page++
             }
 
@@ -200,19 +188,14 @@ class AccountRepositoryImpl @Inject constructor(
             var endPage = 2
             var page = 1
             while (page in 1..endPage) {
-                accountService.getWatchlistTvShows(
-                    page,
-                    sessionId,
-                    languagePreference.getLanguageTag(),
-                    sortBy.toDto().value
+                accountService.getWatchlistTvShows(page, sessionId, sortBy.toDto().value)
+                    .onOk { response ->
+                        endPage = response.totalPages
 
-                ).onOk { response ->
-                    endPage = response.totalPages
-
-                    if (response.results.isNotEmpty()) {
-                        watchlistTvShows.addAll(response.results)
-                    }
-                }.onErr { break }
+                        if (response.results.isNotEmpty()) {
+                            watchlistTvShows.addAll(response.results)
+                        }
+                    }.onErr { break }
                 page++
             }
 

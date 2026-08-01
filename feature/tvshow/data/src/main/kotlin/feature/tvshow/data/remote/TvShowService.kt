@@ -89,8 +89,8 @@ interface TvShowService {
     @GET("tv/{tv_id}/reviews")
     suspend fun getReviews(
         @Path("tv_id") tvShowId: Int,
-        @Query("language") language: String = DEFAULT_REMOTE_CONTENT_LANGUAGE,
         @Query("page") page: Int = 1,
+        @Query("language") language: String = DEFAULT_REMOTE_CONTENT_LANGUAGE,
     ): NetworkResult<ReviewsResponse>
 
     @GET("tv/{tv_id}/account_states")
