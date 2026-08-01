@@ -78,6 +78,8 @@ import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -89,7 +91,6 @@ import core.ui.TmdbImage
 import core.ui.coil.debugPlaceholder
 import core.ui.component.CollapsableText
 import core.ui.component.ImageType
-import core.ui.component.OneTimeEffect
 import core.ui.component.PageIndicator
 import core.ui.component.Poster
 import core.ui.component.PosterHeight
@@ -116,7 +117,7 @@ fun MovieDetailScreen(viewModel: MovieDetailViewModel = hiltViewModel()) {
         viewModel::handleReviewsClick,
     )
 
-    OneTimeEffect {
+    LifecycleEventEffect(Lifecycle.Event.ON_CREATE) {
         viewModel.getDetails()
     }
 }
