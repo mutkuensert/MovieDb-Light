@@ -40,6 +40,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,12 +74,10 @@ import core.ui.component.FeedLoadError
 import core.ui.component.InteractivePoster
 import core.ui.darkenBy
 import feature.profile.presentation.R
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import kotlin.time.Duration.Companion.milliseconds
 
 @Serializable
 object ProfileRoute
@@ -250,7 +249,6 @@ private fun RatedTvShowsTab(
             onClickMovie = onClickTvShow,
         )
         SortByListener(
-            ratedTvShows,
             uiModel.ratedTvShowsSortBy,
             state
         )
@@ -277,7 +275,6 @@ private fun FavoriteTvShowsTab(
             onClickMovie = onClickTvShow,
         )
         SortByListener(
-            favoriteTvShows,
             uiModel.favoriteTvShowsSortBy,
             state
         )
@@ -304,7 +301,6 @@ private fun WatchlistTvShowsTab(
             onClickMovie = onClickTvShow,
         )
         SortByListener(
-            watchlistTvShows,
             uiModel.watchlistTvShowsSortBy,
             state
         )
@@ -331,7 +327,6 @@ private fun RatedMoviesTab(
             onClickMovie = onClickMovie,
         )
         SortByListener(
-            ratedMovies,
             uiModel.ratedMoviesSortBy,
             state
         )
@@ -358,7 +353,6 @@ private fun FavoriteMoviesTab(
             onClickMovie = onClickMovie,
         )
         SortByListener(
-            favoriteMovies,
             uiModel.favoriteMoviesSortBy,
             state
         )
@@ -385,7 +379,6 @@ private fun WatchlistMoviesTab(
             onClickMovie = onClickMovie,
         )
         SortByListener(
-            watchlistMovies,
             uiModel.watchlistMoviesSortBy,
             state
         )
@@ -441,20 +434,18 @@ private fun Productions(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 columns = GridCells.Fixed(2)
             ) {
-                items(
-                    count = productions.itemCount,
-                    key = { index ->
-                        productions[index]?.id ?: index
-                    }) { index ->
+                items(count = productions.itemCount) { index ->
                     val movie = productions[index]
                     if (movie != null) {
-                        InteractivePoster(
-                            modifier = Modifier.fillMaxSize(),
-                            imagePath = movie.imagePath,
-                            title = movie.title,
-                            vote = movie.voteAverage,
-                            onPosterClick = { onClickMovie(movie.id) },
-                        )
+                        key(movie.id) {
+                            InteractivePoster(
+                                modifier = Modifier.fillMaxSize(),
+                                imagePath = movie.imagePath,
+                                title = movie.title,
+                                vote = movie.voteAverage,
+                                onPosterClick = { onClickMovie(movie.id) },
+                            )
+                        }
                     }
                 }
 
@@ -471,17 +462,14 @@ private fun Productions(
     }
 }
 
-//https://issuetracker.google.com/issues/209652366?hl=ru
 @Composable
 private fun SortByListener(
-    movies: LazyPagingItems<MovieUiModel>,
     sortBy: SortByUiModel,
     gridState: LazyGridState
 ) {
-    var previousSortBy: SortByUiModel by rememberSaveable { mutableStateOf(sortBy) }
-    LaunchedEffect(movies.itemSnapshotList) {
+    var previousSortBy by remember { mutableStateOf(sortBy) }
+    LaunchedEffect(sortBy) {
         if (previousSortBy != sortBy) {
-            delay(500.milliseconds) //To fix race condition between internal scroll based on item key and this scroll
             gridState.requestScrollToItem(0)
             previousSortBy = sortBy
         }
