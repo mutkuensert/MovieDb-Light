@@ -24,6 +24,5 @@
     <string name="directors">Directors</string>
     <string name="writers">Writers</string>
     <string name="read_more_reviews">Read more reviews</string>
-    <string name="no_reviews">No reviews yet.</string>
     <string name="film">Film</string>
 </resources>

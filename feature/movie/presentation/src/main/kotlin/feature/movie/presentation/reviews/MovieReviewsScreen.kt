@@ -33,7 +33,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import core.ui.AppColors
 import core.ui.component.FeedLoadError
 import core.ui.darkenBy
-import feature.movie.presentation.R
 import feature.movie.presentation.detail.model.ReviewUiModel
 
 @Composable
@@ -66,16 +65,6 @@ private fun ReviewsFeed(
         }
 
         appendState is LoadState.NotLoading || refreshState is LoadState.NotLoading -> {
-            if (reviews.itemCount == 0) {
-                Box(modifier, contentAlignment = Alignment.Center) {
-                    Text(
-                        text = stringResource(R.string.no_reviews),
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-                return
-            }
-
             PullToRefreshBox(
                 isRefreshing = refreshState is LoadState.Loading,
                 onRefresh = reviews::refresh
