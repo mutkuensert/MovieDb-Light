@@ -66,7 +66,6 @@ graph TD
         F1[feature-data]
         F2[feature-domain]
         F3[feature-presentation]
-        F4[feature-injection]
     end
 
 %% Libraries module dependencies
@@ -84,14 +83,10 @@ graph TD
     F3 --> C4
     F1 --> F2
     F3 --> F2
-    F4 --> F1
-    F4 --> F2
-    F4 --> F3
 
 %% App dependencies
     App --> Core
     App --> F3
-    App --> F4
 
 ```
 
@@ -113,7 +108,6 @@ Each feature is isolated in its own module group with four sub-modules:
 - **feature:[feature-name]:data**: Implements repositories, network services, and data sources
 - **feature:[feature-name]:domain**: Contains business logic, repository interfaces use cases
 - **feature:[feature-name]:presentation**: UI components, ViewModels, and UI states
-- **feature:[feature-name]:injection**: Dependency injection configs for data, domain and presentation modules
 
 ### Libraries Module
 
@@ -158,7 +152,7 @@ To create a new feature module with data, domain, and presentation layers, run:
 
 This task:
 
-- Creates a new feature module with data, domain, presentation and injection sub-modules
+- Creates a new feature module with data, domain and presentation sub-modules
 - Sets up the necessary directory structure for each sub-module
 - Creates build.gradle.kts files with appropriate dependencies
 - Updates settings.gradle.kts to include all the new modules
@@ -209,7 +203,7 @@ plugins {
 
 ## Dependency Management
 
-Dependency management is centralized in the buildSrc directory using Kotlin DSL.
+Dependency management is centralized in the build-logic directory using Kotlin DSL.
 
 ### Structure
 
@@ -250,8 +244,7 @@ dependencies {
 ### ResultCallAdapterFactory
 
 The project includes a custom Retrofit CallAdapter that transforms API responses into a
-`Result<T, Failure>` type using the kotlin-result library. This provides a cleaner way to handle
-network responses and errors.
+`Result<T, Failure>` type. This provides a cleaner way to handle network responses and errors.
 
 #### How It Works
 
@@ -266,44 +259,18 @@ The adapter handles different types of errors:
 - SSL errors
 - Parsing errors
 
-Each error is transformed into a user-friendly message using
-the [StringResource](./utils/src/main/kotlin/utils/StringResource.kt).
+Each error is transformed into a user-friendly message using the [StringResource](./utils/src/main/kotlin/utils/StringResource.kt).
 
 #### Creating and Using a Service
 
 NetworkResult is a typealias Result<T, Failure>
 
-1. Define your API service interface:
+Example:
 
 ```kotlin
 interface MyService {
     @GET("endpoint")
-    suspend fun getData(): NetworkResult<ResponseDto>
-}
-```
-
-2. Create the service instance using Retrofit with
-   the [ResultCallAdapterFactory](core/data/src/main/java/core/data/network/ResultCallAdapterFactory.kt) (
-   typically in a Hilt module):
-
-```kotlin
-@Provides
-fun provideMyService(retrofit: Retrofit): MyService {
-    return retrofit.create(MyService::class.java)
-}
-```
-
-3. Use the service in your repository:
-
-```kotlin
-class MyRepositoryImpl(
-    private val service: MyService
-) : MyRepository {
-    override suspend fun getData(): Result<DomainModel, Failure> {
-        return service.getData().map {
-            it.toDomainModel()
-        }
-    }
+    suspend fun getData(): NetworkResult<FooResponse>
 }
 ```
 
