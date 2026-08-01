@@ -58,6 +58,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -69,7 +71,6 @@ import core.ui.LightGreen
 import core.ui.TmdbImage
 import core.ui.component.FeedLoadError
 import core.ui.component.InteractivePoster
-import core.ui.component.OneTimeEffect
 import core.ui.darkenBy
 import feature.profile.presentation.R
 import kotlinx.coroutines.delay
@@ -105,7 +106,9 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
         viewModel::handleProfileClick,
     )
 
-    OneTimeEffect { viewModel.initScreen() }
+    LifecycleEventEffect(Lifecycle.Event.ON_CREATE) {
+        viewModel.initScreen()
+    }
 }
 
 @Composable
