@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -73,49 +72,45 @@ private fun PersonDetail(
     onClickMovie: (id: Int) -> Unit,
     onClickTvShow: (id: Int) -> Unit,
 ) {
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-        ) {
-            Header(uiModel, Modifier.padding(horizontal = 16.dp, vertical = 16.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Header(uiModel, Modifier.padding(horizontal = 16.dp, vertical = 16.dp))
 
-            Column(Modifier.padding(horizontal = 16.dp)) {
-                if (uiModel.biography.isNotBlank()) {
-                    Biography(uiModel.biography)
-                }
+        Column(Modifier.padding(horizontal = 16.dp)) {
+            if (uiModel.biography.isNotBlank()) {
+                Biography(uiModel.biography)
             }
-
-            Spacer(Modifier.height(16.dp))
-
-            Productions(
-                title = stringResource(R.string.acted_movies),
-                productions = uiModel.castMovies,
-                onClickProduction = onClickMovie
-            )
-
-            Productions(
-                title = stringResource(R.string.crew_movies),
-                productions = uiModel.crewMovies,
-                onClickProduction = onClickMovie
-            )
-
-            Productions(
-                title = stringResource(R.string.acted_tv_shows),
-                productions = uiModel.castTvShows,
-                onClickProduction = onClickTvShow
-            )
-
-            Productions(
-                title = stringResource(R.string.crew_tv_shows),
-                productions = uiModel.crewTvShows,
-                onClickProduction = onClickTvShow
-            )
         }
+
+        Spacer(Modifier.height(16.dp))
+
+        Productions(
+            title = stringResource(R.string.acted_movies),
+            productions = uiModel.castMovies,
+            onClickProduction = onClickMovie
+        )
+
+        Productions(
+            title = stringResource(R.string.crew_movies),
+            productions = uiModel.crewMovies,
+            onClickProduction = onClickMovie
+        )
+
+        Productions(
+            title = stringResource(R.string.acted_tv_shows),
+            productions = uiModel.castTvShows,
+            onClickProduction = onClickTvShow
+        )
+
+        Productions(
+            title = stringResource(R.string.crew_tv_shows),
+            productions = uiModel.crewTvShows,
+            onClickProduction = onClickTvShow
+        )
     }
 }
 
