@@ -1,6 +1,5 @@
 package feature.search.presentation
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,7 +42,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import core.ui.component.FeedLoadError
 import core.ui.component.ImageQuality
 import core.ui.component.ImageType
-import core.ui.component.Poster
+import core.ui.component.InteractivePoster
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
 
@@ -180,23 +179,24 @@ private fun Results(
                 items(count = results.itemCount) { index ->
                     val result = results[index]
                     if (result != null) {
-                        Poster(
-                            modifier = Modifier
-                                .clickable {
-                                    when (result) {
-                                        is ResultUiModel.Movie -> onClickMovie(result.id)
-                                        is ResultUiModel.Person -> onClickPerson(result.id)
-                                        is ResultUiModel.TvShow -> onClickTvShow(result.id)
-                                    }
-                                }
-                                .fillMaxSize(),
+                        InteractivePoster(
+                            modifier = Modifier.fillMaxSize(),
                             imagePath = result.imagePath,
-                            imageType = when (result) {
-                                is ResultUiModel.Movie -> ImageType.POSTER
-                                is ResultUiModel.Person -> ImageType.PROFILE
-                                is ResultUiModel.TvShow -> ImageType.POSTER
+                            imageType = ImageType.POSTER,
+                            imageQuality = ImageQuality.HIGH,
+                            title = result.title,
+                            vote = if (result is ResultUiModel.Production) {
+                                result.voteAverage
+                            } else {
+                                null
                             },
-                            imageQuality = ImageQuality.HIGH
+                            onPosterClick = {
+                                when (result) {
+                                    is ResultUiModel.Movie -> onClickMovie(result.id)
+                                    is ResultUiModel.TvShow -> onClickTvShow(result.id)
+                                    else -> onClickPerson(result.id)
+                                }
+                            }
                         )
                     }
                 }

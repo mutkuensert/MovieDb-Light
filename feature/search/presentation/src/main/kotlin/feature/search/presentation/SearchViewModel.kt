@@ -1,8 +1,6 @@
 package feature.search.presentation
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
@@ -12,6 +10,7 @@ import core.ui.navigation.Navigator
 import core.ui.route.MovieDetailRoute
 import core.ui.route.PersonDetailRoute
 import core.ui.route.TvShowDetailRoute
+import dagger.hilt.android.lifecycle.HiltViewModel
 import feature.search.domain.MultiResult
 import feature.search.domain.SearchRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,9 +23,10 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(FlowPreview::class)
-
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
@@ -43,7 +43,7 @@ class SearchViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun getSearchResultFlow(): Flow<PagingData<MultiResult>> {
-        return uiModel.map { it.query }.debounce(750).flatMapLatest { query ->
+        return uiModel.map { it.query }.debounce(750.milliseconds).flatMapLatest { query ->
             if (query.length > 1) {
                 _uiModel.update { it.copy(showSearchResult = true) }
                 searchRepository.search(query)
@@ -78,17 +78,22 @@ class SearchViewModel @Inject constructor(
         return when (this) {
             is MultiResult.Movie -> ResultUiModel.Movie(
                 this.id,
-                this.imagePath
+                this.title ?: "",
+                this.imagePath,
+                this.voteAverage?.toString(),
             )
 
             is MultiResult.Person -> ResultUiModel.Person(
                 this.id,
-                this.imagePath
+                this.title ?: "",
+                this.imagePath,
             )
 
             is MultiResult.TvShow -> ResultUiModel.TvShow(
                 this.id,
-                this.imagePath
+                this.title ?: "",
+                this.imagePath,
+                this.voteAverage?.toString(),
             )
         }
     }

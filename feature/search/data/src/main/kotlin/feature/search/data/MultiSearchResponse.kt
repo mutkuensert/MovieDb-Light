@@ -1,6 +1,5 @@
 package feature.search.data
 
-import feature.search.domain.MultiResult
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.SerialName
@@ -50,11 +49,7 @@ sealed interface MultiSearchResultDto {
         @SerialName("vote_count")
         val voteCount: Int?,
         @SerialName("media_type") override val mediaType: String
-    ) : MultiSearchResultDto {
-        fun toMovie(): MultiResult.Movie {
-            return MultiResult.Movie(id, title, posterPath)
-        }
-    }
+    ) : MultiSearchResultDto
 
     @Serializable
     data class TvShowDto(
@@ -82,11 +77,7 @@ sealed interface MultiSearchResultDto {
         @SerialName("origin_country")
         val originCountry: List<String>,
         @SerialName("media_type") override val mediaType: String,
-    ) : MultiSearchResultDto {
-        fun toTvShow(): MultiResult.TvShow {
-            return MultiResult.TvShow(id, name, posterPath)
-        }
-    }
+    ) : MultiSearchResultDto
 
     @Serializable
     data class PersonDto(
@@ -104,15 +95,7 @@ sealed interface MultiSearchResultDto {
         @SerialName("known_for")
         val knownFor: List<MultiSearchResultDto>?,
         @SerialName("media_type") override val mediaType: String
-    ) : MultiSearchResultDto {
-        fun toPerson(): MultiResult.Person {
-            return MultiResult.Person(
-                id,
-                name,
-                profilePath
-            )
-        }
-    }
+    ) : MultiSearchResultDto
 }
 
 private object MediaType {

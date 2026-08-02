@@ -1,18 +1,18 @@
 package feature.search.data
 
-import javax.inject.Inject
-import javax.inject.Singleton
-
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import core.data.util.withDecimals
 import feature.search.data.pagingsource.SearchPagingSource
 import feature.search.data.pagingsource.TrendingPagingSource
 import feature.search.domain.MultiResult
 import feature.search.domain.SearchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class SearchRepositoryImpl @Inject constructor(
@@ -46,4 +46,20 @@ private fun MultiSearchResultDto.toDomain(): MultiResult {
         is MultiSearchResultDto.PersonDto -> toPerson()
         is MultiSearchResultDto.TvShowDto -> toTvShow()
     }
+}
+
+private fun MultiSearchResultDto.TvShowDto.toTvShow(): MultiResult.TvShow {
+    return MultiResult.TvShow(id, name, posterPath, voteAverage?.withDecimals(1))
+}
+
+private fun MultiSearchResultDto.MovieDto.toMovie(): MultiResult.Movie {
+    return MultiResult.Movie(id, title, posterPath, voteAverage?.withDecimals(1))
+}
+
+private fun MultiSearchResultDto.PersonDto.toPerson(): MultiResult.Person {
+    return MultiResult.Person(
+        id,
+        name,
+        profilePath
+    )
 }
