@@ -4,7 +4,6 @@ import javax.inject.Inject
 
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.flatMap
-import com.github.michaelbull.result.onOk
 import core.domain.Failure
 import core.domain.account.AccountRepository
 import core.domain.account.User
@@ -16,10 +15,7 @@ class StartSessionUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Result<User, Failure> {
         return authenticationRepository.startSession().flatMap {
-            accountRepository.getAccountDetails().onOk {
-                accountRepository.fetchWatchlistMovies()
-                accountRepository.fetchWatchlistTvShows()
-            }
+            accountRepository.getAccountDetails()
         }
     }
 }

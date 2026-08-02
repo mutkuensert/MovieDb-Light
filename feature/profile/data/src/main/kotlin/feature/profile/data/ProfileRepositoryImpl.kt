@@ -1,6 +1,5 @@
 package feature.profile.data
 
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -10,17 +9,16 @@ import core.data.SessionManager
 import core.data.account.AccountService
 import core.data.account.model.toDto
 import core.data.auth.LogoutTrigger
+import core.data.common.model.MoviesResponse
+import core.data.common.model.TvShowsResponse
 import core.data.network.NetworkError
+import core.data.network.NetworkResult
+import core.data.paging.MoviesPagingSource
+import core.data.paging.TvShowsPagingSource
 import core.data.util.withDecimals
-import core.database.account.FavoriteMovieDao
-import core.database.account.FavoriteTvShowDao
-import core.database.account.RatedMovieDao
-import core.database.account.RatedTvShowDao
-import core.database.account.WatchlistMovieDao
-import core.database.account.WatchlistTvShowDao
 import core.domain.account.SortBy
 import feature.profile.domain.ProfileRepository
-import feature.profile.domain.model.Movie
+import feature.profile.domain.model.Production
 import filmcan.core.data.R
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -32,20 +30,11 @@ import utils.stringresource.StringResource
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@OptIn(
-    ExperimentalPagingApi::class,
-    ExperimentalCoroutinesApi::class
-)
+@OptIn(ExperimentalCoroutinesApi::class)
 @Singleton
 class ProfileRepositoryImpl @Inject constructor(
     private val accountService: AccountService,
     private val sessionManager: SessionManager,
-    private val favoriteMovieDao: FavoriteMovieDao,
-    private val watchlistMovieDao: WatchlistMovieDao,
-    private val ratedMovieDao: RatedMovieDao,
-    private val favoriteTvShowDao: FavoriteTvShowDao,
-    private val watchlistTvShowDao: WatchlistTvShowDao,
-    private val ratedTvShowDao: RatedTvShowDao,
     private val logoutTrigger: LogoutTrigger,
     private val stringResource: StringResource,
 ) : ProfileRepository {
@@ -56,229 +45,102 @@ class ProfileRepositoryImpl @Inject constructor(
     private val watchlistTvShowsRefreshTrigger = MutableStateFlow(0)
     private val ratedTvShowsRefreshTrigger = MutableStateFlow(0)
 
-    override fun getFavoriteMovies(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
-        return favoriteMoviesRefreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = FavoriteMoviesRemoteMediator(
-                    getMovies = { page ->
-                        val sessionId = sessionManager.getSessionId()
-                        if (sessionId == null) {
-                            logoutTrigger.triggerLogout()
-                            Err(
-                                NetworkError(
-                                    null,
-                                    null,
-                                    stringResource.get(R.string.logged_out_unknown_reason)
-                                )
-                            )
-                        } else {
-                            accountService.getFavoriteMovies(
-                                page,
-                                sessionId,
-                                sortBy.toDto().value
-                            )
-                        }
-                    },
-                    favoriteMovieDao
-                ),
-                pagingSourceFactory = { favoriteMovieDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
-                    Movie(
-                        id = entity.id,
-                        title = entity.title,
-                        imagePath = entity.posterPath,
-                        voteAverage = entity.voteAverage?.withDecimals(1),
+    override fun getFavoriteMovies(sortBy: SortBy.CreatedAt): Flow<PagingData<Production>> {
+        return movieFeed(favoriteMoviesRefreshTrigger) { page, sessionId ->
+            accountService.getFavoriteMovies(page, sessionId, sortBy.toDto().value)
+        }
+    }
+
+    override fun getWatchlistMovies(sortBy: SortBy.CreatedAt): Flow<PagingData<Production>> {
+        return movieFeed(watchlistMoviesRefreshTrigger) { page, sessionId ->
+            accountService.getWatchlistMovies(page, sessionId, sortBy.toDto().value)
+        }
+    }
+
+    override fun getRatedMovies(sortBy: SortBy.CreatedAt): Flow<PagingData<Production>> {
+        return movieFeed(ratedMoviesRefreshTrigger) { page, sessionId ->
+            accountService.getRatedMovies(page, sessionId, sortBy.toDto().value)
+        }
+    }
+
+    override fun getFavoriteTvShows(sortBy: SortBy.CreatedAt): Flow<PagingData<Production>> {
+        return tvShowFeed(favoriteTvShowsRefreshTrigger) { page, sessionId ->
+            accountService.getFavoriteTvShows(page, sessionId, sortBy.toDto().value)
+        }
+    }
+
+    override fun getWatchlistTvShows(sortBy: SortBy.CreatedAt): Flow<PagingData<Production>> {
+        return tvShowFeed(watchlistTvShowsRefreshTrigger) { page, sessionId ->
+            accountService.getWatchlistTvShows(page, sessionId, sortBy.toDto().value)
+        }
+    }
+
+    override fun getRatedTvShows(sortBy: SortBy.CreatedAt): Flow<PagingData<Production>> {
+        return tvShowFeed(ratedTvShowsRefreshTrigger) { page, sessionId ->
+            accountService.getRatedTvShows(page, sessionId, sortBy.toDto().value)
+        }
+    }
+
+    private fun movieFeed(
+        refreshTrigger: Flow<Int>,
+        getMovies: suspend (page: Int, sessionId: String) -> NetworkResult<MoviesResponse>,
+    ): Flow<PagingData<Production>> {
+        return refreshTrigger.flatMapLatest {
+            Pager(PagingConfig(pageSize = 20)) {
+                MoviesPagingSource { page ->
+                    withSession { sessionId -> getMovies(page, sessionId) }
+                }
+            }.flow.map { pagingData ->
+                pagingData.map { movie ->
+                    Production(
+                        id = movie.id,
+                        title = movie.title,
+                        imagePath = movie.posterPath,
+                        voteAverage = movie.voteAverage?.withDecimals(1),
                     )
                 }
             }
         }
     }
 
-
-    override fun getWatchlistMovies(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
-        return watchlistMoviesRefreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = WatchlistMoviesRemoteMediator(
-                    getMovies = { page ->
-                        val sessionId = sessionManager.getSessionId()
-                        if (sessionId == null) {
-                            logoutTrigger.triggerLogout()
-                            Err(
-                                NetworkError(
-                                    null,
-                                    null,
-                                    stringResource.get(R.string.logged_out_unknown_reason)
-                                )
-                            )
-                        } else {
-                            accountService.getWatchlistMovies(page, sessionId, sortBy.toDto().value)
-                        }
-                    },
-                    watchlistMovieDao
-                ),
-                pagingSourceFactory = { watchlistMovieDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
-                    Movie(
-                        id = entity.id,
-                        title = entity.title,
-                        imagePath = entity.posterPath,
-                        voteAverage = entity.voteAverage?.withDecimals(1),
+    private fun tvShowFeed(
+        refreshTrigger: Flow<Int>,
+        getTvShows: suspend (page: Int, sessionId: String) -> NetworkResult<TvShowsResponse>,
+    ): Flow<PagingData<Production>> {
+        return refreshTrigger.flatMapLatest {
+            Pager(PagingConfig(pageSize = 20)) {
+                TvShowsPagingSource { page ->
+                    withSession { sessionId -> getTvShows(page, sessionId) }
+                }
+            }.flow.map { pagingData ->
+                pagingData.map { tvShow ->
+                    Production(
+                        id = tvShow.id,
+                        title = tvShow.name,
+                        imagePath = tvShow.posterPath,
+                        voteAverage = tvShow.voteAverage?.withDecimals(1),
                     )
                 }
             }
         }
     }
 
-    override fun getRatedMovies(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
-        return ratedMoviesRefreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = RatedMoviesRemoteMediator(
-                    getMovies = { page ->
-                        val sessionId = sessionManager.getSessionId()
-                        if (sessionId == null) {
-                            logoutTrigger.triggerLogout()
-                            Err(
-                                NetworkError(
-                                    null,
-                                    null,
-                                    stringResource.get(R.string.logged_out_unknown_reason)
-                                )
-                            )
-                        } else {
-                            accountService.getRatedMovies(page, sessionId, sortBy.toDto().value)
-                        }
-                    },
-                    ratedMovieDao
-                ),
-                pagingSourceFactory = { ratedMovieDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
-                    Movie(
-                        id = entity.id,
-                        title = entity.title,
-                        imagePath = entity.posterPath,
-                        voteAverage = entity.voteAverage?.withDecimals(1),
-                    )
-                }
-            }
+    private suspend fun <T> withSession(
+        request: suspend (sessionId: String) -> NetworkResult<T>,
+    ): NetworkResult<T> {
+        val sessionId = sessionManager.getSessionId()
+        if (sessionId != null) {
+            return request(sessionId)
         }
-    }
 
-    override fun getFavoriteTvShows(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
-        return favoriteTvShowsRefreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = FavoriteTvShowsRemoteMediator(
-                    getTvShows = { page ->
-                        val sessionId = sessionManager.getSessionId()
-                        if (sessionId == null) {
-                            logoutTrigger.triggerLogout()
-                            Err(
-                                NetworkError(
-                                    null,
-                                    null,
-                                    stringResource.get(R.string.logged_out_unknown_reason)
-                                )
-                            )
-                        } else {
-                            accountService.getFavoriteTvShows(page, sessionId, sortBy.toDto().value)
-                        }
-                    },
-                    favoriteTvShowDao
-                ),
-                pagingSourceFactory = { favoriteTvShowDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
-                    Movie(
-                        id = entity.id,
-                        title = entity.title,
-                        imagePath = entity.posterPath,
-                        voteAverage = entity.voteAverage?.withDecimals(1),
-                    )
-                }
-            }
-        }
-    }
-
-    override fun getWatchlistTvShows(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
-        return watchlistTvShowsRefreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = WatchlistTvShowsRemoteMediator(
-                    getTvShows = { page ->
-                        val sessionId = sessionManager.getSessionId()
-                        if (sessionId == null) {
-                            logoutTrigger.triggerLogout()
-                            Err(
-                                NetworkError(
-                                    null,
-                                    null,
-                                    stringResource.get(R.string.logged_out_unknown_reason)
-                                )
-                            )
-                        } else {
-                            accountService.getWatchlistTvShows(
-                                page,
-                                sessionId,
-                                sortBy.toDto().value
-                            )
-                        }
-                    },
-                    watchlistTvShowDao
-                ),
-                pagingSourceFactory = { watchlistTvShowDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
-                    Movie(
-                        id = entity.id,
-                        title = entity.title,
-                        imagePath = entity.posterPath,
-                        voteAverage = entity.voteAverage?.withDecimals(1),
-                    )
-                }
-            }
-        }
-    }
-
-    override fun getRatedTvShows(sortBy: SortBy.CreatedAt): Flow<PagingData<Movie>> {
-        return ratedTvShowsRefreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = RatedTvShowsRemoteMediator(
-                    getTvShows = { page ->
-                        val sessionId = sessionManager.getSessionId()
-                        if (sessionId == null) {
-                            logoutTrigger.triggerLogout()
-                            Err(
-                                NetworkError(
-                                    null,
-                                    null,
-                                    stringResource.get(R.string.logged_out_unknown_reason)
-                                )
-                            )
-                        } else {
-                            accountService.getRatedTvShows(page, sessionId, sortBy.toDto().value)
-                        }
-                    },
-                    ratedTvShowDao
-                ),
-                pagingSourceFactory = { ratedTvShowDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
-                    Movie(
-                        id = entity.id,
-                        title = entity.title,
-                        imagePath = entity.posterPath,
-                        voteAverage = entity.voteAverage?.withDecimals(1),
-                    )
-                }
-            }
-        }
+        logoutTrigger.triggerLogout()
+        return Err(
+            NetworkError(
+                httpCode = null,
+                statusCode = null,
+                message = stringResource.get(R.string.logged_out_unknown_reason),
+            )
+        )
     }
 
     override fun updateRatedMovies() {

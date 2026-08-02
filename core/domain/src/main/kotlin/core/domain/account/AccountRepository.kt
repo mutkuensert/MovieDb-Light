@@ -6,13 +6,11 @@ import core.domain.Failure
 interface AccountRepository {
 
     suspend fun getAccountDetails(): Result<User, Failure>
-    suspend fun fetchFavoriteMovies(sortBy: SortBy.CreatedAt = SortBy.CreatedAt.ASCENDING)
     suspend fun syncMovieFavoriteStatus(
         movieId: Int,
         isFavorite: Boolean,
     ): Result<Unit, Failure>
 
-    suspend fun fetchWatchlistMovies(sortBy: SortBy.CreatedAt = SortBy.CreatedAt.ASCENDING)
     suspend fun syncMovieWatchlistStatus(
         movieId: Int,
         inWatchlist: Boolean,
@@ -29,6 +27,4 @@ interface AccountRepository {
     ): Result<Unit, Failure>
 
     suspend fun clearUserRelatedData()
-    suspend fun fetchFavoriteTvShows(sortBy: SortBy.CreatedAt)
-    suspend fun fetchWatchlistTvShows(sortBy: SortBy.CreatedAt = SortBy.CreatedAt.ASCENDING)
 }

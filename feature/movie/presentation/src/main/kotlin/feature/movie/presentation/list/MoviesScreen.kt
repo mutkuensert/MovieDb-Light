@@ -59,7 +59,6 @@ fun MoviesScreen(
         viewModel.popularMovies,
         viewModel.topRatedMovies,
         viewModel::handleMovieClick,
-        viewModel::handleWatchlistClick,
     )
 }
 
@@ -77,7 +76,6 @@ private fun Movies(
     popularMovies: Flow<PagingData<MovieUiModel>>,
     topRatedMovies: Flow<PagingData<MovieUiModel>>,
     onClickMovie: (movieId: Int) -> Unit,
-    onClickWatchlist: (MovieUiModel) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { MovieTab.entries.size })
@@ -117,7 +115,6 @@ private fun Movies(
                     Movies(
                         movies = popularMovies.collectAsLazyPagingItems(),
                         onClickMovie = onClickMovie,
-                        onWatchlistClick = onClickWatchlist
                     )
                 }
 
@@ -125,7 +122,6 @@ private fun Movies(
                     Movies(
                         movies = moviesNowPlaying.collectAsLazyPagingItems(),
                         onClickMovie = onClickMovie,
-                        onWatchlistClick = onClickWatchlist
                     )
                 }
 
@@ -133,7 +129,6 @@ private fun Movies(
                     Movies(
                         movies = upcomingMovies.collectAsLazyPagingItems(),
                         onClickMovie = onClickMovie,
-                        onWatchlistClick = onClickWatchlist
                     )
                 }
 
@@ -141,7 +136,6 @@ private fun Movies(
                     Movies(
                         movies = topRatedMovies.collectAsLazyPagingItems(),
                         onClickMovie = onClickMovie,
-                        onWatchlistClick = onClickWatchlist
                     )
                 }
             }
@@ -166,7 +160,6 @@ private fun Movies(
     modifier: Modifier = Modifier,
     movies: LazyPagingItems<MovieUiModel>,
     onClickMovie: (movieId: Int) -> Unit,
-    onWatchlistClick: (movie: MovieUiModel) -> Unit
 ) {
     if (movies.loadState.refresh == LoadState.Loading) {
         Box(
@@ -197,8 +190,6 @@ private fun Movies(
                             title = movie.title,
                             vote = movie.voteAverage,
                             onPosterClick = { onClickMovie(movie.id) },
-                            inWatchlist = movie.inWatchlist,
-                            onWatchlistClick = { onWatchlistClick(movie) }
                         )
                     }
                 }
@@ -226,28 +217,24 @@ private fun MoviesScreenPreview() {
                 title = "Sample Movie 1",
                 imagePath = "/path/to/image1.jpg",
                 voteAverage = "8.5",
-                inWatchlist = false
             ),
             MovieUiModel(
                 id = 2,
                 title = "Sample Movie 2",
                 imagePath = "/path/to/image2.jpg",
                 voteAverage = "7.2",
-                inWatchlist = true
             ),
             MovieUiModel(
                 id = 3,
                 title = "Sample Movie 3",
                 imagePath = "/path/to/image3.jpg",
                 voteAverage = "9.1",
-                inWatchlist = false
             ),
             MovieUiModel(
                 id = 4,
                 title = "Sample Movie 4",
                 imagePath = "/path/to/image4.jpg",
                 voteAverage = "6.8",
-                inWatchlist = false
             )
         )
         val fakePagingData = flowOf(PagingData.from(fakeMovies))
@@ -257,7 +244,6 @@ private fun MoviesScreenPreview() {
             popularMovies = fakePagingData,
             topRatedMovies = fakePagingData,
             onClickMovie = {},
-            onClickWatchlist = {}
         )
     }
 }

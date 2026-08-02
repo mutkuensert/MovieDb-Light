@@ -1,6 +1,6 @@
 package feature.profile.domain.model
 
-data class Movie(
+data class Production(
     val id: Int,
     val title: String,
     val imagePath: String?,

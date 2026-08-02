@@ -59,7 +59,6 @@ fun TvShowsScreen(
         viewModel.popularTvShows,
         viewModel.topRatedTvShows,
         viewModel::handleTvShowClick,
-        viewModel::handleWatchlistClick,
     )
 }
 
@@ -77,7 +76,6 @@ private fun TvShows(
     popularTvShows: Flow<PagingData<TvShowUiModel>>,
     topRatedTvShows: Flow<PagingData<TvShowUiModel>>,
     onClickTvShow: (tvShowId: Int) -> Unit,
-    onClickWatchlist: (TvShowUiModel) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { TvShowTab.entries.size })
@@ -117,7 +115,6 @@ private fun TvShows(
                     TvShows(
                         tvShows = popularTvShows.collectAsLazyPagingItems(),
                         onClickTvShow = onClickTvShow,
-                        onWatchlistClick = onClickWatchlist
                     )
                 }
 
@@ -125,7 +122,6 @@ private fun TvShows(
                     TvShows(
                         tvShows = tvShowsAiringToday.collectAsLazyPagingItems(),
                         onClickTvShow = onClickTvShow,
-                        onWatchlistClick = onClickWatchlist
                     )
                 }
 
@@ -133,7 +129,6 @@ private fun TvShows(
                     TvShows(
                         tvShows = upcomingTvShows.collectAsLazyPagingItems(),
                         onClickTvShow = onClickTvShow,
-                        onWatchlistClick = onClickWatchlist
                     )
                 }
 
@@ -141,7 +136,6 @@ private fun TvShows(
                     TvShows(
                         tvShows = topRatedTvShows.collectAsLazyPagingItems(),
                         onClickTvShow = onClickTvShow,
-                        onWatchlistClick = onClickWatchlist
                     )
                 }
             }
@@ -166,7 +160,6 @@ private fun TvShows(
     modifier: Modifier = Modifier,
     tvShows: LazyPagingItems<TvShowUiModel>,
     onClickTvShow: (tvShowId: Int) -> Unit,
-    onWatchlistClick: (tvShow: TvShowUiModel) -> Unit
 ) {
     if (tvShows.loadState.refresh == LoadState.Loading) {
         Box(
@@ -197,8 +190,6 @@ private fun TvShows(
                             title = tvShow.title,
                             vote = tvShow.voteAverage,
                             onPosterClick = { onClickTvShow(tvShow.id) },
-                            inWatchlist = tvShow.inWatchlist,
-                            onWatchlistClick = { onWatchlistClick(tvShow) }
                         )
                     }
                 }
@@ -226,28 +217,24 @@ private fun TvShowsScreenPreview() {
                 title = "Sample TV show 1",
                 imagePath = "/path/to/image1.jpg",
                 voteAverage = "8.5",
-                inWatchlist = false
             ),
             TvShowUiModel(
                 id = 2,
                 title = "Sample TV show 2",
                 imagePath = "/path/to/image2.jpg",
                 voteAverage = "7.2",
-                inWatchlist = true
             ),
             TvShowUiModel(
                 id = 3,
                 title = "Sample TV show 3",
                 imagePath = "/path/to/image3.jpg",
                 voteAverage = "9.1",
-                inWatchlist = false
             ),
             TvShowUiModel(
                 id = 4,
                 title = "Sample TV show 4",
                 imagePath = "/path/to/image4.jpg",
                 voteAverage = "6.8",
-                inWatchlist = false
             )
         )
         val fakePagingData = flowOf(PagingData.from(fakeTvShows))
@@ -257,7 +244,6 @@ private fun TvShowsScreenPreview() {
             popularTvShows = fakePagingData,
             topRatedTvShows = fakePagingData,
             onClickTvShow = {},
-            onClickWatchlist = {}
         )
     }
 }

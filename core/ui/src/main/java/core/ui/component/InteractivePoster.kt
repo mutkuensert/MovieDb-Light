@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Beenhere
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
@@ -53,8 +52,6 @@ fun InteractivePoster(
     aspectRatio: Float = 2f / 3f,
     title: String = "",
     vote: String? = null,
-    inWatchlist: Boolean? = null,
-    onWatchlistClick: () -> Unit = {},
     onPosterClick: () -> Unit
 ) {
     var infoButtonColor by remember { mutableStateOf(Color(0xFFFFFFFF)) }
@@ -101,9 +98,6 @@ fun InteractivePoster(
 
         InfoButton(infoButtonColor) { isInfoVisible = !isInfoVisible }
 
-        if (inWatchlist != null) {
-            WatchlistButton(inWatchlist, onWatchlistClick)
-        }
     }
 }
 
@@ -175,24 +169,5 @@ private fun BoxScope.InfoButton(color: Color, onClick: () -> Unit) {
         imageVector = Icons.Default.Info,
         tint = color,
         contentDescription = stringResource(R.string.info)
-    )
-}
-
-@Composable
-private fun BoxScope.WatchlistButton(inWatchlist: Boolean?, onClick: () -> Unit) {
-    val color = if (inWatchlist == true) {
-        Color(0xA6FFEB3B)
-    } else {
-        Color(0x80E1E1E1)
-    }
-    Icon(
-        modifier = Modifier
-            .padding(16.dp)
-            .size(30.dp)
-            .align(Alignment.TopStart)
-            .clickable { onClick.invoke() },
-        imageVector = Icons.Default.Beenhere,
-        tint = color,
-        contentDescription = stringResource(R.string.watchlist_button)
     )
 }

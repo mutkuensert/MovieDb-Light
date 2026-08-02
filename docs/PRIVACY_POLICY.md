@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Last updated: May 30, 2026
+Last updated: August 2, 2026
 
 FilmCan is a movie and TV show discovery app. This Privacy Policy explains what information the app uses and how it is handled.
 
@@ -13,7 +13,7 @@ The app may use the following information:
 - TMDB account information: If you sign in with The Movie Database (TMDB), the app may access your TMDB account ID, name, username, profile image path, adult content preference, session token, favorites, ratings, watchlist data etc.
 - App usage and diagnostics: The app uses Firebase Analytics and Firebase Crashlytics to understand general app usage, detect crashes, and improve stability. This may include device information, app version, crash logs, and usage events.
 - Search and content requests: When you search for movies, TV shows, or people, or when you open content details, the app sends requests to TMDB to provide the requested content.
-- Local app data: The app stores some movie, TV show, account, rating, favorite, watchlist, language preference, and session data on your device so the app can work faster and keep you signed in.
+- Local app data: The app stores account, language preference, and session data on your device to keep you signed in and remember your preferences.
 
 ## How We Use Information
 
@@ -28,7 +28,7 @@ We use this information to:
 
 ## Local Storage and Security
 
-FilmCan stores your TMDB session and user details locally on your device. Session and user preference data are stored using encrypted local preferences. Some non-sensitive app data is stored in a local database cache.
+FilmCan stores your TMDB session, user details, and language preference locally on your device. Session and user details are stored using encrypted local preferences.
 
 No method of storage or transmission is completely secure, but the app uses reasonable technical measures to protect locally stored session information.
 

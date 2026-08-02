@@ -5,5 +5,4 @@ data class TvShowUiModel(
     val title: String,
     val imagePath: String?,
     val voteAverage: String?,
-    val inWatchlist: Boolean?
 )

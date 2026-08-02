@@ -1,6 +1,5 @@
 package feature.movie.data
 
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -12,11 +11,8 @@ import core.data.SessionManager
 import core.data.auth.LogoutTrigger
 import core.data.common.model.ReviewDto
 import core.data.network.mapToDomain
+import core.data.paging.MoviesPagingSource
 import core.data.util.withDecimals
-import core.database.feature.movies.nowplaying.NowPlayingMovieDao
-import core.database.feature.movies.popular.PopularMovieDao
-import core.database.feature.movies.toprated.TopRatedMovieDao
-import core.database.feature.movies.upcoming.UpcomingMovieDao
 import core.domain.AuthFailure
 import core.domain.Failure
 import core.domain.common.model.Provider
@@ -43,17 +39,10 @@ import utils.stringresource.StringResource
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@OptIn(
-    ExperimentalPagingApi::class,
-    ExperimentalCoroutinesApi::class
-)
+@OptIn(ExperimentalCoroutinesApi::class)
 @Singleton
 class MovieRepositoryImpl @Inject constructor(
     private val movieService: MovieService,
-    private val popularMovieDao: PopularMovieDao,
-    private val nowPlayingMovieDao: NowPlayingMovieDao,
-    private val upcomingMovieDao: UpcomingMovieDao,
-    private val topRatedMovieDao: TopRatedMovieDao,
     private val sessionManager: SessionManager,
     private val stringResource: StringResource,
     private val logoutTrigger: LogoutTrigger,
@@ -62,23 +51,17 @@ class MovieRepositoryImpl @Inject constructor(
 
     override fun getPopularMovies(countryCode: String?): Flow<PagingData<Movie>> {
         return refreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = PopularMoviesRemoteMediator(
-                    getMovies = { page ->
-                        movieService.getPopularMovies(page, countryCode)
-                    },
-                    popularMovieDao
-                ),
-                pagingSourceFactory = { popularMovieDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
+            Pager(PagingConfig(pageSize = 20)) {
+                MoviesPagingSource { page ->
+                    movieService.getPopularMovies(page, countryCode)
+                }
+            }.flow.map { pagingData ->
+                pagingData.map { movie ->
                     Movie(
-                        id = entity.movie.id,
-                        title = entity.movie.title,
-                        imagePath = entity.movie.posterPath,
-                        voteAverage = entity.movie.voteAverage?.withDecimals(1),
-                        inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
+                        id = movie.id,
+                        title = movie.title,
+                        imagePath = movie.posterPath,
+                        voteAverage = movie.voteAverage?.withDecimals(1),
                     )
                 }
             }
@@ -88,23 +71,17 @@ class MovieRepositoryImpl @Inject constructor(
 
     override fun getMoviesNowPlaying(countryCode: String?): Flow<PagingData<Movie>> {
         return refreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = NowPlayingMoviesRemoteMediator(
-                    getMovies = { page ->
-                        movieService.getMoviesNowPlaying(page, countryCode)
-                    },
-                    nowPlayingMovieDao
-                ),
-                pagingSourceFactory = { nowPlayingMovieDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
+            Pager(PagingConfig(pageSize = 20)) {
+                MoviesPagingSource { page ->
+                    movieService.getMoviesNowPlaying(page, countryCode)
+                }
+            }.flow.map { pagingData ->
+                pagingData.map { movie ->
                     Movie(
-                        id = entity.movie.id,
-                        title = entity.movie.title,
-                        imagePath = entity.movie.posterPath,
-                        voteAverage = entity.movie.voteAverage?.withDecimals(1),
-                        inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
+                        id = movie.id,
+                        title = movie.title,
+                        imagePath = movie.posterPath,
+                        voteAverage = movie.voteAverage?.withDecimals(1),
                     )
                 }
             }
@@ -113,23 +90,17 @@ class MovieRepositoryImpl @Inject constructor(
 
     override fun getUpcomingMovies(countryCode: String?): Flow<PagingData<Movie>> {
         return refreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = UpcomingMoviesRemoteMediator(
-                    getMovies = { page ->
-                        movieService.getUpcomingMovies(page, countryCode)
-                    },
-                    upcomingMovieDao
-                ),
-                pagingSourceFactory = { upcomingMovieDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
+            Pager(PagingConfig(pageSize = 20)) {
+                MoviesPagingSource { page ->
+                    movieService.getUpcomingMovies(page, countryCode)
+                }
+            }.flow.map { pagingData ->
+                pagingData.map { movie ->
                     Movie(
-                        id = entity.movie.id,
-                        title = entity.movie.title,
-                        imagePath = entity.movie.posterPath,
-                        voteAverage = entity.movie.voteAverage?.withDecimals(1),
-                        inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
+                        id = movie.id,
+                        title = movie.title,
+                        imagePath = movie.posterPath,
+                        voteAverage = movie.voteAverage?.withDecimals(1),
                     )
                 }
             }
@@ -138,23 +109,17 @@ class MovieRepositoryImpl @Inject constructor(
 
     override fun getTopRatedMovies(countryCode: String?): Flow<PagingData<Movie>> {
         return refreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = TopRatedMoviesRemoteMediator(
-                    getMovies = { page ->
-                        movieService.getTopRatedMovies(page, countryCode)
-                    },
-                    topRatedMovieDao
-                ),
-                pagingSourceFactory = { topRatedMovieDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
+            Pager(PagingConfig(pageSize = 20)) {
+                MoviesPagingSource { page ->
+                    movieService.getTopRatedMovies(page, countryCode)
+                }
+            }.flow.map { pagingData ->
+                pagingData.map { movie ->
                     Movie(
-                        id = entity.movie.id,
-                        title = entity.movie.title,
-                        imagePath = entity.movie.posterPath,
-                        voteAverage = entity.movie.voteAverage?.withDecimals(1),
-                        inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
+                        id = movie.id,
+                        title = movie.title,
+                        imagePath = movie.posterPath,
+                        voteAverage = movie.voteAverage?.withDecimals(1),
                     )
                 }
             }

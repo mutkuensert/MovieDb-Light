@@ -5,5 +5,4 @@ data class MovieUiModel(
     val title: String,
     val imagePath: String?,
     val voteAverage: String?,
-    val inWatchlist: Boolean?
 )

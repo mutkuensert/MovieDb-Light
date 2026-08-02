@@ -5,5 +5,4 @@ data class TvShow(
     val title: String,
     val imagePath: String?,
     val voteAverage: Float?,
-    val inWatchlist: Boolean?,
 )

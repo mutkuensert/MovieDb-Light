@@ -1,6 +1,5 @@
 package feature.tvshow.data
 
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -12,11 +11,8 @@ import core.data.SessionManager
 import core.data.auth.LogoutTrigger
 import core.data.common.model.ReviewDto
 import core.data.network.mapToDomain
+import core.data.paging.TvShowsPagingSource
 import core.data.util.withDecimals
-import core.database.feature.tvshows.airingtoday.TvShowsAiringTodayDao
-import core.database.feature.tvshows.popular.PopularTvShowDao
-import core.database.feature.tvshows.toprated.TopRatedTvShowDao
-import core.database.feature.tvshows.upcoming.UpcomingTvShowDao
 import core.domain.AuthFailure
 import core.domain.Failure
 import core.domain.common.model.Provider
@@ -40,17 +36,10 @@ import utils.stringresource.StringResource
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@OptIn(
-    ExperimentalPagingApi::class,
-    ExperimentalCoroutinesApi::class
-)
+@OptIn(ExperimentalCoroutinesApi::class)
 @Singleton
 class TvShowRepositoryImpl @Inject constructor(
     private val tvShowService: TvShowService,
-    private val popularTvShowDao: PopularTvShowDao,
-    private val tvShowAiringTodayDao: TvShowsAiringTodayDao,
-    private val upcomingTvShowDao: UpcomingTvShowDao,
-    private val topRatedTvShowDao: TopRatedTvShowDao,
     private val sessionManager: SessionManager,
     private val logoutTrigger: LogoutTrigger,
     private val stringResource: StringResource,
@@ -59,23 +48,17 @@ class TvShowRepositoryImpl @Inject constructor(
 
     override fun getPopularTvShows(countryCode: String?): Flow<PagingData<TvShow>> {
         return refreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = PopularTvShowsRemoteMediator(
-                    getTvShows = { page ->
-                        tvShowService.getPopularTvShows(page, countryCode)
-                    },
-                    popularTvShowDao
-                ),
-                pagingSourceFactory = { popularTvShowDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
+            Pager(PagingConfig(pageSize = 20)) {
+                TvShowsPagingSource { page ->
+                    tvShowService.getPopularTvShows(page, countryCode)
+                }
+            }.flow.map { pagingData ->
+                pagingData.map { tvShow ->
                     TvShow(
-                        id = entity.tvShow.id,
-                        title = entity.tvShow.title,
-                        imagePath = entity.tvShow.posterPath,
-                        voteAverage = entity.tvShow.voteAverage?.withDecimals(1),
-                        inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
+                        id = tvShow.id,
+                        title = tvShow.name,
+                        imagePath = tvShow.posterPath,
+                        voteAverage = tvShow.voteAverage?.withDecimals(1),
                     )
                 }
             }
@@ -85,23 +68,17 @@ class TvShowRepositoryImpl @Inject constructor(
 
     override fun getTvShowsAiringToday(countryCode: String?): Flow<PagingData<TvShow>> {
         return refreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = TvShowsAiringTodayRemoteMediator(
-                    getTvShows = { page ->
-                        tvShowService.getTvShowsAiringToday(page, countryCode)
-                    },
-                    tvShowAiringTodayDao
-                ),
-                pagingSourceFactory = { tvShowAiringTodayDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
+            Pager(PagingConfig(pageSize = 20)) {
+                TvShowsPagingSource { page ->
+                    tvShowService.getTvShowsAiringToday(page, countryCode)
+                }
+            }.flow.map { pagingData ->
+                pagingData.map { tvShow ->
                     TvShow(
-                        id = entity.tvShow.id,
-                        title = entity.tvShow.title,
-                        imagePath = entity.tvShow.posterPath,
-                        voteAverage = entity.tvShow.voteAverage?.withDecimals(1),
-                        inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
+                        id = tvShow.id,
+                        title = tvShow.name,
+                        imagePath = tvShow.posterPath,
+                        voteAverage = tvShow.voteAverage?.withDecimals(1),
                     )
                 }
             }
@@ -110,23 +87,17 @@ class TvShowRepositoryImpl @Inject constructor(
 
     override fun getUpcomingTvShows(countryCode: String?): Flow<PagingData<TvShow>> {
         return refreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = UpcomingTvShowsRemoteMediator(
-                    getUpcomingTvShows = { page ->
-                        tvShowService.getUpcomingTvShows(page, countryCode)
-                    },
-                    upcomingTvShowDao
-                ),
-                pagingSourceFactory = { upcomingTvShowDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
+            Pager(PagingConfig(pageSize = 20)) {
+                TvShowsPagingSource { page ->
+                    tvShowService.getUpcomingTvShows(page, countryCode)
+                }
+            }.flow.map { pagingData ->
+                pagingData.map { tvShow ->
                     TvShow(
-                        id = entity.tvShow.id,
-                        title = entity.tvShow.title,
-                        imagePath = entity.tvShow.posterPath,
-                        voteAverage = entity.tvShow.voteAverage?.withDecimals(1),
-                        inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
+                        id = tvShow.id,
+                        title = tvShow.name,
+                        imagePath = tvShow.posterPath,
+                        voteAverage = tvShow.voteAverage?.withDecimals(1),
                     )
                 }
             }
@@ -135,23 +106,17 @@ class TvShowRepositoryImpl @Inject constructor(
 
     override fun getTopRatedTvShows(countryCode: String?): Flow<PagingData<TvShow>> {
         return refreshTrigger.flatMapLatest {
-            Pager(
-                config = PagingConfig(pageSize = 20),
-                remoteMediator = TopRatedTvShowsRemoteMediator(
-                    getTvShows = { page ->
-                        tvShowService.getTopRatedTvShows(page, countryCode)
-                    },
-                    topRatedTvShowDao
-                ),
-                pagingSourceFactory = { topRatedTvShowDao.getPagingSource() }
-            ).flow.map { pagingData ->
-                pagingData.map { entity ->
+            Pager(PagingConfig(pageSize = 20)) {
+                TvShowsPagingSource { page ->
+                    tvShowService.getTopRatedTvShows(page, countryCode)
+                }
+            }.flow.map { pagingData ->
+                pagingData.map { tvShow ->
                     TvShow(
-                        id = entity.tvShow.id,
-                        title = entity.tvShow.title,
-                        imagePath = entity.tvShow.posterPath,
-                        voteAverage = entity.tvShow.voteAverage?.withDecimals(1),
-                        inWatchlist = entity.inWatchlist.takeIf { sessionManager.loggedIn.value }
+                        id = tvShow.id,
+                        title = tvShow.name,
+                        imagePath = tvShow.posterPath,
+                        voteAverage = tvShow.voteAverage?.withDecimals(1),
                     )
                 }
             }
