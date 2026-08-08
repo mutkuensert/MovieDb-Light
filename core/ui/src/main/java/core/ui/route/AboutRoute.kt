@@ -3,4 +3,4 @@ package core.ui.route
 import kotlinx.serialization.Serializable
 
 @Serializable
-object AboutRoute
+class AboutRoute(val showAccountManagementInfo: Boolean = false)

@@ -2,8 +2,6 @@ package feature.profile.presentation.login
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onErr
 import com.github.michaelbull.result.onOk
@@ -14,12 +12,14 @@ import core.ui.navigation.Navigator
 import core.ui.route.AboutRoute
 import core.ui.route.SettingsRoute
 import core.ui.showFailurePopup
+import dagger.hilt.android.lifecycle.HiltViewModel
 import feature.profile.domain.usecase.StartSessionUseCase
 import feature.profile.presentation.profile.ProfileRoute
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 const val KEY_CAME_FROM_TMDB_LOGIN = "cameFromTmdbLogin"
 
@@ -80,6 +80,6 @@ class LoginViewModel @Inject constructor(
     }
 
     fun handleAboutClick() {
-        navigator.navigateToRoute(AboutRoute)
+        navigator.navigateToRoute(AboutRoute(showAccountManagementInfo = true))
     }
 }

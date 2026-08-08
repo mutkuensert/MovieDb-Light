@@ -15,4 +15,7 @@ sealed interface NavTab {
 
     @Serializable
     object SearchTab : NavTab
+
+    @Serializable
+    object AboutTab : NavTab
 }

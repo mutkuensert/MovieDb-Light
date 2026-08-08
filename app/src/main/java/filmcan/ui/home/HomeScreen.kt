@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,10 +15,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LiveTv
-import androidx.compose.material.icons.filled.Movie
-import androidx.compose.material.icons.filled.PersonPin
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.LiveTv
+import androidx.compose.material.icons.outlined.Movie
+import androidx.compose.material.icons.outlined.PersonPin
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -33,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -48,6 +51,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 import core.ui.Popup
 import core.ui.navigation.NavTab
 import core.ui.navigation.Navigator
@@ -79,6 +83,7 @@ import feature.splash.presentation.SplashScreen
 import feature.tvshow.presentation.detail.TvShowDetailScreen
 import feature.tvshow.presentation.list.TvShowsScreen
 import feature.tvshow.presentation.reviews.TvShowReviewsScreen
+import kotlin.reflect.KClass
 
 @Composable
 fun HomeScreen(navigator: Navigator) {
@@ -101,10 +106,12 @@ fun HomeScreen(navigator: Navigator) {
 
             MainNavigation(
                 navController,
+                viewModel.isProfileFeatureEnabled,
                 viewModel::navigateToMovies,
                 viewModel::navigateToTvShows,
                 viewModel::navigateToSearch,
-                viewModel::navigateToProfile
+                viewModel::navigateToProfile,
+                viewModel::navigateToAbout
             )
 
             if (loading) {
@@ -170,10 +177,12 @@ private fun Popup(popup: Popup, viewModel: HomeViewModel) {
 @Composable
 fun MainNavigation(
     navController: NavHostController,
+    isProfileTabEnabled: Boolean,
     onNavigateToMovies: (reselected: Boolean) -> Unit,
     onNavigateToTvShows: (reselected: Boolean) -> Unit,
     onNavigateToSearch: (reselected: Boolean) -> Unit,
     onNavigateToProfile: (reselected: Boolean) -> Unit,
+    onNavigateToAbout: (reselected: Boolean) -> Unit,
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val shouldShowBottomBar = navBackStackEntry?.destination?.hasRoute(SplashRoute::class) == false
@@ -183,10 +192,12 @@ fun MainNavigation(
             if (shouldShowBottomBar) {
                 BottomNavBar(
                     navController,
+                    isProfileTabEnabled,
                     onNavigateToMovies,
                     onNavigateToTvShows,
                     onNavigateToSearch,
-                    onNavigateToProfile
+                    onNavigateToProfile,
+                    onNavigateToAbout
                 )
             }
         }
@@ -279,8 +290,8 @@ fun MainNavigation(
                     SettingsScreen()
                 }
 
-                composable<AboutRoute> {
-                    AboutScreen()
+                composable<AboutRoute> { backStackEntry ->
+                    AboutScreen(backStackEntry.toRoute<AboutRoute>())
                 }
 
                 composable<MovieDetailRoute> {
@@ -303,6 +314,12 @@ fun MainNavigation(
                     TvShowReviewsScreen()
                 }
             }
+
+            navigation<NavTab.AboutTab>(AboutRoute()) {
+                composable<AboutRoute> { backStackEntry ->
+                    AboutScreen(backStackEntry.toRoute<AboutRoute>())
+                }
+            }
         }
     }
 }
@@ -311,89 +328,85 @@ fun MainNavigation(
 @Composable
 private fun BottomNavBar(
     navController: NavController,
+    isProfileTabEnabled: Boolean,
     onNavigateToMovies: (reselected: Boolean) -> Unit,
     onNavigateToTvShows: (reselected: Boolean) -> Unit,
     onNavigateToSearch: (reselected: Boolean) -> Unit,
     onNavigateToProfile: (reselected: Boolean) -> Unit,
+    onNavigateToAbout: (reselected: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
-
     NavigationBar(
         modifier = modifier.height(100.dp),
         containerColor = MaterialTheme.colorScheme.background,
     ) {
-        val isMovieTabSelected = currentDestination?.hierarchy?.any {
-            it.hasRoute(NavTab.MovieTab::class)
-        } == true
-        NavigationBarItem(
-            selected = isMovieTabSelected,
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.onBackground,
-                unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                indicatorColor = Color.Gray
-            ),
-            onClick = { onNavigateToMovies.invoke(isMovieTabSelected) },
-            icon = {
-                Icon(
-                    imageVector = Icons.Filled.Movie,
-                    contentDescription = null
-                )
-            })
+        BarItem(
+            navController,
+            NavTab.MovieTab::class,
+            Icons.Outlined.Movie,
+            onNavigateToMovies::invoke
+        )
 
-        val isTvShowTabSelected = currentDestination?.hierarchy?.any {
-            it.hasRoute(NavTab.TvShowTab::class)
-        } == true
-        NavigationBarItem(
-            selected = isTvShowTabSelected,
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.onBackground,
-                unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                indicatorColor = Color.Gray
-            ),
-            onClick = { onNavigateToTvShows.invoke(isTvShowTabSelected) },
-            icon = {
-                Icon(
-                    imageVector = Icons.Filled.LiveTv,
-                    contentDescription = null
-                )
-            })
+        BarItem(
+            navController,
+            NavTab.TvShowTab::class,
+            Icons.Outlined.LiveTv,
+            onNavigateToTvShows::invoke
+        )
 
-        val isSearchTabSelected = currentDestination?.hierarchy?.any {
-            it.hasRoute(NavTab.SearchTab::class)
-        } == true
-        NavigationBarItem(
-            selected = isSearchTabSelected,
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.onBackground,
-                unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                indicatorColor = Color.Gray
-            ),
-            onClick = { onNavigateToSearch.invoke(isSearchTabSelected) },
-            icon = {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = null
-                )
-            })
+        BarItem(
+            navController,
+            NavTab.SearchTab::class,
+            Icons.Outlined.Search,
+            onNavigateToSearch::invoke
+        )
 
-        val isProfileTabSelected = currentDestination?.hierarchy?.any {
-            it.hasRoute(NavTab.ProfileTab::class)
-        } == true
-        NavigationBarItem(
-            selected = isProfileTabSelected,
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = MaterialTheme.colorScheme.onBackground,
-                unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                indicatorColor = Color.Gray
-            ),
-            onClick = { onNavigateToProfile.invoke(isProfileTabSelected) },
-            icon = {
-                Icon(
-                    imageVector = Icons.Filled.PersonPin,
-                    contentDescription = null
-                )
-            })
+        if (isProfileTabEnabled) {
+            BarItem(
+                navController,
+                NavTab.ProfileTab::class,
+                Icons.Outlined.PersonPin,
+                onNavigateToProfile::invoke
+            )
+        } else {
+            BarItem(
+                navController,
+                NavTab.AboutTab::class,
+                Icons.Outlined.Info,
+                onNavigateToAbout::invoke
+            )
+        }
     }
+}
+
+@Composable
+private inline fun RowScope.BarItem(
+    navController: NavController,
+    tab: KClass<*>,
+    icon: ImageVector,
+    crossinline onClick: (selected: Boolean) -> Unit,
+) {
+    val selected = navController.isTabSelected(tab)
+    NavigationBarItem(
+        selected = selected,
+        colors = NavigationBarItemDefaults.colors(
+            selectedIconColor = MaterialTheme.colorScheme.onBackground,
+            unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+            indicatorColor = Color.Gray
+        ),
+        onClick = { onClick(selected) },
+        icon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null
+            )
+        })
+}
+
+@Composable
+private fun NavController.isTabSelected(tab: KClass<*>): Boolean {
+    return this.currentBackStackEntryAsState().value
+        ?.destination
+        ?.hierarchy
+        ?.any { it.hasRoute(tab) } == true
 }

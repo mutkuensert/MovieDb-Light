@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onOk
 import core.data.auth.LogoutTrigger
 import core.data.auth.LogoutTriggerEvent
+import core.domain.ProfileFeatureAvailability
 import core.ui.LoadingAnimator
 import core.ui.PopupHandler
 import core.ui.StatusBarBackgroundColorHandler
@@ -23,11 +24,13 @@ class HomeViewModel @Inject constructor(
     private val navigator: Navigator,
     val loadingAnimator: LoadingAnimator,
     val popupHandler: PopupHandler,
-    val logoutTrigger: LogoutTrigger,
-    val logoutUseCase: LogoutUseCase,
+    private val logoutTrigger: LogoutTrigger,
+    private val logoutUseCase: LogoutUseCase,
+    private val profileFeatureAvailability: ProfileFeatureAvailability,
     statusBarBackgroundColorHandler: StatusBarBackgroundColorHandler
 ) : ViewModel() {
     val statusBarContentColor = statusBarBackgroundColorHandler.color
+    val isProfileFeatureEnabled get() = profileFeatureAvailability.available
 
     init {
         viewModelScope.launch {
@@ -56,6 +59,10 @@ class HomeViewModel @Inject constructor(
 
     fun navigateToProfile(reselected: Boolean) {
         navigator.navigateToTab(NavTab.ProfileTab, reselected)
+    }
+
+    fun navigateToAbout(reselected: Boolean) {
+        navigator.navigateToTab(NavTab.AboutTab, reselected)
     }
 
     fun closePopup() {

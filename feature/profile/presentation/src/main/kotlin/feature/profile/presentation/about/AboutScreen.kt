@@ -22,12 +22,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import core.ui.FilmCanTheme
 import core.ui.addClickAction
+import core.ui.route.AboutRoute
 import feature.profile.presentation.R
 
 private const val TMDB_WEBSITE_URL = "https://www.themoviedb.org/"
 
 @Composable
-fun AboutScreen() {
+fun AboutScreen(aboutRoute: AboutRoute) {
     val uriHandler = LocalUriHandler.current
     val supportNote = stringResource(R.string.tmdb_account_support_note)
     val website = stringResource(R.string.tmdb_website)
@@ -54,18 +55,20 @@ fun AboutScreen() {
             textAlign = TextAlign.Center
         )
 
-        Text(
-            modifier = Modifier.padding(top = 24.dp),
-            text = supportNote.addClickAction(
-                startIndex = supportNote.indexOf(website),
-                endIndex = supportNote.indexOf(website) + website.length,
-                style = SpanStyle(color = Color(0xFFFF5722)),
-                action = { uriHandler.openUri(TMDB_WEBSITE_URL) }
-            ),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-            textAlign = TextAlign.Center
-        )
+        if (aboutRoute.showAccountManagementInfo) {
+            Text(
+                modifier = Modifier.padding(top = 24.dp),
+                text = supportNote.addClickAction(
+                    startIndex = supportNote.indexOf(website),
+                    endIndex = supportNote.indexOf(website) + website.length,
+                    style = SpanStyle(color = Color(0xFFFF5722)),
+                    action = { uriHandler.openUri(TMDB_WEBSITE_URL) }
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
@@ -73,6 +76,6 @@ fun AboutScreen() {
 @Composable
 private fun AboutScreenPreview() {
     FilmCanTheme {
-        AboutScreen()
+        AboutScreen(AboutRoute())
     }
 }

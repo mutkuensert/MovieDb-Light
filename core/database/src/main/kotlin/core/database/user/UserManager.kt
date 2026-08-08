@@ -1,25 +1,21 @@
 package core.database.user
 
 import android.annotation.SuppressLint
-import android.content.Context
-import dagger.hilt.android.qualifiers.ApplicationContext
+import core.database.encryptedpreferences.EncryptedPreferences
+import core.database.encryptedpreferences.EncryptedPreferencesKeys.KEY_USER_DETAILS
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val PREFS_USER = "userPreferences"
-private const val KEY_USER_DETAILS = "userDetails"
-
 @Singleton
 class UserManager @Inject constructor(
-    @ApplicationContext context: Context,
+    private val encryptedPreferences: EncryptedPreferences,
     private val json: Json,
 ) {
-    private val encryptedSharedPreferences = EncryptedPreferences(context, PREFS_USER)
 
     fun getUser(): UserDetails? {
-        val userDetailsJson = encryptedSharedPreferences.getString(KEY_USER_DETAILS)
+        val userDetailsJson = encryptedPreferences.getString(KEY_USER_DETAILS)
             ?: return null
         return json.decodeFromString<UserDetails>(userDetailsJson)
     }
@@ -32,7 +28,7 @@ class UserManager @Inject constructor(
         profilePicturePath: String?,
         includeAdult: Boolean,
     ): Boolean {
-        return encryptedSharedPreferences
+        return encryptedPreferences
             .putString(
                 KEY_USER_DETAILS,
                 json.encodeToString(
@@ -42,7 +38,7 @@ class UserManager @Inject constructor(
     }
 
     fun removeCurrentUser(): Boolean {
-        return encryptedSharedPreferences.remove(KEY_USER_DETAILS)
+        return encryptedPreferences.remove(KEY_USER_DETAILS)
     }
 }
 

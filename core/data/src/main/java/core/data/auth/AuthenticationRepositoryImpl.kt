@@ -3,6 +3,7 @@ package core.data.auth
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.flatMapEither
 import com.github.michaelbull.result.mapBoth
 import com.github.michaelbull.result.onOk
 import core.data.SessionManager
@@ -42,10 +43,14 @@ class AuthenticationRepositoryImpl @Inject constructor(
             ?: return Err(AuthFailure(stringResource.get(R.string.something_is_wrong)))
 
         return authenticationService.startSession(NewSessionRequest(requestToken))
-            .mapBoth(success = {
-                sessionManager.setSessionId(it.sessionId)
+            .flatMapEither(success = { response: SessionResponse ->
+                val savedSessionId = sessionManager.saveSessionIdSecurely(response.sessionId)
                 sessionManager.removeRequestToken()
-                Ok(Unit)
+                if (savedSessionId) {
+                    Ok(Unit)
+                } else {
+                    Err(UndefinedFailure(""))
+                }
             }, failure = { networkError ->
                 Timber.w("Unsuccessful request token validation.")
                 Err(networkError.toFailure())
