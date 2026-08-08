@@ -16,4 +16,6 @@
     <string name="settings_button_icon">Ayarlar butonu ikonu</string>
     <string name="about">Hakkında</string>
     <string name="tmdb_api_attribution">Bu ürün TMDB API\'sini kullanır ancak TMDB tarafından desteklenmez veya onaylanmaz.</string>
+    <string name="tmdb_website">TMDB web sitesi</string>
+    <string name="tmdb_account_support_note">Hesabınızla ilgili bir değişiklik yapmak istediğinizde veya herhangi bir sorun yaşadığınızda bunları TMDB web sitesi üzerinden halledebilirsiniz.</string>
 </resources>

@@ -16,4 +16,6 @@
     <string name="settings_button_icon">Settings button icon</string>
     <string name="about">About</string>
     <string name="tmdb_api_attribution">This product uses the TMDB API but is not endorsed or certified by TMDB.</string>
+    <string name="tmdb_website">TMDB website</string>
+    <string name="tmdb_account_support_note">If you want to make changes to your account or have any issues, you can handle them on the TMDB website.</string>
 </resources>
