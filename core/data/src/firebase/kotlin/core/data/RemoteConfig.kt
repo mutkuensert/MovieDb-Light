@@ -6,8 +6,11 @@ import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import utils.Constants
 import utils.Constants.REMOTE_CONFIG_TMDB_API_KEY_NAME
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class RemoteConfig {
+@Singleton
+class RemoteConfig @Inject constructor() {
     private var isRequesting = false
     private val pendingSuccessListeners = mutableListOf<(String) -> Unit>()
     private val pendingFailureListeners = mutableListOf<() -> Unit>()

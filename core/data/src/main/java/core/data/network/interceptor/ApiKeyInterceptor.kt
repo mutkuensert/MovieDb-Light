@@ -2,7 +2,8 @@ package core.data.network.interceptor
 
 import core.data.RemoteConfig
 import core.data.network.ErrorResponse
-import core.domain.ApiKeyManager
+import core.domain.apikey.ApiKeyManager
+import core.domain.apikey.ApiKeyState
 import filmcan.core.data.R
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -26,16 +27,25 @@ class ApiKeyInterceptor(
         if (apiKeyManager.tmdbApiKey.value == null) {
             remoteConfig.fetch(
                 onSuccess = { apiKey ->
-                    apiKeyManager.tmdbApiKey.value = apiKey
+                    apiKeyManager.tmdbApiKey.value = ApiKeyState.Success(apiKey)
                 },
-                onFailure = {}
+                onFailure = { apiKeyManager.tmdbApiKey.value = ApiKeyState.Failed() }
             )
         }
-        val apiKey: String? = runBlocking {
-            apiKeyManager.tmdbApiKey.first { it != null }
-        }
 
-        return if (apiKey == null) {
+        val apiKey: ApiKeyState = runBlocking {
+            apiKeyManager.tmdbApiKey.first { it != null }
+        }!!
+
+        return if (apiKey is ApiKeyState.Success) {
+            val url = request
+                .url
+                .newBuilder()
+                .addQueryParameter("api_key", apiKey.key)
+                .build()
+            val newRequest = request.newBuilder().url(url).build()
+            chain.proceed(newRequest)
+        } else {
             Response.Builder()
                 .request(request)
                 .protocol(Protocol.HTTP_1_1)
@@ -51,14 +61,6 @@ class ApiKeyInterceptor(
                         .toResponseBody("application/json".toMediaType())
                 )
                 .build()
-        } else {
-            val url = request
-                .url
-                .newBuilder()
-                .addQueryParameter("api_key", apiKey)
-                .build()
-            val newRequest = request.newBuilder().url(url).build()
-            chain.proceed(newRequest)
         }
     }
 }

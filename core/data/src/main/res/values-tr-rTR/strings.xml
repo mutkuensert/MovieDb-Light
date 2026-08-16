@@ -11,6 +11,7 @@
     <string name="error_502_bad_gateway">Sunucu geçici olarak kullanılamıyor. Lütfen birkaç dakika içinde tekrar deneyin.</string>
     <string name="error_503_service_unavailable">Hizmetimiz şu anda bakımda. En kısa sürede geri döneceğiz!</string>
     <string name="error_504_gateway_timeout">Sunucu yanıt vermekte zorlanıyor. Lütfen internet bağlantınızı kontrol edin veya daha sonra tekrar deneyin.</string>
+    <string name="network_connection_error">İnternet bağlantınızda bir sorun var gibi görünüyor. Lütfen bağlantınızı kontrol edip tekrar deneyin.</string>
     <string name="undefined_status_code">Üzgünüz! İsteğinizde bir hata oluştu. Lütfen tekrar deneyin.</string>
     <string name="unknown_request_error">Üzgünüz! İsteğinizde bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
     <string name="something_is_wrong">Üzgünüz! İsteğinizde bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>

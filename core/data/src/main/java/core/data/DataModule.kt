@@ -14,7 +14,7 @@ import core.data.network.interceptor.ApiKeyInterceptor
 import core.data.network.interceptor.LanguageInterceptor
 import core.database.LanguagePreference
 import core.database.user.UserManager
-import core.domain.ApiKeyManager
+import core.domain.apikey.ApiKeyManager
 import core.domain.account.AccountRepository
 import core.domain.auth.AuthStateProvider
 import core.domain.auth.AuthenticationRepository
@@ -123,12 +123,6 @@ abstract class DataModule {
         @Provides
         fun provideAccountService(retrofit: Retrofit): AccountService {
             return retrofit.create(AccountService::class.java)
-        }
-
-        @Provides
-        @Singleton
-        fun provideRemoteConfig(): RemoteConfig {
-            return RemoteConfig()
         }
     }
 }

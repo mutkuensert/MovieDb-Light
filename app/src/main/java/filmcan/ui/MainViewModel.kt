@@ -1,14 +1,15 @@
 package filmcan.ui
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import com.mutkuensert.filmcan.R
-import core.domain.ApiKeyManager
+import core.domain.apikey.ApiKeyManager
+import core.domain.apikey.ApiKeyState
 import core.ui.PopupHandler
 import core.ui.navigation.Navigator
+import dagger.hilt.android.lifecycle.HiltViewModel
 import filmcan.setupRemoteConfigUpdateListener
 import utils.stringresource.StringResource
+import javax.inject.Inject
 
 
 @HiltViewModel
@@ -29,7 +30,7 @@ class MainViewModel @Inject constructor(
 
     fun setupRemoteConfigUpdateListener() {
         setupRemoteConfigUpdateListener(onUpdated = { apiKey: String ->
-            apiKeyManager.tmdbApiKey.value = apiKey
+            apiKeyManager.tmdbApiKey.value = ApiKeyState.Success(apiKey)
         })
     }
 }

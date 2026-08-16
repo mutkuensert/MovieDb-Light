@@ -3,9 +3,10 @@ package core.data.network
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
-import kotlinx.serialization.json.Json
 import filmcan.core.data.R
+import kotlinx.serialization.json.Json
 import okhttp3.Request
+import okio.IOException
 import okio.Timeout
 import retrofit2.Call
 import retrofit2.CallAdapter
@@ -83,7 +84,18 @@ private class ResultCall<T>(
                             NetworkError(
                                 httpCode = sslCertificateError,
                                 statusCode = null,
-                                message = stringResource.get(R.string.something_is_wrong)
+                                message = throwable.message
+                                    ?: stringResource.get(R.string.something_is_wrong)
+                            )
+                        )
+                    }
+
+                    is IOException -> {
+                        Err(
+                            NetworkError(
+                                httpCode = null,
+                                statusCode = null,
+                                message = stringResource.get(R.string.network_connection_error)
                             )
                         )
                     }
@@ -93,7 +105,8 @@ private class ResultCall<T>(
                             NetworkError(
                                 httpCode = null,
                                 statusCode = null,
-                                stringResource.get(R.string.unknown_request_error)
+                                throwable.message
+                                    ?: stringResource.get(R.string.something_is_wrong)
                             )
                         )
                     }

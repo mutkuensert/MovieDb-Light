@@ -11,6 +11,7 @@
     <string name="error_502_bad_gateway">The server is temporarily unavailable. Please try again in a few minutes.</string>
     <string name="error_503_service_unavailable">Our service is currently under maintenance. We’ll be back soon!</string>
     <string name="error_504_gateway_timeout">The server is taking too long to respond. Please check your internet or try again later.</string>
+    <string name="network_connection_error">There seems to be a problem with your internet connection. Please check your connection and try again.</string>
     <string name="undefined_status_code">Oops! Something went wrong with your request. Please try again.</string>
     <string name="unknown_request_error">Oops! Something went wrong with your request. Please try again later.</string>
     <string name="something_is_wrong">Oops! Something went wrong with your request. Please try again later.</string>
