@@ -160,6 +160,8 @@ private fun MovieDetail(
             )
 
             Column(Modifier.padding(horizontal = 16.dp)) {
+                Title(uiModel.displayTitle, Modifier.padding(top = 8.dp))
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -174,7 +176,7 @@ private fun MovieDetail(
                 if (uiModel.genres.isNotBlank()) {
                     Text(
                         text = uiModel.genres,
-                        modifier = Modifier.padding(top = 8.dp),
+                        modifier = Modifier.padding(top = 4.dp),
                         color = MaterialTheme.colorScheme.onBackground.darkenBy(30),
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -232,6 +234,17 @@ private fun MovieDetail(
             }
         }
     }
+}
+
+@Composable
+private fun Title(displayTitle: String, modifier: Modifier = Modifier) {
+    Text(
+        text = displayTitle,
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.onBackground,
+        style = MaterialTheme.typography.bodyLarge,
+        fontWeight = FontWeight.Bold,
+    )
 }
 
 @Composable
@@ -970,6 +983,7 @@ private fun MovieDetailPreview() {
                 id = -1,
                 imagePaths = listOf("", "", "", "", "", "", "", ""),
                 title = "pharetra",
+                originalTitle = "Pharetra",
                 vote = "7.1",
                 showFavoriteButton = true,
                 showWatchlistButton = true,

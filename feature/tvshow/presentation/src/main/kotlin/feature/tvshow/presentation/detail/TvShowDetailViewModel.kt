@@ -91,6 +91,7 @@ class TvShowDetailViewModel @Inject constructor(
                             imagePaths = tvShowDetails.imagePath?.let { path -> listOf(path) }
                                 ?: listOf(),
                             title = tvShowDetails.title ?: "",
+                            originalTitle = tvShowDetails.originalTitle ?: "",
                             vote = tvShowDetails.voteAverage?.toString() ?: "",
                             runtime = tvShowDetails.runtime?.toString() ?: "",
                             releaseDate = tvShowDetails.releaseDate?.replace("-", ".") ?: "",

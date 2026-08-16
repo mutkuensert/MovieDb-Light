@@ -10,7 +10,8 @@ import java.time.format.DateTimeFormatter
 data class TvShowDetailUiModel(
     val id: Int,
     val imagePaths: List<String>,
-    val title: String,
+    private val title: String,
+    private val originalTitle: String,
     val vote: String,
     val showFavoriteButton: Boolean,
     val showWatchlistButton: Boolean,
@@ -28,12 +29,19 @@ data class TvShowDetailUiModel(
     val review: ReviewUiModel?,
     val showsReviewsButton: Boolean,
 ) : Parcelable {
+    val displayTitle: String
+        get() = originalTitle
+            .takeIf { it.isNotBlank() && it.lowercase() != title.lowercase() }
+            ?.let { "$title\n($it)" }
+            ?: title
+
     companion object {
         fun initial(id: Int): TvShowDetailUiModel {
             return TvShowDetailUiModel(
                 id = id,
                 imagePaths = emptyList(),
                 title = "",
+                originalTitle = "",
                 vote = "",
                 showFavoriteButton = false,
                 showWatchlistButton = false,

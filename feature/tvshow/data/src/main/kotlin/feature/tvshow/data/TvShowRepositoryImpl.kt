@@ -128,6 +128,7 @@ class TvShowRepositoryImpl @Inject constructor(
             TvShowDetails(
                 imagePath = response.posterPath,
                 title = response.name ?: response.originalName,
+                originalTitle = response.originalName,
                 voteAverage = response.voteAverage?.withDecimals(1),
                 runtime = response.episodeRunTime?.firstOrNull(),
                 releaseDate = response.firstAirDate,

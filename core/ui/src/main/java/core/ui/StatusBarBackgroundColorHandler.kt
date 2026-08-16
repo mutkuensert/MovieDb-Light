@@ -17,5 +17,4 @@ class StatusBarBackgroundColorHandler @Inject constructor() {
     }
 }
 
-val LocalStatusBarBackgroundColorHandler =
-    compositionLocalOf<StatusBarBackgroundColorHandler> { error("No info is provided.") }
+val LocalStatusBarBackgroundColorHandler = compositionLocalOf { StatusBarBackgroundColorHandler() }

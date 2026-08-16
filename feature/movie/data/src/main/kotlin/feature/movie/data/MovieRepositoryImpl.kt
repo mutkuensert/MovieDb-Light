@@ -130,7 +130,8 @@ class MovieRepositoryImpl @Inject constructor(
         return movieService.getMovieDetails(movieId).mapToDomain { response ->
             MovieDetails(
                 imagePath = response.posterPath,
-                title = response.originalTitle,
+                title = response.title ?: response.originalTitle,
+                originalTitle = response.originalTitle,
                 voteAverage = response.voteAverage?.withDecimals(1),
                 runtime = response.runtime,
                 releaseDate = response.releaseDate,

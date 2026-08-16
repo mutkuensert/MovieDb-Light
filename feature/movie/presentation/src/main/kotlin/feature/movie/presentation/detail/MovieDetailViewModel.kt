@@ -91,6 +91,7 @@ class MovieDetailViewModel @Inject constructor(
                             imagePaths = movieDetails.imagePath?.let { path -> listOf(path) }
                                 ?: listOf(),
                             title = movieDetails.title ?: "",
+                            originalTitle = movieDetails.originalTitle ?: "",
                             vote = movieDetails.voteAverage?.toString() ?: "",
                             runtime = movieDetails.runtime?.toString() ?: "",
                             releaseDate = movieDetails.releaseDate?.replace("-", ".") ?: "",
