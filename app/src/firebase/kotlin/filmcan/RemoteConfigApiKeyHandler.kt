@@ -11,7 +11,18 @@ class RemoteConfigApiKeyHandler @Inject constructor(
 ) {
 
     fun initialize() {
-        if (apiKeyStateHandler.tmdbApiKey.value == null) {
+        remoteConfig.setupUpdateListener(
+            REMOTE_CONFIG_TMDB_API_KEY_NAME,
+            onUpdated = { apiKey: String ->
+                apiKeyStateHandler.tmdbApiKey.value = ApiKeyState.Success(apiKey)
+            },
+            onError = { _ -> })
+    }
+
+    fun fetchApiKeyIfNotFetched() {
+        if (apiKeyStateHandler.tmdbApiKey.value is ApiKeyState.NotRequested ||
+            apiKeyStateHandler.tmdbApiKey.value is ApiKeyState.Failed
+        ) {
             remoteConfig.fetchKey(
                 REMOTE_CONFIG_TMDB_API_KEY_NAME,
                 onSuccess = { apiKey ->
@@ -20,12 +31,5 @@ class RemoteConfigApiKeyHandler @Inject constructor(
                 onFailure = { apiKeyStateHandler.tmdbApiKey.value = ApiKeyState.Failed() }
             )
         }
-
-        remoteConfig.setupUpdateListener(
-            REMOTE_CONFIG_TMDB_API_KEY_NAME,
-            onUpdated = { apiKey: String ->
-                apiKeyStateHandler.tmdbApiKey.value = ApiKeyState.Success(apiKey)
-            },
-            onError = { _ -> })
     }
 }

@@ -29,4 +29,8 @@ class MainViewModel @Inject constructor(
     fun setupRemoteConfigApiKey() {
         remoteConfigApiKeyHandler.initialize()
     }
+
+    fun fetchApiKeyIfNotFetched() {
+        remoteConfigApiKeyHandler.fetchApiKeyIfNotFetched()
+    }
 }

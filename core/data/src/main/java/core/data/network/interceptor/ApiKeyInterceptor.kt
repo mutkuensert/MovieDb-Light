@@ -1,8 +1,8 @@
 package core.data.network.interceptor
 
 import core.data.network.ErrorResponse
-import core.domain.apikey.ApiKeyStateHandler
 import core.domain.apikey.ApiKeyState
+import core.domain.apikey.ApiKeyStateHandler
 import filmcan.core.data.R
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -24,8 +24,8 @@ class ApiKeyInterceptor(
         val request = chain.request()
 
         val apiKey: ApiKeyState = runBlocking {
-            apiKeyStateHandler.tmdbApiKey.first { it != null }
-        }!!
+            apiKeyStateHandler.tmdbApiKey.first { it != ApiKeyState.NotRequested() }
+        }
 
         return if (apiKey is ApiKeyState.Success) {
             val url = request
