@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
-        viewModel.setupRemoteConfigUpdateListener()
+        viewModel.setupRemoteConfigApiKey()
         enableEdgeToEdge()
         setContent {
             CompositionLocalProvider(LocalStatusBarBackgroundColorHandler provides statusBarBackgroundColorHandler) {

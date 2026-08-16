@@ -2,6 +2,6 @@ package core.domain.apikey
 
 import kotlinx.coroutines.flow.MutableStateFlow
 
-interface ApiKeyManager {
+interface ApiKeyStateHandler {
     val tmdbApiKey: MutableStateFlow<ApiKeyState?>
 }

@@ -73,7 +73,7 @@ internal fun Project.configureAndroidLibrary(extension: LibraryExtension) {
         buildFeatures {
             compose = false
             aidl = false
-            buildConfig = true
+            buildConfig = false
             renderScript = false
             shaders = false
         }

@@ -1,8 +1,7 @@
 package core.data.network.interceptor
 
-import core.data.RemoteConfig
 import core.data.network.ErrorResponse
-import core.domain.apikey.ApiKeyManager
+import core.domain.apikey.ApiKeyStateHandler
 import core.domain.apikey.ApiKeyState
 import filmcan.core.data.R
 import kotlinx.coroutines.flow.first
@@ -16,25 +15,16 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import utils.stringresource.StringResource
 
 class ApiKeyInterceptor(
-    private val apiKeyManager: ApiKeyManager,
+    private val apiKeyStateHandler: ApiKeyStateHandler,
     private val json: Json,
     private val stringResource: StringResource,
-    private val remoteConfig: RemoteConfig,
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
-        if (apiKeyManager.tmdbApiKey.value == null) {
-            remoteConfig.fetch(
-                onSuccess = { apiKey ->
-                    apiKeyManager.tmdbApiKey.value = ApiKeyState.Success(apiKey)
-                },
-                onFailure = { apiKeyManager.tmdbApiKey.value = ApiKeyState.Failed() }
-            )
-        }
 
         val apiKey: ApiKeyState = runBlocking {
-            apiKeyManager.tmdbApiKey.first { it != null }
+            apiKeyStateHandler.tmdbApiKey.first { it != null }
         }!!
 
         return if (apiKey is ApiKeyState.Success) {

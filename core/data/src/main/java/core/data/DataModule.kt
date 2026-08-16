@@ -14,8 +14,8 @@ import core.data.network.interceptor.ApiKeyInterceptor
 import core.data.network.interceptor.LanguageInterceptor
 import core.database.LanguagePreference
 import core.database.user.UserManager
-import core.domain.apikey.ApiKeyManager
 import core.domain.account.AccountRepository
+import core.domain.apikey.ApiKeyStateHandler
 import core.domain.auth.AuthStateProvider
 import core.domain.auth.AuthenticationRepository
 import dagger.Binds
@@ -40,7 +40,7 @@ import javax.inject.Singleton
 abstract class DataModule {
     @Binds
     @Singleton
-    abstract fun bindApiKeyManager(apiKeyManager: ApiKeyManagerImpl): ApiKeyManager
+    abstract fun bindApiKeyManager(apiKeyManager: ApiKeyStateHandlerImpl): ApiKeyStateHandler
 
     @Binds
     @Singleton
@@ -67,9 +67,8 @@ abstract class DataModule {
             @ApplicationContext context: Context,
             userManager: UserManager,
             logoutTrigger: LogoutTrigger,
-            apiKeyManager: ApiKeyManager,
+            apiKeyStateHandler: ApiKeyStateHandler,
             stringResource: StringResource,
-            remoteConfig: RemoteConfig,
             languagePreference: LanguagePreference,
             json: Json,
         ): OkHttpClient {
@@ -78,10 +77,9 @@ abstract class DataModule {
                 .addInterceptor(LanguageInterceptor(languagePreference))
                 .addInterceptor(
                     ApiKeyInterceptor(
-                        apiKeyManager,
+                        apiKeyStateHandler,
                         getJson(),
                         stringResource,
-                        remoteConfig
                     )
                 )
                 .addInterceptor(

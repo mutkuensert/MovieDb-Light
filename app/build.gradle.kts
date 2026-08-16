@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("filmcan.android.application")
 }
@@ -19,6 +22,23 @@ android {
                 "proguard-rules.pro"
             )
         }
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    defaultConfig {
+        val localProperties = Properties()
+        val propertiesFile = rootProject.file("local.properties")
+        if (propertiesFile.exists()) {
+            val inputStream = FileInputStream(propertiesFile)
+            localProperties.load(inputStream)
+            inputStream.close()
+        }
+
+        val apiKey = System.getenv("API_KEY_TMDB") ?: localProperties.getProperty("API_KEY_TMDB")
+        buildConfigField("String", "API_KEY_TMDB", "\"" + apiKey + "\"")
     }
 
     sourceSets {
